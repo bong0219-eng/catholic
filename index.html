@@ -1159,6 +1159,9 @@ window.addEventListener('popstate', function() {
   // 스택 즉시 복원 (항상 맨 먼저)
   history.pushState({ s: 'app' }, '');
 
+  // 카카오맵 앱 전환 중 발생한 popstate 무시
+  if (_kakaoLaunching) return;
+
   // PC: 아무것도 안 함
   if (isPc()) return;
 
@@ -2053,6 +2056,9 @@ function restoreAllMarkers() {
   updateMarkers();
 }
 
+// ── 카카오맵 앱 전환 중 popstate 무시 플래그 ──
+let _kakaoLaunching = false;
+
 function doKakaoRoute() {
   if (!rS||!rE) return;
   const s1 = rS.idx<0&&myLocR ? {name:'현위치',lat:myLocR.lat,lng:myLocR.lng} : rS.shrine;
@@ -2060,26 +2066,40 @@ function doKakaoRoute() {
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const isMyLoc = (s1.name==='현위치'||s1.name==='📍 현위치');
 
-  if (isMyLoc) {
-    const web = `https://map.kakao.com/link/to/${encodeURIComponent(s2.name)},${s2.lat},${s2.lng}`;
-    if (isMobile) {
-      const app = `kakaomap://route?ep=${s2.lat},${s2.lng}&by=CAR`;
-      const t = setTimeout(() => window.open(web, '_blank'), 1500);
-      window.addEventListener('blur', () => clearTimeout(t), {once:true});
-      location.href = app;
-    } else {
-      window.open(web, '_blank');
-    }
+  const webUrl = isMyLoc
+    ? `https://map.kakao.com/link/to/${encodeURIComponent(s2.name)},${s2.lat},${s2.lng}`
+    : `https://map.kakao.com/link/from/${encodeURIComponent(s1.name)},${s1.lat},${s1.lng}/to/${encodeURIComponent(s2.name)},${s2.lat},${s2.lng}`;
+
+  const appUrl = isMyLoc
+    ? `kakaomap://route?ep=${s2.lat},${s2.lng}&by=CAR`
+    : `kakaomap://route?sp=${s1.lat},${s1.lng}&ep=${s2.lat},${s2.lng}&by=CAR`;
+
+  if (isMobile) {
+    // iframe으로 앱 스킴 호출 → popstate/히스토리 변경 없음
+    _kakaoLaunching = true;
+    setTimeout(() => { _kakaoLaunching = false; }, 3000);
+
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'display:none;width:0;height:0;border:0;position:fixed;';
+    document.body.appendChild(iframe);
+    iframe.src = appUrl;
+    // 1.5초 후 앱 미설치 시 웹으로 fallback
+    const fallbackTimer = setTimeout(() => {
+      _kakaoLaunching = false;
+      window.open(webUrl, '_blank');
+    }, 1500);
+    // 앱으로 전환되면 blur 발생 → fallback 취소
+    const cancelFallback = () => {
+      clearTimeout(fallbackTimer);
+      window.removeEventListener('blur', cancelFallback);
+    };
+    window.addEventListener('blur', cancelFallback, { once: true });
+    // iframe 정리
+    setTimeout(() => {
+      if (document.body.contains(iframe)) document.body.removeChild(iframe);
+    }, 2000);
   } else {
-    const web = `https://map.kakao.com/link/from/${encodeURIComponent(s1.name)},${s1.lat},${s1.lng}/to/${encodeURIComponent(s2.name)},${s2.lat},${s2.lng}`;
-    if (isMobile) {
-      const app = `kakaomap://route?sp=${s1.lat},${s1.lng}&ep=${s2.lat},${s2.lng}&by=CAR`;
-      const t = setTimeout(() => window.open(web, '_blank'), 1500);
-      window.addEventListener('blur', () => clearTimeout(t), {once:true});
-      location.href = app;
-    } else {
-      window.open(web, '_blank');
-    }
+    window.open(webUrl, '_blank');
   }
 }
 
@@ -2217,15 +2237,29 @@ function initSW(){
   });
 }
 
-// 카카오맵 앱 복귀 시 relayout
+// 카카오맵 앱 복귀 시 relayout + 지도 상태 복원
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && typeof map !== 'undefined' && map) {
-    try { map.relayout(); } catch(e) {}
+  if (document.visibilityState === 'visible') {
+    // map-active 클래스가 있는데 cover가 보이면 강제 복원
+    if (_screen === 'map') {
+      document.getElementById('cover').style.display = 'none';
+      document.documentElement.classList.add('map-active');
+    }
+    if (typeof map !== 'undefined' && map) {
+      try { map.relayout(); } catch(e) {}
+    }
   }
 });
 window.addEventListener('pageshow', (e) => {
-  if (e.persisted && typeof map !== 'undefined' && map) {
-    try { map.relayout(); } catch(e) {}
+  if (e.persisted) {
+    // bfcache에서 복원 시 지도 상태 재확인
+    if (_screen === 'map') {
+      document.getElementById('cover').style.display = 'none';
+      document.documentElement.classList.add('map-active');
+    }
+    if (typeof map !== 'undefined' && map) {
+      try { map.relayout(); } catch(e) {}
+    }
   }
 });
 
