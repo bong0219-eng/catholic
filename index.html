@@ -688,7 +688,7 @@ html.map-active #app-map { display: block; }
 <div class="mob-sheet" id="mob-list-sheet">
   <div class="mob-sheet-hd">
     <span class="mob-sheet-title">📋 성지목록</span>
-    <button class="mob-sheet-x" onclick="mobToggleList()">×</button>
+    <button class="mob-sheet-x" onclick="mobCloseList()">×</button>
   </div>
   <div class="list-search-bar">
     <div class="list-search-inner">
@@ -723,7 +723,7 @@ html.map-active #app-map { display: block; }
 <div class="mob-sheet" id="mob-nearby-sheet">
   <div class="mob-sheet-hd">
     <span class="mob-sheet-title">📍 내 주변 성지</span>
-    <button class="mob-sheet-x" onclick="mobToggleNearby()">×</button>
+    <button class="mob-sheet-x" onclick="mobCloseNearby()">×</button>
   </div>
   <div class="mob-sheet-body" style="overflow-y:auto">
     <div id="nearby-result-inner" style="font-size:13px;color:#333">
@@ -736,7 +736,7 @@ html.map-active #app-map { display: block; }
 <div class="mob-sheet" id="mob-route-sheet">
   <div class="mob-sheet-hd">
     <span class="mob-sheet-title">🧭 경로 탐색</span>
-    <button class="mob-sheet-x" onclick="mobToggleRoute()">×</button>
+    <button class="mob-sheet-x" onclick="mobCloseRoute()">×</button>
   </div>
   <div class="mob-sheet-body" style="padding:14px 14px 20px;overflow-y:auto">
     <div class="rs-start-box" onclick="openSearchModal('start')">
@@ -1152,7 +1152,7 @@ function doExit() {
 /* ═══════════════════════════════════════════
    뒤로가기 (popstate)
    ─ 항상 pushState로 스택 1개 유지
-   ─ UI 상태에 따라 닫기 처리
+   ─ 플래그 대신 DOM 클래스로 직접 확인 (플래그 동기화 문제 방지)
 ═══════════════════════════════════════════ */
 window.addEventListener('popstate', function() {
   // 스택 즉시 복원 (항상 맨 먼저)
@@ -1177,13 +1177,19 @@ window.addEventListener('popstate', function() {
     if (document.getElementById('info-card').classList.contains('open')) {
       closeInfo(); return;
     }
-    // 시트들 (열린 순서대로)
-    if (_mobListOpen)   { mobToggleList();   return; }
-    if (_mobNearbyOpen) { mobToggleNearby(); return; }
-    if (_mobRouteOpen)  { mobToggleRoute();  return; }
-    // 경로 모드
+    // 시트들 — 플래그 대신 DOM의 open 클래스로 직접 확인
+    if (document.getElementById('mob-list-sheet').classList.contains('open')) {
+      mobCloseList(); return;
+    }
+    if (document.getElementById('mob-nearby-sheet').classList.contains('open')) {
+      mobCloseNearby(); return;
+    }
+    if (document.getElementById('mob-route-sheet').classList.contains('open')) {
+      mobCloseRoute(); return;
+    }
+    // 경로 모드만 남아있으면 해제
     if (routeMode || polyline) { exitRouteMode(); return; }
-    // 아무것도 없으면 → 표지
+    // 완전히 아무것도 없으면 → 표지
     showCover();
     return;
   }
@@ -1628,11 +1634,31 @@ function _closeAllSheets() {
     document.getElementById(id)?.classList.remove('open');
   });
   document.querySelectorAll('.mob-tab').forEach(t => t.classList.remove('active'));
+  _mobListOpen = false; _mobRouteOpen = false; _mobNearbyOpen = false;
 }
 
 let _mobListOpen   = false;
 let _mobRouteOpen  = false;
 let _mobNearbyOpen = false;
+
+// ── 시트 닫기 전용 (뒤로가기에서 사용) ──
+function mobCloseList() {
+  _mobListOpen = false;
+  document.getElementById('mob-list-sheet')?.classList.remove('open');
+  document.getElementById('tab-list')?.classList.remove('active');
+}
+function mobCloseRoute() {
+  _mobRouteOpen = false;
+  document.getElementById('mob-route-sheet')?.classList.remove('open');
+  document.getElementById('tab-route')?.classList.remove('active');
+  // exitRouteMode는 호출하지 않음 — 경로 데이터 유지
+}
+function mobCloseNearby() {
+  _mobNearbyOpen = false;
+  const sheet = document.getElementById('mob-nearby-sheet');
+  if (sheet) { sheet.classList.remove('open'); sheet.classList.remove('split'); }
+  document.getElementById('tab-nearby')?.classList.remove('active');
+}
 
 function mobToggleList() {
   const wasOpen = _mobListOpen;
@@ -1645,7 +1671,6 @@ function mobToggleList() {
     renderListFiltered();
     if (routeMode) exitRouteMode();
     closeInfo();
-
   }
 }
 
@@ -1659,10 +1684,9 @@ function mobToggleRoute() {
     document.getElementById('tab-route')?.classList.add('active');
     enterRouteMode();
     closeInfo();
-
-  } else {
-    exitRouteMode();
   }
+  // 닫을 때: exitRouteMode 호출 안 함 — 시트만 닫힘, 경로 데이터 유지
+  // 경로 모드 종료는 resetRoute() 또는 명시적 exitRouteMode()로만
 }
 
 function mobToggleNearby() {
