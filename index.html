@@ -1606,19 +1606,33 @@ window.addEventListener('popstate', function onBack() {
 
   // 지도 화면
   if (_screen === 'map') {
-    if (document.getElementById('srch-modal')?.classList.contains('open')) { closeSearchModal(); return; }
-    if (document.getElementById('info-card')?.classList.contains('open'))  { closeInfo(); return; }
-    if (typeof _mobListOpen !== 'undefined' && _mobListOpen)   { mobToggleList();   return; }
-    if (typeof _mobRouteOpen !== 'undefined' && _mobRouteOpen) { mobToggleRoute();  return; }
-    if (typeof _mobNearbyOpen !== 'undefined' && _mobNearbyOpen) { mobToggleNearby(); return; }
-    // 경로탐색 모드이거나 경로선이 그려져 있으면 → 경로 해제 후 마커 복원
-    if (routeMode || polyline) {
-      exitRouteMode();
-      // 모바일 경로탐색 시트도 닫기
-      if (_mobRouteOpen) mobToggleRoute();
+    // 1. 검색 모달
+    if (document.getElementById('srch-modal')?.classList.contains('open')) {
+      closeSearchModal(); return;
+    }
+    // 2. 성지 정보 카드
+    if (document.getElementById('info-card')?.classList.contains('open')) {
+      closeInfo(); return;
+    }
+    // 3. 성지목록 시트
+    if (_mobListOpen) { mobToggleList(); return; }
+    // 4. 내주변 시트
+    if (_mobNearbyOpen) { mobToggleNearby(); return; }
+    // 5. 경로탐색 시트 OR 경로가 그려진 상태
+    if (_mobRouteOpen || routeMode || polyline) {
+      // 경로탐색 시트 닫기
+      if (_mobRouteOpen) {
+        document.getElementById('mob-route-sheet')?.classList.remove('open');
+        document.getElementById('tab-route')?.classList.remove('active');
+        _mobRouteOpen = false;
+      }
+      // 경로 모드 완전 초기화
+      if (routeMode || polyline) {
+        exitRouteMode(); // 내부에서 resetRoute() + restoreAllMarkers() 호출
+      }
       return;
     }
-    // 모두 닫혀있으면 표지로
+    // 6. 모두 닫혀있으면 → 표지로
     showCover();
     return;
   }
@@ -1835,23 +1849,39 @@ function drawLine(s1,s2,path) {
   if (polyline) polyline.setMap(null);
   const pts = path || [new kakao.maps.LatLng(s1.lat,s1.lng), new kakao.maps.LatLng(s2.lat,s2.lng)];
   polyline = new kakao.maps.Polyline({
-    path:pts, strokeWeight:path?6:3,
-    strokeColor:path?'#1a73e8':'#b8965a',
-    strokeOpacity:path?.88:.7,
-    strokeStyle:path?'solid':'dashed'
+    path: pts,
+    strokeWeight: path ? 6 : 3,
+    strokeColor: path ? '#1a73e8' : '#b8965a',
+    strokeOpacity: path ? 0.88 : 0.7,
+    strokeStyle: path ? 'solid' : 'dashed'
   });
   polyline.setMap(map);
-  // 경로 확정 시(실선) 출발·도착 마커만 남기고 나머지 숨김
+
   if (path) {
+    // 다른 마커 숨기기
     hideMarkersExceptRoute();
+    // 출/도 마커 이미지 강제 재설정 (타이밍 이슈 방지)
+    if (rS && rS.idx >= 0 && markers[rS.idx]) {
+      markers[rS.idx].marker.setImage(mkrImgRoute(mkrColor(rS.shrine.type), '출'));
+      markers[rS.idx].marker.setMap(map);
+      markers[rS.idx].marker.setZIndex(15);
+    }
+    if (rE && rE.idx >= 0 && markers[rE.idx]) {
+      markers[rE.idx].marker.setImage(mkrImgRoute(mkrColor(rE.shrine.type), '도'));
+      markers[rE.idx].marker.setMap(map);
+      markers[rE.idx].marker.setZIndex(15);
+    }
+
+    // 경계 맞추기 - 탭바(52px) + 경로탐색시트 높이 고려
     const bounds = new kakao.maps.LatLngBounds();
     pts.forEach(p => bounds.extend(p));
-    // 모바일: 경로탐색 시트(화면 하단 약 55%)가 지도를 가리므로
-    // 상단 패딩 80, 하단 패딩을 크게 줘서 경로 전체가 지도 위쪽에 보이게
     if (!isPc()) {
-      const mapH = document.getElementById('map')?.offsetHeight || window.innerHeight;
-      const sheetH = Math.round(mapH * 0.55); // 시트 높이 추정
-      map.setBounds(bounds, 60, 60, sheetH + 60, 60);
+      const TAB_H = 52;   // 상단 탭바
+      const mapEl = document.getElementById('map');
+      const mapH = mapEl ? mapEl.offsetHeight : (window.innerHeight - TAB_H);
+      const sheetH = Math.min(Math.round(mapH * 0.5), 380); // 경로탐색 시트
+      // top, right, bottom, left 순서
+      map.setBounds(bounds, TAB_H + 20, 40, sheetH + 40, 40);
     } else {
       map.setBounds(bounds, 80);
     }
