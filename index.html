@@ -507,6 +507,31 @@ html.map-active #app-map { display: block; }
 .exit-btns { display: flex; gap: 10px; }
 .exit-cancel { flex:1; padding: 12px; border-radius: 10px; border: 1.5px solid #dde3f2; background: #fff; font-size: 15px; font-weight: 600; color: #1a2456; cursor: pointer; font-family: inherit; }
 .exit-ok     { flex:1; padding: 12px; border-radius: 10px; border: none; background: #1a2456; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+/* ══ 모바일 플로팅 뒤로가기 버튼 ══ */
+#mob-back-btn {
+  display: none;
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, var(--sb, 0px)));
+  z-index: 9500;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(14,21,53,.88);
+  border: 2px solid rgba(212,170,106,.6);
+  color: #d4aa6a;
+  font-size: 22px;
+  cursor: pointer;
+  align-items: center; justify-content: center;
+  box-shadow: 0 3px 14px rgba(0,0,0,.35);
+  backdrop-filter: blur(6px);
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s, transform .1s;
+}
+#mob-back-btn:active { transform: scale(.93); background: rgba(26,36,86,.95); }
+/* 모바일 map-active 상태에서만 표시 */
+@media(max-width:768px){
+  html.map-active #mob-back-btn { display: flex; }
+}
 </style>
 </head>
 <body>
@@ -522,6 +547,9 @@ html.map-active #app-map { display: block; }
     </div>
   </div>
 </div>
+
+<!-- ══ 모바일 플로팅 뒤로가기 버튼 ══ -->
+<button id="mob-back-btn" onclick="_handleBack()" aria-label="뒤로가기">←</button>
 
 <!-- ══ 표지 ══ -->
 <div id="cover">
@@ -1111,41 +1139,6 @@ let _screen = 'cover';
   btn.addEventListener('click', go);
 })();
 
-// ── 히스토리 완전 격리 시스템 ──
-// 전략:
-//   ① 초기에 20개 쌓기
-//   ② popstate 발생 시 20개 보충 (pushState는 popstate 재발생 안 함)
-//   ③ focus/visibilitychange 복귀 시마다 보충 (OS 레벨 뒤로가기 대응)
-//   ④ _handling 500ms: pushState 연쇄로 인한 오작동 완전 차단
-
-let _handling = false;
-let _backCooldown = false;
-let _exiting = false;
-
-// ── 히스토리: 딱 2개만 유지 ──
-// base(0) → app(1) 구조
-// popstate 발생 시 app(1)로 즉시 복원 → 브라우저 탈출 차단
-function _initHistory() {
-  try {
-    history.replaceState({ p: 0 }, '');
-    history.pushState({ p: 1 }, '');
-  } catch(e) {}
-}
-
-function _keepHistory() {
-  // popstate 후 app(1) 상태 복원
-  try { history.pushState({ p: 1 }, ''); } catch(e) {}
-}
-
-_initHistory();
-window.addEventListener('DOMContentLoaded', _initHistory);
-window.addEventListener('focus', function() {
-  if (!_exiting) _keepHistory();
-});
-window.addEventListener('pageshow', function() {
-  if (!_exiting) _keepHistory();
-});
-
 // ── 지도 진입 ──
 function startMap() {
   document.getElementById('cover').style.display = 'none';
@@ -1177,26 +1170,11 @@ function showExitConfirm() {
 function closeExitConfirm() {
   document.getElementById('exit-confirm').classList.remove('open');
 }
-
 function doExit() {
+  // 표지로 이동 후 안내 토스트 표시
   document.getElementById('exit-confirm').classList.remove('open');
-  _exiting = true;
-
-  // 히스토리를 base(0) 1개만 남김
-  // → 다음 뒤로가기 시 히스토리 없음 → 브라우저가 이전 앱으로
-  try { history.replaceState({ p: 0 }, ''); } catch(e) {}
-
   showCover();
-
-  // 토스트 안내
   _showExitToast();
-
-  // 잠시 후 _exiting 해제 및 history 재설정
-  // (사용자가 취소하고 다시 쓸 수 있게)
-  setTimeout(function() {
-    _exiting = false;
-    _initHistory();
-  }, 4000);
 }
 
 function _showExitToast() {
@@ -1206,7 +1184,7 @@ function _showExitToast() {
   t.id = '_et';
   t.style.cssText = [
     'position:fixed',
-    'bottom:calc(36px + env(safe-area-inset-bottom,0px))',
+    'bottom:calc(80px + env(safe-area-inset-bottom,0px))',
     'left:50%',
     'transform:translateX(-50%)',
     'background:rgba(14,21,53,0.95)',
@@ -1222,88 +1200,50 @@ function _showExitToast() {
     'box-shadow:0 4px 20px rgba(0,0,0,0.35)',
     'font-family:inherit',
   ].join(';');
-  t.textContent = '📱 뒤로가기를 누르면 앱이 닫힙니다';
+  t.textContent = '홈 버튼으로 앱을 닫아주세요';
   document.body.appendChild(t);
-  setTimeout(function() { if(t.parentNode) t.remove(); }, 4000);
-}/* ══════════════════════════════════════════
-   뒤로가기 (popstate)
-   - 즉시 app 상태 복원 (브라우저 탈출 차단)
-   - 단순 순차 처리
-══════════════════════════════════════════ */
-window.addEventListener('popstate', function() {
-  // 종료 진행 중 무시
-  if (_exiting) return;
+  setTimeout(function() { if(t.parentNode) t.remove(); }, 3000);
+}
 
-  // app(1) 상태 즉시 복원
-  _keepHistory();
-
-  // 카카오맵 전환 중 무시
-  if (_kakaoLaunching) return;
-
-  // PC 무시
-  if (isPc()) return;
-
-  // 중복 방지
-  if (_handling) return;
-  _handling = true;
-  setTimeout(function() { _handling = false; }, 0);
-
-  _handleBack();
-});
-
+// ── 뒤로가기 로직 (플로팅 버튼 #mob-back-btn 에서 호출) ──
 function _handleBack() {
-  // 종료 팝업이 열려있으면 닫기만 (종료 안 함)
+  // 종료 팝업 열려있으면 닫기
   if (document.getElementById('exit-confirm').classList.contains('open')) {
     closeExitConfirm();
     return;
   }
 
-  // 지도 화면
+  // 지도 화면: 열린 UI 순서대로 닫기
   if (_screen === 'map') {
-    // 검색 모달
     if (document.getElementById('srch-modal').classList.contains('open')) {
       closeSearchModal(); return;
     }
-    // 성지 상세 카드
     if (document.getElementById('info-card').classList.contains('open')) {
       closeInfo(); return;
     }
-    // 성지목록 시트
     if (document.getElementById('mob-list-sheet').classList.contains('open')) {
       mobCloseList(); return;
     }
-    // 내주변 시트
     if (document.getElementById('mob-nearby-sheet').classList.contains('open')) {
       mobCloseNearby(); return;
     }
-    // 경로탐색 시트 → 시트만 닫기 (경로 데이터 유지)
     if (document.getElementById('mob-route-sheet').classList.contains('open')) {
-      mobCloseRoute();
-      return;
+      mobCloseRoute(); return;
     }
-    // 경로 데이터 남아있으면 → 완전 해제 → 지도 (Image4)
     if (routeMode || polyline || rS || rE) {
-      exitRouteMode();
-      return;
+      exitRouteMode(); return;
     }
-    // 모두 없으면 → 표지 (Image5)
+    // 모두 없으면 → 표지
     showCover();
     return;
   }
 
-  // 표지 → 종료 확인 팝업
+  // 표지 → 종료 확인
   if (_screen === 'cover') {
     showExitConfirm();
     return;
   }
 }
-
-// ── 뒤로가기 (popstate) ──
-// 규칙:
-//   종료확인 열림  → 팝업 닫기
-//   지도 화면      → 열린 창 순서대로 닫기 → 모두 닫히면 표지로
-//   표지 화면      → 종료 확인 팝업
-//   어떤 경우도 실제 종료 안됨 (항상 pushState로 스택 복원)
 // ── 지도 앱 초기화 ──
 function _initMapApp() {
   if (!isPc()) {
@@ -2348,10 +2288,9 @@ self.addEventListener('fetch',e=>{
   });
 }
 
-// 앱 복귀 시 지도 상태 복원 + 히스토리 보충
+// 앱 복귀 시 지도 상태 복원
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'visible') {
-    if (!_exiting) _keepHistory();
     if (_screen === 'map') {
       document.getElementById('cover').style.display = 'none';
       document.documentElement.classList.add('map-active');
@@ -2362,7 +2301,6 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 window.addEventListener('pageshow', function(e) {
-  if (!_exiting) _keepHistory();
   if (_screen === 'map') {
     document.getElementById('cover').style.display = 'none';
     document.documentElement.classList.add('map-active');
