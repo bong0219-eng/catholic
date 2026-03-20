@@ -201,9 +201,9 @@
   #map-area { position: absolute; inset: 0; }
   #map { width: 100%; height: 100%; }
 
-  /* 현위치 버튼 */
+  /* 현위치 버튼 — 왼쪽 하단 (뒤로가기 버튼과 겹침 방지) */
   #loc-btn{
-    position:absolute; right:12px;
+    position:absolute; left:12px;
     bottom: calc(18px + env(safe-area-inset-bottom, 0px));
     width:auto; height:36px; background:#fff; border-radius:18px;
     box-shadow:0 2px 8px rgba(0,0,0,.25); border:none; cursor:pointer;
@@ -212,10 +212,10 @@
     z-index:400; font-family:inherit;
   }
 
-  /* 범례 */
+  /* 범례 — 왼쪽, 내위치 버튼 위 */
   #legend{
     position:absolute; left:12px;
-    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
     background:rgba(255,255,255,.95); border-radius:10px;
     padding:8px 12px; z-index:400; font-size:11px; border:1px solid #e8e8e8;
   }
@@ -509,7 +509,7 @@ html.map-active #app-map { display: block; }
 .exit-ok     { flex:1; padding: 12px; border-radius: 10px; border: none; background: #1a2456; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 /* ══ 모바일 플로팅 뒤로가기 버튼 ══ */
 #mob-back-btn {
-  display: none;
+  display: none !important; /* 기본: 완전 숨김 */
   position: fixed;
   right: 16px;
   bottom: calc(16px + env(safe-area-inset-bottom, var(--sb, 0px)));
@@ -528,9 +528,9 @@ html.map-active #app-map { display: block; }
   transition: background .15s, transform .1s;
 }
 #mob-back-btn:active { transform: scale(.93); background: rgba(26,36,86,.95); }
-/* 모바일 map-active 상태에서만 표시 */
+/* map-active + 모바일일 때만 표시 */
 @media(max-width:768px){
-  html.map-active #mob-back-btn { display: flex; }
+  html.map-active #mob-back-btn { display: flex !important; }
 }
 </style>
 </head>
@@ -1139,7 +1139,22 @@ let _screen = 'cover';
   btn.addEventListener('click', go);
 })();
 
-// ── 지도 진입 ──
+// ── 하드웨어 뒤로가기 차단 (히스토리 탈출 방지) ──
+// UI 동작은 플로팅 버튼 #mob-back-btn 이 전담
+// popstate는 오직 스택 복원만 → 외부 이탈 원천 차단
+(function() {
+  if (typeof window === 'undefined') return;
+  // 초기 2개 쌓기
+  try {
+    history.replaceState({ app: 1 }, '');
+    history.pushState({ app: 2 }, '');
+  } catch(e) {}
+
+  window.addEventListener('popstate', function() {
+    // 즉시 복원만 — 다른 아무것도 하지 않음
+    try { history.pushState({ app: Date.now() }, ''); } catch(e) {}
+  });
+})();
 function startMap() {
   document.getElementById('cover').style.display = 'none';
   document.documentElement.classList.add('map-active');
