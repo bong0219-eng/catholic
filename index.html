@@ -241,9 +241,10 @@ html.parish-active #inapp-install-bar{
     padding-top: env(safe-area-inset-top, 0px);
     background: var(--navy);
     display: flex;
-    z-index: 900;
+    z-index: 950;
     border-bottom: 2px solid var(--gold);
     flex-shrink: 0;
+    transform: translateZ(0);
   }
   .mob-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:none;border:none;color:rgba(255,255,255,.45);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;padding:4px 0;gap:2px;border-bottom:3px solid transparent;margin-bottom:-2px;transition:background .15s,color .15s}
   .mob-tab.active{color:var(--gold);background:rgba(212,170,106,.18);border-bottom:3px solid var(--gold);font-weight:800}
@@ -341,13 +342,16 @@ html.parish-active #inapp-install-bar{
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 20px rgba(0,0,0,.2);
   }
-  /* 키보드 열릴 때 시트가 탭바 위로 올라가지 않도록 */
-  html.keyboard-open .mob-sheet {
+  /* 키보드 열릴 때: 시트가 탭바 아래에서 시작 */
+  html.keyboard-open .mob-sheet.open {
     top: calc(var(--tab-h) + env(safe-area-inset-top,0px)) !important;
   }
-  html.parish-active.keyboard-open .mob-sheet {
+  html.parish-active.keyboard-open .mob-sheet.open {
     top: calc(104px + env(safe-area-inset-top,0px)) !important;
   }
+  /* 성당 헤더/탭바도 키보드와 무관하게 z-index 높게 */
+  #pa-mob-hdr { z-index: 952; }
+  #pa-mob-tabbar { z-index: 951; }
 
 
   /* 모바일 시트 공통 */
@@ -992,9 +996,9 @@ html.parish-active .mob-sheet.open.split {
 
 <!-- ══ 성당 모드: 헤더 ══ -->
 <div id="pa-mob-hdr">
-  <button class="pa-back" onclick="showCoverFromParish()">←</button>
-  <span class="pa-title">⛪ 성당 찾기</span>
-  <span class="pa-cnt" id="pa-cnt"></span>
+  <button class="pa-back" onclick="showCoverFromParish()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">←</button>
+  <span style="font-size:15px;font-weight:700;color:#fff;flex:1">⛪ 성당 찾기</span>
+  <span id="pa-cnt" style="font-size:11px;color:rgba(255,255,255,.6);font-weight:600"></span>
 </div>
 
 <!-- ══ 성당 모드: 탭바 ══ -->
@@ -1013,131 +1017,30 @@ html.parish-active .mob-sheet.open.split {
   </button>
 </div>
 
-<!-- ══ 성당 모드: 내주변 시트 ══ -->
-<div class="mob-sheet" id="pa-sheet-nearby" style="display:none">
-  <div class="mob-sheet-hd" style="background:#2e1f0e">
-    <span class="mob-sheet-title">📍 내주변 성당</span>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button onclick="loadNearbyParishes()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50%;color:var(--gold);font-size:14px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer">🔄</button>
-      <button class="mob-sheet-x" onclick="switchParishTab('nearby')">×</button>
-    </div>
-  </div>
-  <div class="mob-sheet-body" id="pa-nearby-result-inner">
-    <div style="padding:40px;text-align:center;color:#aaa;font-size:14px">📍 위치를 확인하는 중...</div>
-  </div>
-</div>
-
-<!-- ══ 성당 모드: 성당목록 시트 ══ -->
-<div class="mob-sheet" id="pa-sheet-list" style="display:none">
-  <div class="mob-sheet-hd" style="background:#2e1f0e">
-    <span class="mob-sheet-title">📋 성당목록</span>
-    <button class="mob-sheet-x" onclick="switchParishTab('list')">×</button>
-  </div>
-  <div style="background:#2e1f0e;padding:8px 12px 6px;flex-shrink:0">
-    <div class="pa-srch-inner">
-      <span style="font-size:14px;opacity:.5;margin-right:8px;color:#fff">🔍</span>
-      <input type="text" id="pa-srch-inp" placeholder="성당명, 주소 검색" oninput="onParishSearch(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      <button class="pa-srch-x" id="pa-srch-x" onclick="clearParishSearch()">×</button>
-    </div>
-  </div>
-  <div class="mob-sheet-body pa-body" id="pa-body"></div>
-</div>
-
-<!-- ══ 성당 모드: 지역검색 시트 ══ -->
-<div class="mob-sheet" id="pa-sheet-search" style="display:none">
-  <div class="mob-sheet-hd" style="background:#2e1f0e">
-    <span class="mob-sheet-title">🔍 지역 성당 검색</span>
-    <button class="mob-sheet-x" onclick="switchParishTab('search')">×</button>
-  </div>
-  <div style="background:#2e1f0e;padding:8px 12px 6px;flex-shrink:0">
-    <div style="display:flex;gap:8px;align-items:center">
-      <div style="flex:1;display:flex;align-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:22px;padding:0 14px;height:38px">
-        <span style="font-size:14px;opacity:.4;margin-right:8px;color:#fff">🔍</span>
-        <input type="text" id="pa-region-inp" placeholder="지역·식당·숙박 등 검색" style="flex:1;background:none;border:none;outline:none;font-size:13px;color:#fff;font-family:inherit" oninput="onRegionInput(this.value)" onkeydown="if(event.key==='Enter')searchRegionParishes()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      </div>
-      <button onclick="searchRegionParishes()" style="padding:0 14px;height:38px;border-radius:19px;border:none;background:var(--gold);color:var(--navy);font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;flex-shrink:0">검색</button>
-    </div>
-  </div>
-  <div class="mob-sheet-body" id="pa-region-result" style="background:#f8f9fc;overscroll-behavior:contain">
-    <div style="padding:48px 20px;text-align:center;color:#aaa;font-size:14px;line-height:1.8">🏨 여행지나 숙박 지역을 검색하면<br>근처 성당 목록이 나타납니다</div>
-  </div>
-</div>
-
-<!-- ══ 성당 모드: 길찾기 시트 ══ -->
-<div class="mob-sheet" id="pa-sheet-route" style="display:none">
-  <div class="mob-sheet-hd">
-    <span class="mob-sheet-title">🧭 성당 길찾기</span>
-  </div>
-  <div class="mob-sheet-body" style="background:#f8f9fc;padding:16px">
-    <div style="background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
-      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">출발지</div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:10px;height:10px;border-radius:50%;background:#1565c0;flex-shrink:0"></div>
-        <div id="pa-route-start-lbl" style="flex:1;font-size:13px;color:#555">출발지를 선택하세요</div>
-        <button onclick="parishRouteMyLoc()" style="flex-shrink:0;padding:6px 12px;border-radius:20px;border:none;background:#e8f0fe;color:#1565c0;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📍 현위치</button>
-      </div>
-    </div>
-    <div style="background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
-      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">도착지</div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:10px;height:10px;border-radius:50%;background:#c0392b;flex-shrink:0"></div>
-        <div id="pa-route-end-lbl" style="flex:1;font-size:13px;color:#555">목록에서 성당을 선택하세요</div>
-      </div>
-    </div>
-    <button id="pa-route-go-btn" onclick="parishRouteGo()" style="width:100%;padding:14px;border-radius:14px;border:none;background:#FEE500;color:#111;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px" disabled>🗺️ 카카오맵으로 길찾기</button>
-    <div style="font-size:11px;color:#aaa;text-align:center;line-height:1.7">내주변·목록·지역검색에서 성당 선택 시<br>도착지가 자동 설정됩니다</div>
-  </div>
-</div>
-
-<!-- ══ 성당 모드: 상세 카드 ══ -->
-<div id="pa-detail">
-  <div class="pa-det-hd">
-    <span class="pa-det-name" id="pa-det-name"></span>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span id="pa-det-dist" style="display:none;font-size:12px;font-weight:700;color:var(--gold2);background:#fff8e8;padding:3px 8px;border-radius:10px;border:1px solid rgba(212,170,106,.4)"></span>
-      <button class="pa-det-x" onclick="closeParishDetail()">×</button>
-    </div>
-  </div>
-  <div id="pa-det-map-wrap" style="width:100%;height:150px;background:#e8eaf0;overflow:hidden;cursor:pointer;position:relative" onclick="parishMapOpen()">
-    <div id="pa-det-map-canvas" style="width:100%;height:100%"></div>
-    <div id="pa-det-map-fallback" style="display:flex;position:absolute;inset:0;background:#e8eaf0;align-items:center;justify-content:center;flex-direction:column;gap:6px">
-      <span style="font-size:24px">🗺️</span><span style="font-size:12px;color:#666;font-weight:600">지도 보기</span>
-    </div>
-    <div style="position:absolute;bottom:6px;right:8px;background:rgba(0,0,0,.5);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;pointer-events:none">카카오맵 ↗</div>
-  </div>
-  <div class="pa-det-body">
-    <div class="pa-det-dio" id="pa-det-dio"></div>
-    <div class="pa-det-row"><span class="pa-det-lbl">주소</span><span class="pa-det-val" id="pa-det-addr"></span></div>
-    <div class="pa-det-row" id="pa-det-tel-row">
-      <a id="pa-det-tel-link" href="#" style="display:flex;align-items:center;gap:8px;text-decoration:none;background:#f0f7ff;border:1.5px solid #c5d9f5;border-radius:10px;padding:8px 14px;width:100%">
-        <span style="font-size:18px">📞</span>
-        <span id="pa-det-tel" style="font-size:15px;font-weight:800;color:#1565c0;letter-spacing:.04em"></span>
-      </a>
-    </div>
-    <div class="pa-det-btns">
-      <button class="pa-btn-kakao" id="pa-btn-kakao" onclick="parishKakao()">🗺 카카오맵으로 길찾기</button>
-      <div class="pa-det-btns-row2">
-        <button class="pa-btn-hp" id="pa-btn-hp" onclick="parishHp()">🌐 홈페이지</button>
-        <a class="pa-btn-dio" id="pa-btn-dio" href="#" onclick="parishDio(event)">✝ 교구 안내</a>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ══ 모바일 전용: 성지목록 시트 ══ -->
 <div class="mob-sheet" id="mob-list-sheet">
   <div class="mob-sheet-hd">
     <span class="mob-sheet-title">📋 성지목록</span>
     <button class="mob-sheet-x" onclick="mobCloseList()">×</button>
   </div>
-  <div class="list-search-bar">
+  <!-- 성지 검색바 -->
+  <div class="list-search-bar" id="shrine-list-srch-bar">
     <div class="list-search-inner">
       <span style="font-size:14px;opacity:.5;margin-right:8px;color:#fff">🔍</span>
       <input type="text" id="list-srch-inp" placeholder="성지명, 주소 검색" oninput="onListSearch(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
       <button class="list-srch-x" id="list-srch-x" onclick="clearListSearch()">×</button>
     </div>
   </div>
-  <div class="dio-filter-bar">
+  <!-- 성당 검색바 -->
+  <div class="list-search-bar" id="parish-list-srch-bar" style="display:none">
+    <div class="list-search-inner">
+      <span style="font-size:14px;opacity:.5;margin-right:8px;color:#fff">🔍</span>
+      <input type="text" id="pa-srch-inp" placeholder="성당명, 주소 검색" oninput="onParishSearch(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="list-srch-x" id="pa-srch-x" onclick="clearParishSearch()">×</button>
+    </div>
+  </div>
+  <!-- 성지 교구 필터 -->
+  <div class="dio-filter-bar" id="shrine-dio-filter">
     <button class="dio-filter-btn active" onclick="setDioFilter('all',this)">전체</button>
     <button class="dio-filter-btn" onclick="setDioFilter('서울대교구',this)">서울</button>
     <button class="dio-filter-btn" onclick="setDioFilter('인천교구',this)">인천</button>
@@ -1155,6 +1058,26 @@ html.parish-active .mob-sheet.open.split {
     <button class="dio-filter-btn" onclick="setDioFilter('전주교구',this)">전주</button>
     <button class="dio-filter-btn" onclick="setDioFilter('제주교구',this)">제주</button>
     <button class="dio-filter-btn" onclick="setDioFilter('군종교구',this)">군종</button>
+  </div>
+  <!-- 성당 교구 필터 -->
+  <div class="dio-filter-bar" id="parish-dio-filter" style="display:none">
+    <button class="dio-filter-btn active" onclick="setParishDio('all',this)">전체</button>
+    <button class="dio-filter-btn" onclick="setParishDio('서울대교구',this)">서울</button>
+    <button class="dio-filter-btn" onclick="setParishDio('인천교구',this)">인천</button>
+    <button class="dio-filter-btn" onclick="setParishDio('수원교구',this)">수원</button>
+    <button class="dio-filter-btn" onclick="setParishDio('의정부교구',this)">의정부</button>
+    <button class="dio-filter-btn" onclick="setParishDio('춘천교구',this)">춘천</button>
+    <button class="dio-filter-btn" onclick="setParishDio('원주교구',this)">원주</button>
+    <button class="dio-filter-btn" onclick="setParishDio('대전교구',this)">대전</button>
+    <button class="dio-filter-btn" onclick="setParishDio('청주교구',this)">청주</button>
+    <button class="dio-filter-btn" onclick="setParishDio('대구대교구',this)">대구</button>
+    <button class="dio-filter-btn" onclick="setParishDio('안동교구',this)">안동</button>
+    <button class="dio-filter-btn" onclick="setParishDio('부산교구',this)">부산</button>
+    <button class="dio-filter-btn" onclick="setParishDio('마산교구',this)">마산</button>
+    <button class="dio-filter-btn" onclick="setParishDio('광주대교구',this)">광주</button>
+    <button class="dio-filter-btn" onclick="setParishDio('전주교구',this)">전주</button>
+    <button class="dio-filter-btn" onclick="setParishDio('제주교구',this)">제주</button>
+    <button class="dio-filter-btn" onclick="setParishDio('군종교구',this)">군종</button>
   </div>
   <div class="mob-sheet-body" id="mob-list-body"></div>
 </div>
@@ -1179,7 +1102,8 @@ html.parish-active .mob-sheet.open.split {
     <button class="mob-sheet-x" onclick="mobCloseRegion()">×</button>
   </div>
   <div style="background:var(--navy2);padding:10px 12px 8px;flex-shrink:0">
-    <div style="display:flex;gap:8px;align-items:center">
+    <!-- 성지 검색 입력 -->
+    <div id="shrine-region-row" style="display:flex;gap:8px;align-items:center">
       <div class="list-search-inner" style="flex:1">
         <span style="font-size:14px;opacity:.4;margin-right:8px;color:#fff">🔍</span>
         <input type="text" id="shrine-region-inp" placeholder="예: 경주, 속초, 제주 서귀포"
@@ -1188,11 +1112,28 @@ html.parish-active .mob-sheet.open.split {
       </div>
       <button onclick="searchRegionShrines()" style="padding:0 14px;height:38px;border-radius:19px;border:none;background:var(--gold);color:var(--navy);font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;flex-shrink:0">검색</button>
     </div>
+    <!-- 성당 검색 입력 -->
+    <div id="parish-region-row" style="display:none;gap:8px;align-items:center">
+      <div class="list-search-inner" style="flex:1">
+        <span style="font-size:14px;opacity:.4;margin-right:8px;color:#fff">🔍</span>
+        <input type="text" id="pa-region-inp" placeholder="예: 경주시, 속초, 제주 서귀포"
+          style="flex:1;background:none;border:none;outline:none;font-size:13px;color:#fff;font-family:inherit"
+          oninput="onRegionInput(this.value)" onkeydown="if(event.key==='Enter')searchRegionParishes()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <button onclick="searchRegionParishes()" style="padding:0 14px;height:38px;border-radius:19px;border:none;background:var(--gold);color:var(--navy);font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;flex-shrink:0">검색</button>
+    </div>
   </div>
   <div class="mob-sheet-body" style="overflow-y:auto">
-    <div id="shrine-region-result">
+    <!-- 성지 검색 결과 -->
+    <div id="shrine-region-result" style="display:block">
       <div style="padding:40px 20px;text-align:center;color:#aaa;font-size:13px;line-height:1.8">
         🏞 여행지나 숙박 지역을 검색하면<br>근처 성지 목록이 나타납니다
+      </div>
+    </div>
+    <!-- 성당 검색 결과 -->
+    <div id="pa-region-result" style="display:none">
+      <div style="padding:48px 20px;text-align:center;color:#aaa;font-size:14px;line-height:1.8">
+        🏨 여행지나 숙박 지역을 검색하면<br>근처 성당 목록이 나타납니다
       </div>
     </div>
   </div>
@@ -2554,19 +2495,36 @@ function mobToggleRegion() {
   _closeAllSheets();
   if (!wasOpen) {
     _mobRegionOpen = true;
-    document.getElementById('mob-region-sheet')?.classList.add('open');
+    const sheet = document.getElementById('mob-region-sheet');
+    if (sheet) sheet.classList.add('open');
+    // 모드에 따라 헤더 타이틀 변경
+    const titleEl = sheet ? sheet.querySelector('.mob-sheet-title') : null;
+    if (titleEl) titleEl.textContent = _mode === 'parish' ? '🔍 지역 성당 검색' : '🔍 지역 성지 검색';
+    // 성지/성당 입력창+결과창 전환
+    var shrineRow = document.getElementById('shrine-region-row');
+    var parishRow = document.getElementById('parish-region-row');
+    var shrineResult = document.getElementById('shrine-region-result');
+    var parishResult = document.getElementById('pa-region-result');
+    if (_mode === 'parish') {
+      if (shrineRow) shrineRow.style.display = 'none';
+      if (parishRow) parishRow.style.display = 'flex';
+      if (shrineResult) shrineResult.style.display = 'none';
+      if (parishResult) parishResult.style.display = 'block';
+      if (_parishRegionList10 && _parishRegionList10.length > 0) showNearby10OnMap(_parishRegionList10);
+    } else {
+      if (shrineRow) shrineRow.style.display = 'flex';
+      if (parishRow) parishRow.style.display = 'none';
+      if (shrineResult) shrineResult.style.display = 'block';
+      if (parishResult) parishResult.style.display = 'none';
+      if (_shrineRegionList10 && _shrineRegionList10.length > 0) showNearby10OnMap(_shrineRegionList10);
+    }
     document.getElementById('tab-region')?.classList.add('active');
     closeInfo();
-    // 캐시된 지역검색 결과 있으면 마커 복원
-    if (_shrineRegionList10 && _shrineRegionList10.length > 0) {
-      showNearby10OnMap(_shrineRegionList10);
-    }
     setTimeout(function() {
-      var inp = document.getElementById('shrine-region-inp');
+      var inp = document.getElementById(_mode === 'parish' ? 'pa-region-inp' : 'shrine-region-inp');
       if (inp && !inp.value) inp.focus();
     }, 200);
   } else {
-    // 탭 닫을 때 전체 마커 복원
     restoreAllMarkersToMap();
   }
 }
@@ -2585,12 +2543,32 @@ function mobToggleList() {
   _mobListOpen = false; _mobRouteOpen = false; _mobNearbyOpen = false;
   if (!wasOpen) {
     _mobListOpen = true;
-    document.getElementById('mob-list-sheet')?.classList.add('open');
+    const sheet = document.getElementById('mob-list-sheet');
+    if (sheet) sheet.classList.add('open');
+    // 모드에 따라 헤더/검색바/필터 전환
+    const titleEl = sheet ? sheet.querySelector('.mob-sheet-title') : null;
+    if (titleEl) titleEl.textContent = _mode === 'parish' ? '📋 성당목록' : '📋 성지목록';
+    const shrineSrch = document.getElementById('shrine-list-srch-bar');
+    const parishSrch = document.getElementById('parish-list-srch-bar');
+    const shrineFlt  = document.getElementById('shrine-dio-filter');
+    const parishFlt  = document.getElementById('parish-dio-filter');
+    if (_mode === 'parish') {
+      if (shrineSrch) shrineSrch.style.display = 'none';
+      if (parishSrch) parishSrch.style.display = 'block';
+      if (shrineFlt)  shrineFlt.style.display  = 'none';
+      if (parishFlt)  parishFlt.style.display  = 'flex';
+      renderParishList();
+    } else {
+      if (shrineSrch) shrineSrch.style.display = 'block';
+      if (parishSrch) parishSrch.style.display = 'none';
+      if (shrineFlt)  shrineFlt.style.display  = 'flex';
+      if (parishFlt)  parishFlt.style.display  = 'none';
+      renderListFiltered();
+      if (routeMode) exitRouteMode();
+      restoreAllMarkersToMap();
+    }
     document.getElementById('tab-list')?.classList.add('active');
-    renderListFiltered();
-    if (routeMode) exitRouteMode();
     closeInfo();
-    restoreAllMarkersToMap(); // 목록 탭: 전체 마커 복원
   }
 }
 
@@ -2622,16 +2600,22 @@ function mobToggleNearby() {
       sheet.classList.remove('split');
       sheet.classList.add('open');
     }
+    // 모드에 따라 헤더 타이틀 변경
+    const titleEl = sheet ? sheet.querySelector('.mob-sheet-title') : null;
+    if (titleEl) titleEl.textContent = _mode === 'parish' ? '📍 내주변 성당' : '📍 내주변 성지';
     document.getElementById('tab-nearby')?.classList.add('active');
     closeInfo();
-    // 캐시된 내주변 결과 있으면 마커만 복원, 없으면 새로 검색
-    if (_nearbyList10 && _nearbyList10.length > 0) {
-      showNearby10OnMap(_nearbyList10);
+    // 모드에 따라 데이터 로드
+    if (_mode === 'parish') {
+      loadNearbyParishes();
     } else {
-      findNearbyShrines();
+      if (_nearbyList10 && _nearbyList10.length > 0) {
+        showNearby10OnMap(_nearbyList10);
+      } else {
+        findNearbyShrines();
+      }
     }
   } else {
-    // 탭 닫을 때 전체 마커 복원
     restoreAllMarkersToMap();
   }
 }
@@ -3394,16 +3378,18 @@ function restoreAllMarkersToMap() {
 }
 
 function nearbySelectShrine(idx) {
-  // 시트를 즉시 닫지 않고 split 모드로 전환 — 뒤로가기 시 내주변 상태 복원 가능
+  // 성당 모드면 paListItemClick으로 처리 (PARISHES 인덱스 사용)
+  if (_mode === 'parish') {
+    paListItemClick(PARISHES[idx], idx);
+    return;
+  }
+  // 성지 모드: split + 지도 + info-card
   var sheet = document.getElementById('mob-nearby-sheet');
   setSplitMode(true);
   if (sheet) sheet.classList.add('split');
   _nearbyFromSelect = true;
-  // 마커 선택 (노란 마커)
   if (typeof map !== 'undefined' && map) selectMkr(idx);
-  // 내 위치 파란 원 표시 확보
   if (myLLng && myMkr) myMkr.setMap(map);
-  // 지도: 내 위치 + 선택 장소 둘 다 보이도록 bounds 조정
   var s = SHRINES[idx];
   if (typeof map !== 'undefined' && map && s && s.lat && s.lng) {
     if (myLLng && myLLng.getLat) {
@@ -3416,7 +3402,7 @@ function nearbySelectShrine(idx) {
       map.setLevel(9);
     }
   }
-  showInfo(idx, true); // skipPan=true: 이미 위에서 지도 조정했으므로
+  showInfo(idx, true);
 }
 
 
@@ -5248,43 +5234,35 @@ function paDioClick(dioName) {
 
 // 성당 목록/지도 마커 클릭
 function paListItemClick(p, idx) {
-  if (!paMap) { openParishDetail(p); return; }
-  // 현재 열린 시트 split 모드로 전환
+  if (!paMap && typeof map !== 'undefined' && map) { paMap = map; paMapInited = true; }
   var activeSheet = _getActiveParishSheet();
-  if (activeSheet) activeSheet.classList.add('split');
-  // 이전 선택 마커 제거
-  if (paSelMarker) { paSelMarker.setMap(null); paSelMarker = null; }
-  // 노란 선택 마커
-  var yellowSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">'
-    + '<ellipse cx="14" cy="34" rx="5" ry="2.5" fill="rgba(0,0,0,.25)"/>'
-    + '<path d="M14 0C7.9 0 3 4.9 3 11c0 8.2 11 24 11 24S25 19.2 25 11C25 4.9 20.1 0 14 0z" fill="#FEE500" stroke="#c0912a" stroke-width="1.5"/>'
-    + '<circle cx="14" cy="11" r="5" fill="#c0912a"/></svg>';
-  paSelMarker = new kakao.maps.Marker({
-    position: new kakao.maps.LatLng(p.lat, p.lng),
-    image: new kakao.maps.MarkerImage(
-      'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(yellowSvg),
-      new kakao.maps.Size(28, 36),
-      { offset: new kakao.maps.Point(14, 36) }
-    ),
-    zIndex: 10
-  });
-  paSelMarker.setMap(paMap);
-  // 내 위치 + 선택 성당 둘 다 보이도록
-  if (_parishMyLat && _parishMyLng && p.lat && p.lng) {
-    var bounds = new kakao.maps.LatLngBounds();
-    bounds.extend(new kakao.maps.LatLng(_parishMyLat, _parishMyLng));
-    bounds.extend(new kakao.maps.LatLng(p.lat, p.lng));
-    try { paMap.setBounds(bounds, 60, 60, 180, 60); } catch(e) {}
-  } else if (p.lat && p.lng) {
-    paMap.setCenter(new kakao.maps.LatLng(p.lat, p.lng));
-    if (paMap.getLevel() > 5) paMap.setLevel(5);
+  if (activeSheet) { activeSheet.classList.add('split'); setSplitMode(true); }
+  if (paSelMarker) { try { paSelMarker.setMap(null); } catch(e) {} paSelMarker = null; }
+  if (paMap && p.lat && p.lng) {
+    var yellowSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">'
+      + '<ellipse cx="14" cy="34" rx="5" ry="2.5" fill="rgba(0,0,0,.25)"/>'
+      + '<path d="M14 0C7.9 0 3 4.9 3 11c0 8.2 11 24 11 24S25 19.2 25 11C25 4.9 20.1 0 14 0z" fill="#FEE500" stroke="#c0912a" stroke-width="1.5"/>'
+      + '<circle cx="14" cy="11" r="5" fill="#c0912a"/></svg>';
+    paSelMarker = new kakao.maps.Marker({
+      position: new kakao.maps.LatLng(p.lat, p.lng),
+      image: new kakao.maps.MarkerImage('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(yellowSvg),
+        new kakao.maps.Size(28, 36), { offset: new kakao.maps.Point(14, 36) }), zIndex: 10
+    });
+    paSelMarker.setMap(paMap);
+    if (_parishMyLat && _parishMyLng) {
+      var bounds = new kakao.maps.LatLngBounds();
+      bounds.extend(new kakao.maps.LatLng(_parishMyLat, _parishMyLng));
+      bounds.extend(new kakao.maps.LatLng(p.lat, p.lng));
+      try { paMap.setBounds(bounds, 60, 60, 180, 60); } catch(e) {}
+    } else {
+      paMap.setCenter(new kakao.maps.LatLng(p.lat, p.lng));
+      if (paMap.getLevel() > 5) paMap.setLevel(5);
+    }
   }
-  // 거리 표시
   var distStr = (_parishMyLat && p.lat && p.lng)
     ? calcDistance(_parishMyLat, _parishMyLng, p.lat, p.lng).toFixed(1) + 'km' : '';
   openParishDetailWithDist(p, distStr);
 }
-
 function openParishDetailWithDist(p, distStr) {
   openParishDetail(p);
   // info-card 거리 표시 (우측 빈공간)
@@ -5296,93 +5274,90 @@ function openParishDetailWithDist(p, distStr) {
 // ── 탭 전환 ──
 var _parishTab = 'list';
 // ══ 성당 탭 전환 (공유 지도 구조) ══
-function switchParishTab(tab) {
-  closeParishDetail();
-  _parishTab = tab;
-  _closeAllParishSheets();
-  // 활성 탭 버튼
-  var tabEl = document.getElementById('pa-tab-' + tab);
-  if (tabEl) tabEl.classList.add('active');
-  // 시트 열기
-  var sheetMap = {nearby:'pa-sheet-nearby', list:'pa-sheet-list', search:'pa-sheet-search', route:'pa-sheet-route'};
-  var sheet = document.getElementById(sheetMap[tab] || 'pa-sheet-nearby');
-  if (sheet) { sheet.style.display = 'flex'; sheet.classList.add('open'); }
-  // 탭별 액션
-  if (tab === 'nearby') {
-    loadNearbyParishes();
-  } else if (tab === 'list') {
-    renderParishList();
-    // 처음 진입 시 교구 마커 빌드
-    if (paMap && !_paMarkersBuilt) {
-      _buildPaMarkers();
-      _drawDioceseOverlay();
-      _paMarkersBuilt = true;
-    }
-  } else if (tab === 'search') {
-    setTimeout(function() {
-      var inp = document.getElementById('pa-region-inp');
-      if (inp && !inp.value) inp.focus();
-    }, 150);
-  }
-}
-var _paMarkersBuilt = false;
+// ══════════════════════════════════════════
+//  성당 모드 — 성지 시트/함수 완전 재사용
+//  대원칙: 성당 = 성지 (데이터/색상만 다름)
+// ══════════════════════════════════════════
 
-// ── 성당 시트 전체 닫기 ──
-function _closeAllParishSheets() {
-  ['pa-sheet-nearby','pa-sheet-list','pa-sheet-search','pa-sheet-route'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) { el.style.display = 'none'; el.classList.remove('open','split'); }
-  });
+// 현재 모드: 'shrine' | 'parish'
+var _mode = 'shrine';
+
+// 성당 모드에서 성지 탭함수를 그대로 호출
+function switchParishTab(tab) {
+  var tabMap = {nearby:'nearby', list:'list', search:'region', route:'route'};
+  var shrineTab = tabMap[tab] || tab;
+  if (shrineTab === 'nearby') mobToggleNearby();
+  else if (shrineTab === 'list') mobToggleList();
+  else if (shrineTab === 'region') mobToggleRegion();
+  else if (shrineTab === 'route') mobToggleRoute();
+  // 성당 탭버튼 활성화 동기화
   ['pa-tab-nearby','pa-tab-list','pa-tab-search','pa-tab-route'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.classList.remove('active');
   });
+  var activeEl = document.getElementById('pa-tab-' + tab);
+  if (activeEl) activeEl.classList.add('active');
 }
 
-// 현재 열려있는 성당 시트 반환
+// 성당 시트 닫기 → 성지 시트 닫기 함수 재사용
+function _closeAllParishSheets() {
+  _closeAllSheets();
+}
 function _getActiveParishSheet() {
-  var ids = ['pa-sheet-nearby','pa-sheet-list','pa-sheet-search','pa-sheet-route'];
+  var ids = ['mob-nearby-sheet','mob-list-sheet','mob-region-sheet'];
   for (var i = 0; i < ids.length; i++) {
     var el = document.getElementById(ids[i]);
     if (el && el.classList.contains('open')) return el;
   }
   return null;
 }
-
-// split 상태인 성당 시트 반환
 function _getSplitParishSheet() {
-  var ids = ['pa-sheet-nearby','pa-sheet-list','pa-sheet-search'];
-  for (var i = 0; i < ids.length; i++) {
-    var el = document.getElementById(ids[i]);
-    if (el && el.classList.contains('split')) return el;
-  }
-  return null;
+  return document.querySelector('.mob-sheet.open.split') || null;
 }
 
-// ── 성당 모드 진입: 성지 마커 숨김, 지도 공유 ──
+// 탭바 라벨을 모드에 맞게 교체
+function _updateTabbarLabels() {
+  if (_mode === 'parish') {
+    var t = document.getElementById('tab-list');
+    if (t) t.querySelector('span:last-child').textContent = '성당목록';
+    var t2 = document.getElementById('tab-region');
+    // 지역검색은 동일
+  } else {
+    var t = document.getElementById('tab-list');
+    if (t) t.querySelector('span:last-child').textContent = '성지목록';
+  }
+}
+
+// ── 성당 모드 진입 ──
 function _enterParishMode() {
+  _mode = 'parish';
   // 성지 마커 전부 숨김
   if (typeof markers !== 'undefined') {
     markers.forEach(function(m) { if (m && m.marker) m.marker.setMap(null); });
   }
   if (typeof myMkr !== 'undefined' && myMkr) myMkr.setMap(null);
-  // 지도 공유 설정
+  // 지도 공유
   paMap = map;
   paMapInited = true;
-  // 지도 중심: 전국 뷰
-  if (paMap) {
-    try { paMap.setCenter(new kakao.maps.LatLng(36.5, 127.8)); paMap.setLevel(13); } catch(e) {}
-  }
+  // 탭라벨 변경
+  _updateTabbarLabels();
+  // 내주변 캐시 초기화 (성지→성당 전환)
+  _nearbyList10 = [];
 }
 
-// ── 성지 모드 복원: 성당 마커 숨김, 성지 마커 복원 ──
+// ── 성지 모드 복원 ──
 function _exitParishMode() {
+  _mode = 'shrine';
   // 성당 마커 숨김
   paMarkers.forEach(function(m) { if (m && m.marker) m.marker.setMap(null); });
   if (paSelMarker) { try { paSelMarker.setMap(null); } catch(e) {} paSelMarker = null; }
   paMap = null;
   paMapInited = false;
   _paMarkersBuilt = false;
+  // 탭라벨 복원
+  _updateTabbarLabels();
+  // 내주변 캐시 초기화
+  _nearbyList10 = [];
   // 성지 마커 복원
   if (typeof map !== 'undefined' && map) {
     restoreAllMarkersToMap();
@@ -5393,11 +5368,11 @@ function _exitParishMode() {
 }
 
 function startParish() {
-  // 성지 시트/상태 모두 초기화
+  // 성지 시트/상태 초기화
   _closeAllSheets();
   closeInfo();
   setSplitMode(false);
-  // 지도 초기화 (성지 지도 재사용 — 지도 공유)
+  // 지도 초기화
   if (!_mapStarted) {
     _mapStarted = true;
     _initMapApp();
@@ -5411,12 +5386,21 @@ function startParish() {
   if (tc) tc.content = '#2e1f0e';
   if (typeof map !== 'undefined' && map) { try { map.relayout(); } catch(e) {} }
   _enterParishMode();
-  switchParishTab('nearby');
+  // 내주변 탭으로 시작
+  mobToggleNearby();
+  // 성당 탭버튼 동기화
+  ['pa-tab-nearby','pa-tab-list','pa-tab-search','pa-tab-route'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+  var nearbyBtn = document.getElementById('pa-tab-nearby');
+  if (nearbyBtn) nearbyBtn.classList.add('active');
 }
 
 function showCoverFromParish() {
-  _closeAllParishSheets();
-  closeParishDetail();
+  _closeAllSheets();
+  closeInfo();
+  setSplitMode(false);
   document.documentElement.classList.remove('parish-active');
   document.documentElement.classList.remove('map-active');
   document.getElementById('cover').style.display = '';
@@ -5459,7 +5443,7 @@ function clearParishSearch() {
 
 // ── 목록 렌더 ──
 function renderParishList() {
-  var body = document.getElementById('pa-body');
+  var body = document.getElementById('mob-list-body');
   if (!body) return;
   var q = _parishSrch;
   var groups = {};
@@ -5505,7 +5489,7 @@ function renderParishList() {
 
 // ── 내주변 성당 ──
 function loadNearbyParishes() {
-  var inner = document.getElementById('pa-nearby-result-inner');
+  var inner = document.getElementById('nearby-result-inner');
   if (inner) inner.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;font-size:14px">📍 위치를 확인하는 중...</div>';
   if (!navigator.geolocation) {
     if (inner) inner.innerHTML = '<div style="padding:30px;text-align:center;color:#c0392b;font-size:13px">⚠️ 위치 기능을 지원하지 않습니다</div>';
@@ -5516,14 +5500,14 @@ function loadNearbyParishes() {
     _parishMyLng = pos.coords.longitude;
     renderNearbyParishes();
   }, function(err) {
-    var inner2 = document.getElementById('pa-nearby-result-inner');
+    var inner2 = document.getElementById('nearby-result-inner');
     var msg = err.code === 1 ? '위치 권한을 허용해주세요' : '위치를 가져올 수 없습니다';
     if (inner2) inner2.innerHTML = '<div style="padding:30px;text-align:center;color:#c0392b;font-size:13px">⚠️ ' + msg + '</div>';
   }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
 }
 
 function renderNearbyParishes() {
-  var inner = document.getElementById('pa-nearby-result-inner');
+  var inner = document.getElementById('nearby-result-inner');
   if (!inner || !_parishMyLat) return;
 
   // 1단계: 직선거리로 후보 30개 추림 후 일단 렌더
@@ -5569,9 +5553,10 @@ function _renderParishList(inner, items) {
       ? '🚗 ' + (item.carDist / 1000).toFixed(1) + 'km <span style="font-size:11px;color:#aaa;font-weight:400">' + fmtTime(item.carTime) + '</span>'
       : item.dist.toFixed(1) + 'km';
     var distVal = item.carDist !== null ? (item.carDist/1000).toFixed(1)+'km' : item.dist.toFixed(1)+'km';
-    return '<div onclick="openParishDetailWithDist(PARISHES[' + idx + '],\'' + distVal + '\')"'
+    // nearbySelectShrine이 _mode==='parish' 분기 처리
+    return '<div onclick="nearbySelectShrine(' + idx + ')"'
       + ' style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #eef0f6;cursor:pointer;background:#fff"'
-      + ' class="pa-nearby-item">'  
+      + ' class="pa-nearby-item">'
       + '<div style="width:28px;height:28px;border-radius:50%;background:#8b5e3c;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0">' + (i + 1) + '</div>'
       + '<div style="flex:1;min-width:0">'
       + '<div style="font-size:13px;font-weight:700;color:#1a2456;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3">' + item.p.name + '</div>'
@@ -5798,7 +5783,8 @@ function onRegionInput(val) {
 //  성지 지역검색 (성지 탭 전용)
 // ═══════════════════════════════════════════
 var _shrineRegionLat = null, _shrineRegionLng = null, _shrineRegionName = '';
-var _shrineRegionList10 = []; // 지역검색 결과 10개 캐시 (탭 복귀 복원용)
+var _shrineRegionList10 = []; // 성지 지역검색 결과 캐시
+var _parishRegionList10 = []; // 성당 지역검색 결과 캐시
 
 function searchRegionShrines() {
   var q = (document.getElementById('shrine-region-inp').value || '').trim();
