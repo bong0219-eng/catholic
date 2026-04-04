@@ -12,6 +12,8 @@
 <meta name="format-detection" content="telephone=no">
 <meta name="description" content="한국 천주교 성지순례 지도 · 성당 찾기">
 <title>한국 천주교</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230e1535'/><text y='.9em' font-size='90' x='10'>✝</text></svg>">
+<link rel="icon" href="data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230e1535'/><text x='6' y='26' font-size='24' fill='%23d4aa6a'>✝</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -2769,12 +2771,10 @@ function startApp(mode){
   document.documentElement.classList.add('app-active');
   document.documentElement.classList.toggle('parish-mode',mode==='parish');
   
-  // 탭 라벨
-  document.getElementById('tab-nearby-lbl').textContent = mode==='parish'?'내주변':'내주변';
-  document.getElementById('tab-list-lbl').textContent   = mode==='parish'?'성당목록':'성지목록';
-  document.getElementById('nearby-title').textContent   = mode==='parish'?'📍 내주변 성당':'📍 내주변 성지';
-  document.getElementById('list-title').textContent     = mode==='parish'?'📋 성당 목록':'📋 성지 목록';
-  document.getElementById('region-title').textContent   = mode==='parish'?'🔍 지역 성당 검색':'🔍 지역 성지 검색';
+  // 탭 라벨 (null-safe: 헤더 삭제된 id는 무시)
+  const _setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  _setTxt('tab-nearby-lbl', mode==='parish'?'내주변':'내주변');
+  _setTxt('tab-list-lbl',   mode==='parish'?'성당목록':'성지목록');
   
   // 범례: 성당 모드에서는 숨김
   document.getElementById('legend').style.display = mode==='parish'?'none':'block';
@@ -3213,6 +3213,7 @@ function _autoLocate(){
 
 function _setMyLoc(lat,lng){
   _myLat=lat;_myLng=lng;
+  if(typeof kakao==='undefined'||!_map) return;  // 지도 미로드 시 무시
   if(_myMkr) _myMkr.setMap(null);
   const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><circle cx='14' cy='14' r='12' fill='#1a73e8' opacity='.18'/><circle cx='14' cy='14' r='7' fill='#1a73e8'/><circle cx='14' cy='14' r='3.5' fill='white'/></svg>`;
   _myMkr=new kakao.maps.Marker({
