@@ -489,9 +489,11 @@ const _HP={'1':'http://cafe.daum.net/','2':'https://cafe.daum.net/','3':'http://
 const PARISHES=(function(raw){
  return raw.map(r=>{
   const h=r[4]||'';
+  const u=r[5]||'';
   return{name:r[0],diocese:_DIO_PARISH[r[1]]||r[1],addr:r[2],
      tel:r[3]||'',hp:h&&_HP[h[0]]?_HP[h[0]]+h.slice(1):h,
-     lat:r[5],lng:r[6]};
+     url:u&&_URL_T[u.slice(0,2)]?_URL_T[u.slice(0,2)]+u.slice(2):(u&&_URL_T[u[0]]?_URL_T[u[0]]+u.slice(1):u),
+     lat:r[6],lng:r[7]};
  });
 })(_PA_RAW);
 
@@ -507,7 +509,20 @@ const RETREATS=_unpack(_RT_RAW);
 function _getCurrentItems(){return _mode==='shrine'?SHRINES:(_mode==='retreat'?RETREATS:PARISHES);}
 function _getModeTypeText(){return _mode==='shrine'?'성지':(_mode==='retreat'?'피정의 집':'성당');}
 function _getModeTypeLabel(item){return _mode==='shrine'?item.type:(_mode==='retreat'?'🏔 피정의 집':'⛪ 성당');}
-function _getModeMarkerColor(item){return _mode==='shrine'?(TC[item.type]||'#555'):(_mode==='retreat'?'#2e7d32':'#8b5e3c');}
+const _RETREAT_DIO_COLORS={
+  'SE':'#c0392b','IC':'#1565c0','SW':'#1b7a3e','UJ':'#c0392b','CC':'#1565c0',
+  'WJ':'#1b7a3e','DJ':'#c0392b','CJ':'#1565c0','DG':'#1b7a3e','AD':'#c0392b',
+  'BS':'#1565c0','MS':'#1b7a3e','GJ':'#c0392b','JJ':'#1565c0','JE':'#1b7a3e','ML':'#c0392b'
+};
+function _getRetreatColor(item){
+  const codeMap={'서울대교구':'SE','인천교구':'IC','수원교구':'SW','의정부교구':'UJ',
+    '춘천교구':'CC','원주교구':'WJ','대전교구':'DJ','청주교구':'CJ','대구대교구':'DG',
+    '안동교구':'AD','부산교구':'BS','마산교구':'MS','광주대교구':'GJ','전주교구':'JJ',
+    '제주교구':'JE','군종교구':'ML'};
+  const code=item.diocese in _RETREAT_DIO_COLORS ? item.diocese : (codeMap[item.diocese]||'SE');
+  return _RETREAT_DIO_COLORS[code]||'#c0392b';
+}
+function _getModeMarkerColor(item){return _mode==='shrine'?(TC[item.type]||'#555'):(_mode==='retreat'?_getRetreatColor(item):'#8b5e3c');}
 function _getRouteGuideTarget(){return _mode==='shrine'?'성지':(_mode==='retreat'?'피정의 집':'성당');}
 
 
@@ -838,6 +853,13 @@ function openTab(name){
   resetRoute();
   _exitRouteMode();
   _restoreMapMarkers();
+  // 탭 전환 시 지역검색 결과 초기화
+  if(_activeTab==='region'&&name!=='region'){
+   _regionLat=null;_regionLng=null;_regionCache=[];
+   const rb=$('region-body');
+   if(rb)rb.innerHTML='<div class="empty-msg">🏞 여행지나 숙박 지역을 검색하면<br>근처 성지/성당 목록이 나타납니다</div>';
+   const ri=$('region-inp');if(ri)ri.value='';
+  }
   _activeTab=name;
   $('sheet-'+name)?.classList.add('open');
   _updateTabBtns(name);
@@ -1341,7 +1363,7 @@ function _buildRetreatMarkers(){
       if(!p.lat||!p.lng||p.lat===0) return;
       const mk=new _MM({
         position:new _LL(p.lat,p.lng),
-        image:_mkrImg('#2e7d32',false),
+        image:_mkrImg(_getRetreatColor(p),false),
         title:p.name,
         zIndex:45
       });
@@ -1873,6 +1895,16 @@ function _drawLine(s1,s2,path){
    const isRoute=(_rS&&_rS.idx===i)||(_rE&&_rE.idx===i);
    m.marker.setMap(isRoute?_map:null);
   });
+  // parish/retreat 마커도 경로 안내 시 숨김
+  if(_mode==='parish'){
+   _hideDioOverlays();
+   if(_activeDio){ _hideParishDioMkrs(_activeDio); }
+  } else if(_mode==='retreat'){
+   _retreatMarkers.forEach(o=>{
+    const isRoute=(_rS&&_rS.idx===o.index)||(_rE&&_rE.idx===o.index);
+    o.marker.setMap(isRoute?_map:null);
+   });
+  }
   const bounds=new _LB();
   pts.forEach(p=>bounds.extend(p));
   if(_startTmpMkr) bounds.extend(new _LL(s1.lat,s1.lng));
@@ -2012,9 +2044,34 @@ function _fetchDist(lat,lng,iLat,iLng,distId){
   const route=data.routes?.[0];
   if(route&&route.result_code===0){
    const km=(route.summary.distance/1000).toFixed(1);
-   const el=$(distId);if(el)el.innerHTML=`🚗${km}km<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:3px">${_fmtTime(route.summary.duration)}</span>`;
+   const dur=route.summary.duration;
+   const el=$(distId);if(el){el.innerHTML=`🚗${km}km<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:3px">${_fmtTime(dur)}</span>`;el.dataset.dur=dur;}
+   _trySortNearbyByDur();
   }
  }).catch(()=>{});
+}
+let _nearbyDurTimer=null;
+function _trySortNearbyByDur(){
+ clearTimeout(_nearbyDurTimer);
+ _nearbyDurTimer=setTimeout(()=>{
+  const body=$('nearby-body');
+  if(!body) return;
+  const items=[...body.querySelectorAll('.nearby-item')];
+  const withDur=items.filter(el=>el.querySelector('.nearby-dist[data-dur]'));
+  if(withDur.length===0) return;
+  // 전체 완료 or 절반 이상 완료 시 정렬
+  if(withDur.length<Math.min(items.length,5)) return;
+  items.sort((a,b)=>{
+   const da=parseInt(a.querySelector('.nearby-dist')?.dataset?.dur||'999999');
+   const db=parseInt(b.querySelector('.nearby-dist')?.dataset?.dur||'999999');
+   return da-db;
+  });
+  items.forEach((el,i)=>{
+   const num=el.querySelector('.nearby-num');
+   if(num) num.textContent=i+1;
+   body.appendChild(el);
+  });
+ },800);
 }
 function _nearbyHtml(idx,i,name,addr,c,tLabel,distId,estKm){
  return `<div class="nearby-item" onclick="selectItem(${idx},{fromNearby:true})"><div class="nearby-num" style="background:${c}">${i+1}</div><div class="nearby-info"><div class="nearby-name">${name}</div><div class="nearby-addr">${addr.substring(0,26)}${addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${tLabel}</div><div class="nearby-dist" id="${distId}">🚗${estKm}km</div></div></div>`;
