@@ -770,7 +770,7 @@ function startApp(mode){
   document.documentElement.classList.toggle('parish-mode',mode==='parish');
   document.documentElement.classList.toggle('retreat-mode',mode==='retreat');
   const _setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=v;};
-  const listLbl = mode==='parish' ? '성당찾기' : (mode==='retreat' ? '피정찾기' : '성지찾기');
+  const listLbl = mode==='parish' ? '성당찾기' : (mode==='retreat' ? '피정의집 찾기' : '성지찾기');
   _setTxt('tab-nearby-lbl', '내주변');
   _setTxt('tab-list-lbl', listLbl);
   $('legend').style.display = mode==='shrine'?'block':'none';
