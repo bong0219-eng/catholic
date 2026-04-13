@@ -20,80 +20,38 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* =========================
-   White Primary Theme Fix
-   ========================= */
+:root {
+  --navy:#2563EB;
+  --navy2:#1D4ED8;
+  --navy3:#1E40AF;
 
-/* 상단 탭바 글자/아이콘 */
-.tab-btn{
-  color:#6B7280;
-}
+  --gold:#2563EB;
+  --gold2:#1D4ED8;
 
-.tab-btn.active{
-  color:#0F766E;
-  background:rgba(15,118,110,.08);
-  border-bottom-color:#0F766E;
-}
+  --cream:#EFF6FF;
+  --ink:#0F172A;
+  --border:#BFDBFE;
 
-/* Parish / Retreat 모드 탭 글자 */
-html.parish-mode .tab-btn,
-html.retreat-mode .tab-btn{
-  color:#6B7280;
-}
+  --shrine:#2563EB;
+  --pilgrim:#2563EB;
+  --martyr:#B7791F;
 
-html.parish-mode .tab-btn.active{
-  color:#B7791F;
-  background:rgba(183,121,31,.10);
-  border-bottom-color:#B7791F;
-}
+  --parish-bg:#2563EB;
+  --parish-active:#B7791F;
+  --parish-accent:#FFFFFF;
 
-html.retreat-mode .tab-btn.active{
-  color:#2F855A;
-  background:rgba(47,133,90,.10);
-  border-bottom-color:#2F855A;
-}
+  --retreat-bg:#2563EB;
+  --retreat-active:#2F855A;
+  --retreat-accent:#FFFFFF;
 
-/* Sheet Header 글자 */
-.sheet-title{
-  color:#111827;
-}
+  --addr-color:#64748B;
 
-.sheet-x{
-  color:#6B7280;
-  background:#F3F4F6;
-  border-color:#E5E7EB;
-}
+  --dist-parish:#B7791F;
+  --dist-retreat:#2F855A;
 
-/* 검색 영역 */
-.srch-inner input,
-.srch-inner input::placeholder{
-  color:#111827;
-}
-
-.srch-inner input::placeholder{
-  color:#9CA3AF;
-}
-
-/* Modal Header */
-.sm-title{
-  color:#111827;
-}
-
-.sm-x{
-  color:#6B7280;
-  background:#F3F4F6;
-  border-color:#E5E7EB;
-}
-
-/* Missa Header */
-#missa-bar-title{
-  color:#111827;
-}
-
-#missa-close{
-  color:#6B7280;
-  background:#F3F4F6;
-  border-color:#E5E7EB;
+  --tab-h:52px;
+  --sb:env(safe-area-inset-bottom,0);
+  --st:env(safe-area-inset-top,0);
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
