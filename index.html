@@ -25,8 +25,8 @@
   --gold:#d4aa6a; --gold2:#b8965a;
   --cream:#f5f0e8; --ink:#1F2937; --border:#dde3f2;
   --shrine:#c0392b; --pilgrim:#1565c0; --martyr:#1b7a3e;
-  --parish-bg:#2E7D32; --parish-active:#388E3C; --parish-accent:#ffffff;
-  --retreat-bg:#3F8F44; --retreat-active:#4CAF50; --retreat-accent:#ffffff;
+  --parish-bg:#5D3A1A; --parish-active:#7B4F28; --parish-accent:#f5e6d0;
+  --retreat-bg:#558B2F; --retreat-active:#689F38; --retreat-accent:#f1f8e9;
   --addr-color:#6B7280;
   --dist-parish:#8B5E3C; --dist-retreat:#B7791F;
   --tab-h:52px;
@@ -73,10 +73,10 @@ html,body{width:100%;height:100%;background:var(--navy);font-family:'Noto Sans K
 .cv-btn-desc{font-size:10px;opacity:.72;font-weight:400;line-height:1.55;word-break:keep-all;text-align:center;}
 .cv-btn-shrine{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#e8f0fe;
   box-shadow:0 6px 26px rgba(21,101,192,.45),inset 0 1px 0 rgba(255,255,255,.1);}
-.cv-btn-parish{background:linear-gradient(135deg,#2E7D32,#1B5E20);color:#e0fff2;
-  box-shadow:0 6px 24px rgba(46,125,50,.45),inset 0 1px 0 rgba(255,255,255,.15);}
-.cv-btn-retreat{background:linear-gradient(135deg,#3F8F44,#2E7D32);color:#eaffcc;
-  box-shadow:0 6px 24px rgba(63,143,68,.4),inset 0 1px 0 rgba(255,255,255,.15);}
+.cv-btn-parish{background:linear-gradient(135deg,#6D4C28,#4a3728);color:#f5e6d0;
+  box-shadow:0 6px 24px rgba(93,58,26,.45),inset 0 1px 0 rgba(255,255,255,.15);border:1px solid rgba(212,170,106,.2);}
+.cv-btn-retreat{background:linear-gradient(135deg,#689F38,#33691E);color:#f1f8e9;
+  box-shadow:0 6px 24px rgba(85,139,47,.45),inset 0 1px 0 rgba(255,255,255,.15);}
 
 .cv-btn-missa{background:linear-gradient(135deg,#8B4513,#5C2D0A);color:#f5e6d0;
   box-shadow:0 6px 24px rgba(139,69,19,.45),inset 0 1px 0 rgba(255,255,255,.15);}
@@ -106,9 +106,9 @@ html.app-active #app{display:block;}
 }
 html.parish-mode #tabbar{background:var(--parish-bg);border-bottom-color:rgba(255,255,255,.4);}
 html.retreat-mode #tabbar{background:var(--retreat-bg);border-bottom-color:rgba(255,255,255,.4);}
-html.parish-mode .tab-btn{color:rgba(255,255,255,.75);}
+html.parish-mode .tab-btn{color:rgba(245,230,208,.7);}
 html.retreat-mode .tab-btn{color:rgba(255,255,255,.75);}
-html.parish-mode .tab-btn.active{color:#fff;background:var(--parish-active);border-bottom-color:#fff;}
+html.parish-mode .tab-btn.active{color:#f5e6d0;background:var(--parish-active);border-bottom-color:#f5e6d0;}
 html.retreat-mode .tab-btn.active{color:#fff;background:var(--retreat-active);border-bottom-color:#fff;}
 .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:none;border:none;color:rgba(255,255,255,.45);font-size:12px;font-weight:600;
@@ -372,8 +372,8 @@ html.retreat-mode .region-wrap{background:var(--retreat-bg);}
   box-shadow:0 2px 12px rgba(14,21,53,.1);border:1px solid rgba(21,101,192,.2);}
 .ric-hd{background:linear-gradient(135deg,#0e1535,#1a2456);
   padding:12px 14px;display:flex;align-items:center;gap:10px;}
-html.parish-mode .ric-hd{background:linear-gradient(135deg,#0d3d2b,#1a5c42);}
-html.retreat-mode .ric-hd{background:linear-gradient(135deg,#1a2a1a,#2a3d1a);}
+html.parish-mode .ric-hd{background:linear-gradient(135deg,#4a2e0a,#6d4c28);}
+html.retreat-mode .ric-hd{background:linear-gradient(135deg,#2d4a0a,#3d5c1a);}
 .ric-icon{width:38px;height:38px;border-radius:50%;background:rgba(212,170,106,.15);
   border:1.5px solid rgba(212,170,106,.4);display:flex;align-items:center;
   justify-content:center;font-size:18px;flex-shrink:0;}
@@ -923,11 +923,12 @@ function openTab(name){
   resetRoute();
   _exitRouteMode();
   _restoreMapMarkers();
-  if(_activeTab==='region'&&name!=='region'){
-    _regionLat=null;_regionLng=null;_regionCache=[];
-    const rb=$('region-body');if(rb)rb.innerHTML='<div class="empty-msg">🏞 여행지나 숙박 지역을 검색하면<br>근처 성지/성당 목록이 나타납니다</div>';
-    const ri=$('region-inp');if(ri)ri.value='';
-  }
+  // 탭 전환 시 항상 검색어 초기화
+  _listSrch='';
+  const lsi=$('list-srch-inp');if(lsi){lsi.value='';const lsx=$('list-srch-x');if(lsx)lsx.style.display='none';}
+  _regionLat=null;_regionLng=null;_regionCache=[];
+  const rb=$('region-body');if(rb)rb.innerHTML='<div class="empty-msg">🏞 여행지나 숙박 지역을 검색하면<br>근처 성지/성당 목록이 나타납니다</div>';
+  const ri=$('region-inp');if(ri)ri.value='';
   _activeTab=name;
   $('sheet-'+name)?.classList.add('open');
   _updateTabBtns(name);
@@ -990,8 +991,6 @@ function selectItem(idx, opts={}){
   _selectRetreatMarker(item);
   }
   if(_map && item.lat && item.lng){
-    const lvl=(_mode==='parish')?10:9;
-    if(!opts.fromNearby && !opts.fromRegion) _map.setLevel(lvl);
     _map.setCenter(new _LL(item.lat, item.lng));
     setTimeout(()=>{
       const cardEl=$('info-card');
@@ -1158,7 +1157,9 @@ function _mkrImg(color,big){
 }
 
 function _mkrImgRoute(color,label){
-  const svg=`<svg ${_NS} width='36' height='46' viewBox='0 0 36 46'><ellipse cx='18' cy='43' rx='8' ry='3' fill='rgba(0,0,0,0.25)'/><path d='M18 2C9 2 2 9 2 18C2 28 18 42 18 42C18 42 34 28 34 18C34 9 27 2 18 2Z' fill='${color}' stroke='white' stroke-width='2.5'/><circle cx='18' cy='18' r='10' fill='white' opacity='0.9'/><text x='18' y='23' font-size='13' font-weight='900' fill='${color}' text-anchor='middle' font-family='Arial,sans-serif'>${label}</text></svg>`;
+  // 출=빨간색, 도=녹색 (무조건 고정)
+  const c=label==='출'?'#E53935':label==='도'?'#2E7D32':color;
+  const svg=`<svg ${_NS} width='36' height='46' viewBox='0 0 36 46'><ellipse cx='18' cy='43' rx='8' ry='3' fill='rgba(0,0,0,0.25)'/><path d='M18 2C9 2 2 9 2 18C2 28 18 42 18 42C18 42 34 28 34 18C34 9 27 2 18 2Z' fill='${c}' stroke='white' stroke-width='2.5'/><circle cx='18' cy='18' r='10' fill='white' opacity='0.9'/><text x='18' y='23' font-size='13' font-weight='900' fill='${c}' text-anchor='middle' font-family='Arial,sans-serif'>${label}</text></svg>`;
   return new _MI(_svgUrl(svg),new _SZ(36,46),{offset:new _PT(18,44)});
 }
 
