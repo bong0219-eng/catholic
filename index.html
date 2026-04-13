@@ -23,10 +23,12 @@
 :root {
   --navy:#0e1535; --navy2:#1a2456; --navy3:#243070;
   --gold:#d4aa6a; --gold2:#b8965a;
-  --cream:#f5f0e8; --ink:#1a2456; --border:#dde3f2;
+  --cream:#f5f0e8; --ink:#1F2937; --border:#dde3f2;
   --shrine:#c0392b; --pilgrim:#1565c0; --martyr:#1b7a3e;
-  --parish-bg:#006d3b; --parish-accent:#ffffff;
-  --retreat-bg:#2d6a00; --retreat-accent:#ffffff;
+  --parish-bg:#2E7D32; --parish-active:#388E3C; --parish-accent:#ffffff;
+  --retreat-bg:#3F8F44; --retreat-active:#4CAF50; --retreat-accent:#ffffff;
+  --addr-color:#6B7280;
+  --dist-parish:#8B5E3C; --dist-retreat:#B7791F;
   --tab-h:52px;
   --sb:env(safe-area-inset-bottom,0);
   --st:env(safe-area-inset-top,0);
@@ -71,10 +73,13 @@ html,body{width:100%;height:100%;background:var(--navy);font-family:'Noto Sans K
 .cv-btn-desc{font-size:10px;opacity:.72;font-weight:400;line-height:1.55;word-break:keep-all;text-align:center;}
 .cv-btn-shrine{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#e8f0fe;
   box-shadow:0 6px 26px rgba(21,101,192,.45),inset 0 1px 0 rgba(255,255,255,.1);}
-.cv-btn-parish{background:linear-gradient(135deg,#007a45,#004d2a);color:#e0fff2;
-  box-shadow:0 6px 24px rgba(0,122,69,.45),inset 0 1px 0 rgba(255,255,255,.15);}
-.cv-btn-retreat{background:linear-gradient(135deg,#3a7a00,#224d00);color:#eaffcc;
-  box-shadow:0 6px 24px rgba(58,122,0,.4),inset 0 1px 0 rgba(255,255,255,.15);}
+.cv-btn-parish{background:linear-gradient(135deg,#2E7D32,#1B5E20);color:#e0fff2;
+  box-shadow:0 6px 24px rgba(46,125,50,.45),inset 0 1px 0 rgba(255,255,255,.15);}
+.cv-btn-retreat{background:linear-gradient(135deg,#3F8F44,#2E7D32);color:#eaffcc;
+  box-shadow:0 6px 24px rgba(63,143,68,.4),inset 0 1px 0 rgba(255,255,255,.15);}
+
+.cv-btn-missa{background:linear-gradient(135deg,#8B4513,#5C2D0A);color:#f5e6d0;
+  box-shadow:0 6px 24px rgba(139,69,19,.45),inset 0 1px 0 rgba(255,255,255,.15);}
 .cv-btn-soon{opacity:.6;cursor:default;background:linear-gradient(135deg,#2a2a3a,#1a1a2a);
   color:rgba(255,255,255,.5);box-shadow:none;border:1px solid rgba(255,255,255,.1);}
 .cv-btn-soon:active{transform:none;}
@@ -99,12 +104,12 @@ html.app-active #app{display:block;}
   border-bottom:2px solid var(--gold);
   transform:translateZ(0);
 }
-html.parish-mode #tabbar{background:var(--parish-bg);}
-html.retreat-mode #tabbar{background:var(--retreat-bg);}
-html.parish-mode .tab-btn.active{color:#fff;background:rgba(255,255,255,.2);border-bottom-color:#fff;}
-html.retreat-mode .tab-btn.active{color:#fff;background:rgba(255,255,255,.2);border-bottom-color:#fff;}
-html.parish-mode #tabbar{border-bottom-color:rgba(255,255,255,.5);}
-html.retreat-mode #tabbar{border-bottom-color:rgba(255,255,255,.5);}
+html.parish-mode #tabbar{background:var(--parish-bg);border-bottom-color:rgba(255,255,255,.4);}
+html.retreat-mode #tabbar{background:var(--retreat-bg);border-bottom-color:rgba(255,255,255,.4);}
+html.parish-mode .tab-btn{color:rgba(255,255,255,.75);}
+html.retreat-mode .tab-btn{color:rgba(255,255,255,.75);}
+html.parish-mode .tab-btn.active{color:#fff;background:var(--parish-active);border-bottom-color:#fff;}
+html.retreat-mode .tab-btn.active{color:#fff;background:var(--retreat-active);border-bottom-color:#fff;}
 .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:none;border:none;color:rgba(255,255,255,.45);font-size:12px;font-weight:600;
   font-family:inherit;cursor:pointer;padding:4px 0;gap:2px;
@@ -176,8 +181,8 @@ html.retreat-mode .sheet-hd{background:var(--retreat-bg);}
   overflow-y: auto;
 }
 .srch-bar{padding:8px 12px 6px;background:var(--navy2);flex-shrink:0;}
-html.parish-mode .srch-bar{background:#0d3d2b;}
-html.retreat-mode .srch-bar{background:#1a2a1a;}
+html.parish-mode .srch-bar{background:var(--parish-bg);}
+html.retreat-mode .srch-bar{background:var(--retreat-bg);}
 .srch-inner{display:flex;align-items:center;background:rgba(255,255,255,.12);
   border:1px solid rgba(255,255,255,.2);border-radius:22px;padding:0 14px;height:38px;}
 .srch-inner input{flex:1;background:none;border:none;outline:none;
@@ -187,8 +192,8 @@ html.retreat-mode .srch-bar{background:#1a2a1a;}
 .filter-bar{display:flex;overflow-x:auto;gap:6px;padding:7px 12px;
   background:var(--navy2);flex-shrink:0;
   border-bottom:1px solid rgba(255,255,255,.08);scrollbar-width:none;}
-html.parish-mode .filter-bar{background:#0d3d2b;}
-html.retreat-mode .filter-bar{background:#1a2a1a;}
+html.parish-mode .filter-bar{background:var(--parish-bg);}
+html.retreat-mode .filter-bar{background:var(--retreat-bg);}
 .filter-bar::-webkit-scrollbar{display:none;}
 .filter-btn{flex-shrink:0;padding:5px 13px;border-radius:16px;
   border:1px solid rgba(212,170,106,.3);background:rgba(255,255,255,.06);
@@ -205,7 +210,7 @@ html.retreat-mode .filter-bar{background:#1a2a1a;}
 .li-info{flex:1;min-width:0;}
 .li-name{font-size:15px;font-weight:600;color:var(--ink);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.li-sub{font-size:12px;color:#888;margin-top:2px;}
+.li-sub{font-size:12px;color:var(--addr-color);margin-top:2px;}
 .li-badge{font-size:11px;font-weight:700;padding:4px 9px;border-radius:10px;
   white-space:nowrap;flex-shrink:0;}
 .nearby-item{display:flex;align-items:center;gap:10px;padding:12px 14px;
@@ -216,13 +221,14 @@ html.retreat-mode .filter-bar{background:#1a2a1a;}
 .nearby-info{flex:1;min-width:0;}
 .nearby-name{font-size:15px;font-weight:700;color:var(--ink);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
-.nearby-addr{font-size:12px;color:#888;line-height:1.3;margin-top:2px;}
+.nearby-addr{font-size:12px;color:var(--addr-color);line-height:1.3;margin-top:2px;}
 .nearby-meta{text-align:right;flex-shrink:0;line-height:1.6;min-width:68px;}
 .nearby-type{font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;}
-.nearby-dist{font-size:13px;color:#7a4f00;font-weight:700;margin-top:4px;}
+.nearby-dist{font-size:13px;color:var(--dist-parish);font-weight:700;margin-top:4px;}
+html.retreat-mode .nearby-dist{color:var(--dist-retreat);}
 .region-wrap{padding:10px 12px 8px;background:var(--navy2);flex-shrink:0;}
-html.parish-mode .region-wrap{background:#0d3d2b;}
-html.retreat-mode .region-wrap{background:#1a2a1a;}
+html.parish-mode .region-wrap{background:var(--parish-bg);}
+html.retreat-mode .region-wrap{background:var(--retreat-bg);}
 .region-row{display:flex;gap:8px;align-items:center;}
 .region-search-btn{padding:0 14px;height:38px;border-radius:19px;border:none;
   background:var(--gold);color:var(--navy);font-size:12px;font-weight:800;
@@ -266,23 +272,23 @@ html.retreat-mode .region-wrap{background:#1a2a1a;}
 .ic-btn-row{display:flex;gap:7px;padding:10px 14px 0;}
 .ic-tel-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
   text-decoration:none;background:#f0f7ff;border:1.5px solid #c5d9f5;
-  border-radius:10px;padding:10px 8px;font-size:14px;font-weight:700;color:#1565c0;}
+  border-radius:10px;padding:0 8px;font-size:14px;font-weight:700;color:#1565c0;height:46px;}
 .ic-tel-icon{font-size:18px;}
 .ic-tel{font-size:14px;font-weight:800;color:#1565c0;}
 .ic-route-btn{flex:1;background:#1565c0;color:#fff;border:none;border-radius:10px;
-  padding:10px 8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
-  display:flex;align-items:center;justify-content:center;}
+  padding:0 8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  height:46px;display:flex;align-items:center;justify-content:center;}
 .ic-links{display:flex;gap:6px;}
-.ic-link-btn{flex:1;padding:9px 6px;border-radius:10px;
+.ic-link-btn{flex:1;height:46px;padding:0 6px;border-radius:10px;
   font-size:13px;font-weight:700;text-align:center;cursor:pointer;
   font-family:inherit;white-space:nowrap;text-decoration:none;
-  display:flex;align-items:center;justify-content:center;}
+  display:flex;align-items:center;justify-content:center;box-sizing:border-box;}
 .ic-hp-btn{background:#1b7a3e;color:#fff;border:none;}
 .ic-guide-btn{background:var(--cream);color:#8b6914;border:1px solid #ddd3b0;}
 .btn-kakao-nav{display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:11px;border-radius:10px;border:none;cursor:pointer;
+  height:46px;border-radius:10px;border:none;cursor:pointer;
   font-size:14px;font-weight:700;font-family:inherit;
-  background:#FEE500;color:#3A1D1D;width:100%;}
+  background:#FEE500;color:#3A1D1D;width:100%;box-sizing:border-box;}
 .btn-kakao-nav:active{opacity:.85;}
 .ic-body{padding:0 0 14px;}
 .rs-start-box,.rs-end-box{display:flex;align-items:center;gap:8px;padding:0 12px;border:1.5px solid var(--border);cursor:pointer;background:#fff;border-radius:10px;height:46px;}
@@ -412,13 +418,52 @@ html.kb-open .sheet.open {
 .sm-sub{font-size:11px;color:#888;margin-top:1px}
 .sm-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap}
 .empty-msg{padding:40px 20px;text-align:center;color:#aaa;font-size:13px;line-height:1.8}
+
+#missa-view{
+  display:none;position:fixed;inset:0;z-index:2000;background:#fff;
+  flex-direction:column;
+}
+#missa-view.open{display:flex;}
+#missa-bar{
+  background:#0e1535;padding:env(safe-area-inset-top,0) 0 0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding-left:14px;padding-right:14px;
+  min-height:calc(52px + env(safe-area-inset-top,0));
+  flex-shrink:0;
+  border-bottom:2px solid var(--gold);
+}
+#missa-bar-title{font-size:16px;font-weight:700;color:var(--gold);letter-spacing:.05em;}
+#missa-close{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:50%;color:rgba(212,170,106,.9);font-size:20px;font-weight:900;
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:none;flex-shrink:0;margin-top:env(safe-area-inset-top,0);}
+#missa-frame{flex:1;width:100%;border:none;background:#fff;}
+#missa-loading{position:absolute;inset:0;top:calc(52px + env(safe-area-inset-top,0));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:#F8F6F2;z-index:1;pointer-events:none;}
+.missa-spinner{width:40px;height:40px;border:4px solid #E5DED3;
+  border-top:4px solid #B89B72;border-radius:50%;
+  animation:spin 1s linear infinite;margin-bottom:14px;}
+.missa-loading-txt{font-size:13px;color:#8a7060;font-weight:600;}
 </style>
 </head>
 
 <body><!-- ══ 종료 다이얼로그 ══ -->
+<!-- 매일미사 뷰 -->
+<div id="missa-view">
+  <div id="missa-bar">
+    <span id="missa-bar-title">✝ 매일미사</span>
+    <button id="missa-close" onclick="closeMissa()">×</button>
+  </div>
+  <div id="missa-loading">
+    <div class="missa-spinner"></div>
+    <div class="missa-loading-txt">오늘의 매일미사 불러오는 중…</div>
+  </div>
+  <iframe id="missa-frame" src="about:blank" onload="missaLoaded()"></iframe>
+</div>
 <div id="exit-dlg"><div class="exit-box"><h3>앱을 종료할까요?</h3><p>성지순례 앱을 종료합니다.</p><div class="exit-btns"><button class="exit-cancel" onclick="closeExitDlg()">취소</button><button class="exit-ok" onclick="doExit()">종료</button></div></div>
 </div><!-- ══ 표지 ══ -->
-<div id="cover"><div id="cv-pull"><div id="cv-pull-arrow">↓</div><span id="cv-pull-txt">당겨서 새로고침</span></div><div class="cv-bg"></div><div class="cv-stars" id="cv-stars"></div><div class="cv-wave"></div><div class="cv-inner"><div class="cv-orn"><div class="cv-orn-line"></div><div class="cv-cross">✞</div><div class="cv-orn-line r"></div></div><h1 class="cv-title">한국 천주교<br><em>순례 지도</em></h1><p class="cv-sub">성지 · 성당 · 피정 · 순례길</p><div class="cv-div"></div><div class="cv-grid"><button class="cv-btn cv-btn-shrine" onclick="startApp('shrine')"><span class="cv-btn-icon">✝</span><span class="cv-btn-label">성지순례<br>스탬프 167</span><span class="cv-btn-desc">카카오맵 · 경로탐색<br>내 주변 성지 찾기</span></button><button class="cv-btn cv-btn-parish" onclick="startApp('parish')"><span class="cv-btn-icon">⛪</span><span class="cv-btn-label">내 주변<br>성당 찾기</span><span class="cv-btn-desc">전국 1,696개 성당<br>교구별 검색 · 전화</span></button><button class="cv-btn cv-btn-retreat" onclick="startApp('retreat')"><span class="cv-btn-icon">🏔</span><span class="cv-btn-label">피정의 집</span><span class="cv-btn-desc">전국 피정의 집 검색<br>전화 · 길찾기</span></button><button class="cv-btn cv-btn-soon"><span class="cv-btn-icon">🚶</span><span class="cv-btn-label">순례길</span><span class="cv-btn-desc">준비 중</span></button></div></div><div class="cv-footer"><div id="cv-install-wrap"><button class="cv-install-btn" onclick="cvInstall()">
+<div id="cover"><div id="cv-pull"><div id="cv-pull-arrow">↓</div><span id="cv-pull-txt">당겨서 새로고침</span></div><div class="cv-bg"></div><div class="cv-stars" id="cv-stars"></div><div class="cv-wave"></div><div class="cv-inner"><div class="cv-orn"><div class="cv-orn-line"></div><div class="cv-cross">✞</div><div class="cv-orn-line r"></div></div><h1 class="cv-title">한국 천주교<br><em>순례 지도</em></h1><p class="cv-sub">성지 · 성당 · 피정 · 순례길</p><div class="cv-div"></div><div class="cv-grid"><button class="cv-btn cv-btn-shrine" onclick="startApp('shrine')"><span class="cv-btn-icon">✝</span><span class="cv-btn-label">성지순례<br>스탬프 167</span><span class="cv-btn-desc">카카오맵 · 경로탐색<br>내 주변 성지 찾기</span></button><button class="cv-btn cv-btn-parish" onclick="startApp('parish')"><span class="cv-btn-icon">⛪</span><span class="cv-btn-label">내 주변<br>성당 찾기</span><span class="cv-btn-desc">전국 1,696개 성당<br>교구별 검색 · 전화</span></button><button class="cv-btn cv-btn-retreat" onclick="startApp('retreat')"><span class="cv-btn-icon">🏔</span><span class="cv-btn-label">피정의 집</span><span class="cv-btn-desc">전국 피정의 집 검색<br>전화 · 길찾기</span></button><button class="cv-btn cv-btn-missa" onclick="openMissa()"><span class="cv-btn-icon">📖</span><span class="cv-btn-label">매일미사</span><span class="cv-btn-desc">오늘의 말씀 · 기도</span></button></div></div><div class="cv-footer"><div id="cv-install-wrap"><button class="cv-install-btn" onclick="cvInstall()">
         📲 <span id="cv-install-txt">홈 화면에 앱 설치</span></button></div><p class="cv-footer-txt">성지 167곳 · 성당 1,696개 · 16교구</p></div>
 </div><!-- ══ 앱 ══ -->
 <div id="app"><!-- 탭바 --><div id="tabbar"><button class="tab-btn" data-tab="nearby" onclick="toggleTab('nearby')"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button class="tab-btn" data-tab="list" onclick="toggleTab('list')"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button class="tab-btn" data-tab="region" onclick="toggleTab('region')"><span class="tab-icon">🔍</span>지역검색
@@ -440,6 +485,37 @@ html.kb-open .sheet.open {
             oninput="filterModal(this.value)"
             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div></div><div class="sm-body" id="sm-body"></div></div></div></div><!-- /#app -->
 <script>
+
+function openMissa(){
+  const today=new Date();
+  const yyyy=today.getFullYear();
+  const mm=String(today.getMonth()+1).padStart(2,'0');
+  const dd=String(today.getDate()).padStart(2,'0');
+  const url='https://missa.cbck.or.kr/DailyMissa/'+yyyy+mm+dd;
+  const view=$('missa-view');
+  const frame=$('missa-frame');
+  const loading=$('missa-loading');
+  if(loading) loading.style.display='flex';
+  frame.src=url;
+  view.classList.add('open');
+  // 히스토리에 상태 추가 (뒤로가기 지원)
+  try{history.pushState({_missa:true},'',location.href);}catch(e){}
+}
+function closeMissa(){
+  const view=$('missa-view');
+  const frame=$('missa-frame');
+  view.classList.remove('open');
+  frame.src='about:blank';
+}
+function missaLoaded(){
+  const loading=$('missa-loading');
+  if(loading) loading.style.display='none';
+}
+// 뒤로가기로 매일미사 닫기
+window.addEventListener('popstate',function(e){
+  if($('missa-view')?.classList.contains('open')) closeMissa();
+});
+
 
 // ════════════════════════════════════════════════
 // 📌 DATA 수정 가이드
@@ -509,19 +585,8 @@ const RETREATS=_unpack(_RT_RAW);
 function _getCurrentItems(){return _mode==='shrine'?SHRINES:(_mode==='retreat'?RETREATS:PARISHES);}
 function _getModeTypeText(){return _mode==='shrine'?'성지':(_mode==='retreat'?'피정의 집':'성당');}
 function _getModeTypeLabel(item){return _mode==='shrine'?item.type:(_mode==='retreat'?'🏔 피정의 집':'⛪ 성당');}
-const _RETREAT_DIO_COLORS={
-  'SE':'#c0392b','IC':'#1565c0','SW':'#1b7a3e','UJ':'#c0392b','CC':'#1565c0',
-  'WJ':'#1b7a3e','DJ':'#c0392b','CJ':'#1565c0','DG':'#1b7a3e','AD':'#c0392b',
-  'BS':'#1565c0','MS':'#1b7a3e','GJ':'#c0392b','JJ':'#1565c0','JE':'#1b7a3e','ML':'#c0392b'
-};
-function _getRetreatColor(item){
-  const codeMap={'서울대교구':'SE','인천교구':'IC','수원교구':'SW','의정부교구':'UJ',
-    '춘천교구':'CC','원주교구':'WJ','대전교구':'DJ','청주교구':'CJ','대구대교구':'DG',
-    '안동교구':'AD','부산교구':'BS','마산교구':'MS','광주대교구':'GJ','전주교구':'JJ',
-    '제주교구':'JE','군종교구':'ML'};
-  const code=item.diocese in _RETREAT_DIO_COLORS ? item.diocese : (codeMap[item.diocese]||'SE');
-  return _RETREAT_DIO_COLORS[code]||'#c0392b';
-}
+const _RETREAT_DIO_COLORS={'SE':'#c0392b','IC':'#1565c0','SW':'#1b7a3e','UJ':'#c0392b','CC':'#1565c0','WJ':'#1b7a3e','DJ':'#c0392b','CJ':'#1565c0','DG':'#1b7a3e','AD':'#c0392b','BS':'#1565c0','MS':'#1b7a3e','GJ':'#c0392b','JJ':'#1565c0','JE':'#1b7a3e','ML':'#c0392b'};
+function _getRetreatColor(item){const codeMap={'서울대교구':'SE','인천교구':'IC','수원교구':'SW','의정부교구':'UJ','춘천교구':'CC','원주교구':'WJ','대전교구':'DJ','청주교구':'CJ','대구대교구':'DG','안동교구':'AD','부산교구':'BS','마산교구':'MS','광주대교구':'GJ','전주교구':'JJ','제주교구':'JE','군종교구':'ML'};const code=codeMap[item.diocese]||'SE';return _RETREAT_DIO_COLORS[code]||'#c0392b';}
 function _getModeMarkerColor(item){return _mode==='shrine'?(TC[item.type]||'#555'):(_mode==='retreat'?_getRetreatColor(item):'#8b5e3c');}
 function _getRouteGuideTarget(){return _mode==='shrine'?'성지':(_mode==='retreat'?'피정의 집':'성당');}
 
@@ -534,6 +599,11 @@ const TC    = {'성지':'#c0392b','순례지':'#1565c0','순교 사적지':'#1b7
 const _DIOS=[['all','전체'],['서울대교구','서울'],['인천교구','인천'],['수원교구','수원'],['의정부교구','의정부'],['춘천교구','춘천'],['원주교구','원주'],['대전교구','대전'],['청주교구','청주'],['대구대교구','대구'],['안동교구','안동'],['부산교구','부산'],['마산교구','마산'],['광주대교구','광주'],['전주교구','전주'],['제주교구','제주'],['군종교구','군종']];
 
 const _SU='https://www.cbck.or.kr/Catholic/Shrine/Read?seq=';
+// SHRINES hp 필드 URL 디코딩
+SHRINES.forEach(s=>{
+  if(s.hp&&_URL_T[s.hp.slice(0,2)]) s.hp=_URL_T[s.hp.slice(0,2)]+s.hp.slice(2);
+  else if(s.hp&&_URL_T[s.hp[0]]) s.hp=_URL_T[s.hp[0]]+s.hp.slice(1);
+});
 const _NAV='https://apis-navi.kakaomobility.com/v1/directions';
 const _AH={headers:{Authorization:'KakaoAK '+REST}};
 const _ACH={headers:{Authorization:'KakaoAK '+REST,'Content-Type':'application/json'}};
@@ -770,7 +840,7 @@ function startApp(mode){
   document.documentElement.classList.toggle('parish-mode',mode==='parish');
   document.documentElement.classList.toggle('retreat-mode',mode==='retreat');
   const _setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=v;};
-  const listLbl = mode==='parish' ? '성당찾기' : (mode==='retreat' ? '피정의집 찾기' : '성지찾기');
+  const listLbl = mode==='parish' ? '성당찾기' : (mode==='retreat' ? '피정찾기' : '성지찾기');
   _setTxt('tab-nearby-lbl', '내주변');
   _setTxt('tab-list-lbl', listLbl);
   $('legend').style.display = mode==='shrine'?'block':'none';
@@ -853,12 +923,10 @@ function openTab(name){
   resetRoute();
   _exitRouteMode();
   _restoreMapMarkers();
-  // 탭 전환 시 지역검색 결과 초기화
   if(_activeTab==='region'&&name!=='region'){
-   _regionLat=null;_regionLng=null;_regionCache=[];
-   const rb=$('region-body');
-   if(rb)rb.innerHTML='<div class="empty-msg">🏞 여행지나 숙박 지역을 검색하면<br>근처 성지/성당 목록이 나타납니다</div>';
-   const ri=$('region-inp');if(ri)ri.value='';
+    _regionLat=null;_regionLng=null;_regionCache=[];
+    const rb=$('region-body');if(rb)rb.innerHTML='<div class="empty-msg">🏞 여행지나 숙박 지역을 검색하면<br>근처 성지/성당 목록이 나타납니다</div>';
+    const ri=$('region-inp');if(ri)ri.value='';
   }
   _activeTab=name;
   $('sheet-'+name)?.classList.add('open');
@@ -922,8 +990,29 @@ function selectItem(idx, opts={}){
   _selectRetreatMarker(item);
   }
   if(_map && item.lat && item.lng){
-  _map.setCenter(new _LL(item.lat, item.lng));
-  if(!opts.fromNearby && !opts.fromRegion) _map.setLevel(9);
+    const lvl=(_mode==='parish')?10:9;
+    if(!opts.fromNearby && !opts.fromRegion) _map.setLevel(lvl);
+    _map.setCenter(new _LL(item.lat, item.lng));
+    setTimeout(()=>{
+      const cardEl=$('info-card');
+      const mapEl=$('map-wrap');
+      if(!cardEl||!mapEl||!_map) return;
+      const cardH=cardEl.offsetHeight||0;
+      const mapH=mapEl.offsetHeight||window.innerHeight;
+      const tabH=($('tabbar')?.offsetHeight)||52;
+      const visH=mapH-cardH;
+      if(visH<80||cardH<10) return;
+      const proj=_map.getProjection();
+      if(!proj) return;
+      const pos=new _LL(item.lat,item.lng);
+      const pt=proj.containerPointFromCoords(pos);
+      const targetY=tabH+(visH/2);
+      const dy=pt.y-targetY;
+      if(Math.abs(dy)>20){
+        const newPos=proj.coordsFromContainerPoint({x:pt.x,y:targetY});
+        _map.setCenter(newPos);
+      }
+    },350);
   }
   _showInfoCard(item, idx);
 }
@@ -1142,6 +1231,8 @@ function _clearShrineMarkers(){
 
 function _restoreMapMarkers(){
   if(_mode==='parish'){
+    if(_activeDio){_hideParishDioMkrs(_activeDio);_activeDio=null;}
+    document.querySelectorAll('.dio-label').forEach(e=>{e.style.transform='';e.style.display='';});
     if(_parishSysInited) _showDioOverlays();
     return;
   }
@@ -1203,17 +1294,11 @@ function _selectParishMarker(p){
     if(_activeDio) _hideParishDioMkrs(_activeDio);
     _activeDio=dioCode;
     _showParishDioMkrs(dioCode);
-    document.querySelectorAll('.dio-label').forEach(e=>e.style.transform='');
+    document.querySelectorAll('.dio-label').forEach(e=>{e.style.transform='';e.style.display='';});
     const clickedEl=_dioOverlays[dioCode]?.getContent?.();
-    if(clickedEl) clickedEl.style.transform='scale(1.12)';
+    if(clickedEl){clickedEl.style.display='none';}
   }
-  const svg=`<svg ${_NS} width="40" height="52" viewBox="0 0 40 52"><path d="M20 0C8.954 0 0 8.954 0 20c0 14.21 20 32 20 32S40 34.21 40 20C40 8.954 31.046 0 20 0z" fill="#FFD700" stroke="#c0912a" stroke-width="2"/><circle cx="20" cy="20" r="9" fill="rgba(0,0,0,0.1)"/><text x="20" y="25" text-anchor="middle" font-size="13" fill="#7B4A00" font-family="serif" font-weight="bold">✝</text></svg>`;
-  _paSelMkr=new _MM({
-  position:new _LL(p.lat,p.lng),
-  image:new _MI(_svgUrl(svg),
-   new _SZ(40,52),{offset:new _PT(20,52)}),
-  zIndex:200
-  });
+  _paSelMkr=new _MM({position:new _LL(p.lat,p.lng),image:_mkrImg('#FFE500',true),zIndex:200});
   _paSelMkr.setMap(_map);
 }
 
@@ -1308,22 +1393,16 @@ function _hideDioOverlays(){
 
 function _toggleParishDio(code){
   if(_activeDio===code){
-    // 이미 열린 교구 클릭 → 닫기
-    _hideParishDioMkrs(code);
-    _activeDio=null;
-    // 라벨 강조 해제
-    const el=_dioOverlays[code]?.e||_dioOverlays[code]?.getContent?.();
-    document.querySelectorAll('.dio-label').forEach(e=>e.style.transform='');
+    _hideParishDioMkrs(code);_activeDio=null;
+    const el=_dioOverlays[code]?.getContent?.();
+    if(el){el.style.transform='';el.style.display='';}
     return;
   }
-  // 이전 교구 닫기
-  if(_activeDio) _hideParishDioMkrs(_activeDio);
-  document.querySelectorAll('.dio-label').forEach(e=>e.style.transform='');
+  if(_activeDio){_hideParishDioMkrs(_activeDio);const pe=_dioOverlays[_activeDio]?.getContent?.();if(pe){pe.style.transform='';pe.style.display='';}}
+  document.querySelectorAll('.dio-label').forEach(e=>{e.style.transform='';e.style.display='';});
   _activeDio=code;
-  // 클릭한 라벨 강조
   const clickedEl=_dioOverlays[code]?.getContent?.();
-  if(clickedEl) clickedEl.style.transform='scale(1.12)';
-  // 마커 표시
+  if(clickedEl){clickedEl.style.display='none';}
   _showParishDioMkrs(code);
 }
 
@@ -1333,7 +1412,7 @@ function _showParishDioMkrs(code){
     const parishes=_PA_BY_DIO[code]||[];
     _dioMkrs[code]=[];
     parishes.forEach(p=>{
-      if(!p.lat||!p.lng||p.lat===0) return;
+      if(!p.lat||!p.lng||p.lat===0||p.lng===0) return;
       const mk=new _MM({
         position:new _LL(p.lat,p.lng),
         image:_mkrImg(cfg.c,false),
@@ -1363,14 +1442,14 @@ function _buildRetreatMarkers(){
       if(!p.lat||!p.lng||p.lat===0) return;
       const mk=new _MM({
         position:new _LL(p.lat,p.lng),
-        image:_mkrImg(_getRetreatColor(p),false),
+        image:_mkrImg('#2e7d32',false),
         title:p.name,
         zIndex:45
       });
-      kakao.maps.event.addListener(mk,'click',function(){
-        if(_routeMode) _selectRouteItem(i);
-        else selectItem(i,{fromNearby:false,fromRegion:false});
-      });
+      (function(idx){kakao.maps.event.addListener(mk,'click',function(){
+        if(_routeMode) _selectRouteItem(idx);
+        else selectItem(idx,{fromNearby:false,fromRegion:false});
+      });})(i);
       _retreatMarkers.push({marker:mk,item:p,index:i});
     });
   }
@@ -1390,12 +1469,7 @@ function _restoreRetreatMarkers(){
 function _selectRetreatMarker(p){
   if(_paSelMkr){try{_paSelMkr.setMap(null);}catch(e){} _paSelMkr=null;}
   if(!_map||!p.lat||!p.lng) return;
-  const svg=`<svg ${_NS} width="40" height="52" viewBox="0 0 40 52"><path d="M20 0C8.954 0 0 8.954 0 20c0 14.21 20 32 20 32S40 34.21 40 20C40 8.954 31.046 0 20 0z" fill="#FFE082" stroke="#b28704" stroke-width="2"/><circle cx="20" cy="20" r="9" fill="rgba(0,0,0,0.08)"/><text x="20" y="25" text-anchor="middle" font-size="13" fill="#795548" font-family="serif" font-weight="bold">🏔</text></svg>`;
-  _paSelMkr=new _MM({
-    position:new _LL(p.lat,p.lng),
-    image:new _MI(_svgUrl(svg),new _SZ(40,52),{offset:new _PT(20,52)}),
-    zIndex:200
-  });
+  _paSelMkr=new _MM({position:new _LL(p.lat,p.lng),image:_mkrImg('#FFE500',true),zIndex:200});
   _paSelMkr.setMap(_map);
 }
 // ──────────────────────────────────────────────────────────────────
@@ -1479,53 +1553,46 @@ function _loadNearby(){
   },{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
 }
 
-function _loadNearbyShrines(lat,lng){
-  const sorted=SHRINES
-  .filter(s=>s.lat&&s.lng)
-  .map(s=>({s,d:calcDist(lat,lng,s.lat,s.lng)}))
-  .sort((a,b)=>a.d-b.d).slice(0,10);
-  _nearbyCache=sorted.map(x=>x.s);
-  if(_map) _showItemsOnMap(_nearbyCache);
 
+function _loadNearbyWithDist(lat,lng,items,getIdx,getColor,getLabel){
   const body=$('nearby-body');
-  body.innerHTML=sorted.map((x,i)=>{
-  const idx=SHRINES.indexOf(x.s);
-  const c=TC[x.s.type]||'#555';
-  const estKm=(x.d*1.35).toFixed(1);
-  return _nearbyHtml(idx,i,x.s.name,x.s.addr,c,x.s.type,`ndist-${idx}`,estKm);
-  }).join('');
-  sorted.forEach(x=>{const idx=SHRINES.indexOf(x.s);_fetchDist(lat,lng,x.s.lat,x.s.lng,`ndist-${idx}`);});
+  body.innerHTML='<div style="text-align:center;padding:24px;font-size:13px;color:#888;">🚗 자동차 거리 계산 중입니다…</div>';
+  const POOL=items.filter(p=>p.lat&&p.lng);
+  const prelim=POOL.map(p=>({p,d:calcDist(lat,lng,p.lat,p.lng)})).sort((a,b)=>a.d-b.d).slice(0,30);
+  const results=new Array(prelim.length).fill(null);
+  let done=0;
+  prelim.forEach((x,i)=>{
+    fetch(`${_NAV}?origin=${lng},${lat}&destination=${x.p.lng},${x.p.lat}&priority=RECOMMEND`,_AH)
+    .then(r=>r.json()).then(data=>{
+      const route=data.routes?.[0];
+      if(route&&route.result_code===0) results[i]={km:route.summary.distance/1000,dur:route.summary.duration};
+      else results[i]={km:x.d*1.35,dur:null};
+    }).catch(()=>{ results[i]={km:x.d*1.35,dur:null}; })
+    .finally(()=>{ done++; if(done===prelim.length) _renderNearbyDone(prelim,results,getIdx,getColor,getLabel); });
+  });
 }
-
-function _loadNearbyParishes(lat,lng){
-  const sorted=PARISHES
-  .filter(p=>p.lat&&p.lng)
-  .map(p=>({p,d:calcDist(lat,lng,p.lat,p.lng)}))
-  .sort((a,b)=>a.d-b.d).slice(0,10);
-  _nearbyCache=sorted.map(x=>x.p);
-
+function _renderNearbyDone(prelim,results,getIdx,getColor,getLabel){
+  const sorted=prelim.map((x,i)=>({x,r:results[i]||{km:x.d*1.35,dur:null}})).sort((a,b)=>a.r.km-b.r.km).slice(0,10);
+  _nearbyCache=sorted.map(o=>o.x.p);
+  if(_mode==='shrine'&&_map) _showItemsOnMap(_nearbyCache);
   const body=$('nearby-body');
-  body.innerHTML=sorted.map((x,i)=>{
-  const idx=PARISHES.indexOf(x.p);
-  const estKm=(x.d*1.35).toFixed(1);
-  return _nearbyHtml(idx,i,x.p.name,x.p.addr,'#8b5e3c','⛪ 성당',`pdist-${idx}`,estKm);
+  body.innerHTML=sorted.map((o,i)=>{
+    const idx=getIdx(o.x.p);
+    const c=getColor(o.x.p);
+    const lbl=getLabel(o.x.p);
+    const km=o.r.km.toFixed(1);
+    const dur=o.r.dur?`<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:3px">${_fmtTime(o.r.dur)}</span>`:'';
+    return `<div class="nearby-item" onclick="selectItem(${idx},{fromNearby:true})"><div class="nearby-num" style="background:${c}">${i+1}</div><div class="nearby-info"><div class="nearby-name">${o.x.p.name}</div><div class="nearby-addr">${o.x.p.addr.substring(0,26)}${o.x.p.addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${lbl}</div><div class="nearby-dist">🚗${km}km${dur}</div></div></div>`;
   }).join('');
-  sorted.forEach(x=>{const idx=PARISHES.indexOf(x.p);_fetchDist(lat,lng,x.p.lat,x.p.lng,`pdist-${idx}`);});
+}
+function _loadNearbyShrines(lat,lng){
+  _loadNearbyWithDist(lat,lng,SHRINES,p=>SHRINES.indexOf(p),p=>TC[p.type]||'#555',p=>p.type);
+}
+function _loadNearbyParishes(lat,lng){
+  _loadNearbyWithDist(lat,lng,PARISHES,p=>PARISHES.indexOf(p),()=>'#8b5e3c',()=>'⛪ 성당');
 }
 function _loadNearbyRetreats(lat,lng){
-  const sorted=RETREATS
-  .filter(p=>p.lat&&p.lng)
-  .map(p=>({p,d:calcDist(lat,lng,p.lat,p.lng)}))
-  .sort((a,b)=>a.d-b.d).slice(0,10);
-  _nearbyCache=sorted.map(x=>x.p);
-
-  const body=$('nearby-body');
-  body.innerHTML=sorted.map((x,i)=>{
-  const idx=RETREATS.indexOf(x.p);
-  const estKm=(x.d*1.35).toFixed(1);
-  return _nearbyHtml(idx,i,x.p.name,x.p.addr,'#2e7d32','🏔 피정의 집',`rdist-ret-${idx}`,estKm);
-  }).join('');
-  sorted.forEach(x=>{const idx=RETREATS.indexOf(x.p);_fetchDist(lat,lng,x.p.lat,x.p.lng,`rdist-ret-${idx}`);});
+  _loadNearbyWithDist(lat,lng,RETREATS,p=>RETREATS.indexOf(p),p=>_getRetreatColor(p),()=>'🏔 피정의 집');
 }
 
 function renderList(){
@@ -1538,7 +1605,14 @@ function renderList(){
   if(_mode==='shrine' && (!s.lat||!s.lng||s.lat<33||s.lat>38)) return;
   const matchDio = q?true:(_filterDio==='all'||s.diocese===_filterDio);
   if(!matchDio) return;
-  if(q&&!s.name.includes(q)&&!s.diocese.includes(q)&&!s.addr.includes(q)) return;
+  if(q){
+    const nq=q.replace(/\s+/g,'');
+    const tokens=q.trim().split(/\s+/);
+    const matchAll=tokens.length>=2
+      ?tokens.every(t=>{const nt=t.replace(/\s+/g,'');return s.name.replace(/\s+/g,'').includes(nt)||s.diocese.replace(/\s+/g,'').includes(nt)||s.addr.replace(/\s+/g,'').includes(nt);})
+      :s.name.replace(/\s+/g,'').includes(nq)||s.diocese.replace(/\s+/g,'').includes(nq)||s.addr.replace(/\s+/g,'').includes(nq);
+    if(!matchAll) return;
+  }
   if(!groups[s.diocese]) groups[s.diocese]=[];
   groups[s.diocese].push({s,i});
   });
@@ -1631,57 +1705,37 @@ function doRegionSearch(){
 
 function _showRegionResults(q,lat,lng,doc){
   const items=_getCurrentItems();
-  const sorted=items.filter(s=>s.lat&&s.lng)
-  .map(s=>({s,d:calcDist(lat,lng,s.lat,s.lng)}))
-  .sort((a,b)=>a.d-b.d).slice(0,10);
-  _regionCache=sorted.map(x=>x.s);
-
-  if(_mode==='shrine'&&_map) _showItemsOnMap(_regionCache);
-
+  const POOL=items.filter(s=>s.lat&&s.lng);
+  const prelim=POOL.map(s=>({s,d:calcDist(lat,lng,s.lat,s.lng)})).sort((a,b)=>a.d-b.d).slice(0,30);
   const placeName=doc.place_name||q;
   const placeAddr=doc.road_address_name||doc.address_name||'';
   const placeCat=doc.category_name?doc.category_name.split(' > ').pop():'';
   const placeUrl=doc.place_url||'';
-  const isParish=_mode==='parish';
-  const isRetreat=_mode==='retreat';
-
-  const infoCard=`<div class="region-info-card">
-  <div class="ric-hd">
-   <div class="ric-icon">📍</div>
-   <div class="ric-name-wrap">
-    <div class="ric-name">${placeName}</div>
-    ${placeCat?`<div class="ric-cat">${placeCat}</div>`:''}
-   </div>
-   ${placeUrl?`<a class="ric-map-link" href="${placeUrl}" target="_blank">지도 ↗</a>`:''}
-  </div>
-  <div class="ric-body">${placeAddr?`<div class="ric-row"><span class="ric-lbl">주소</span><span>${placeAddr}</span></div>`:''}
-  </div>
-  </div>`;
-
-  const listHd=`<div class="region-list-hd">${isParish?'⛪ 근처 성당':(isRetreat?'🏔 근처 피정의 집':'✝ 근처 성지')} <span style="font-size:10px;font-weight:400;color:#aaa">· 가까운 순 10곳 · 탭 → 상세정보</span></div>`;
-
-  const list=sorted.map((x,i)=>{
-  const idx=items.indexOf(x.s);
-  const c=_getModeMarkerColor(x.s);
-  const typeLabel=_getModeTypeLabel(x.s);
-  const estKm=(x.d*1.35).toFixed(1);
-  const distId=`rdist-${idx}`;
-  return `<div class="region-item" onclick="selectItem(${idx},{fromRegion:true})">
-   <div class="nearby-num" style="background:${c};width:28px;height:28px;font-size:12px">${i+1}</div>
-   <div class="nearby-info">
-    <div class="nearby-name">${x.s.name}</div>
-    <div class="nearby-addr">${x.s.addr.substring(0,26)}${x.s.addr.length>26?'…':''}</div>
-   </div>
-   <div class="nearby-meta">
-    <div class="nearby-type" style="background:${c}18;color:${c}">${typeLabel}</div>
-    <div class="nearby-dist" id="${distId}">🚗${estKm}km</div>
-   </div>
-  </div>`;
-  }).join('');
-
-  $('region-body').innerHTML=
-  infoCard+listHd+`<div style="background:#fff">${list}</div>`;
-  sorted.forEach(x=>{const idx=items.indexOf(x.s);_fetchDist(lat,lng,x.s.lat,x.s.lng,`rdist-${idx}`);});
+  const isParish=_mode==='parish',isRetreat=_mode==='retreat';
+  const infoCard=`<div class="region-info-card"><div class="ric-hd"><div class="ric-icon">📍</div><div class="ric-name-wrap"><div class="ric-name">${placeName}</div>${placeCat?`<div class="ric-cat">${placeCat}</div>`:''}</div>${placeUrl?`<a class="ric-map-link" href="${placeUrl}" target="_blank">지도 ↗</a>`:''}</div><div class="ric-body">${placeAddr?`<div class="ric-row"><span class="ric-lbl">주소</span><span>${placeAddr}</span></div>`:''}</div></div>`;
+  const listHd=`<div class="region-list-hd">${isParish?'⛪ 근처 성당':(isRetreat?'🏔 근처 피정의 집':'✝ 근처 성지')} <span style="font-size:10px;font-weight:400;color:#aaa">· 자동차 거리순 10곳</span></div>`;
+  $('region-body').innerHTML=infoCard+listHd+'<div style="text-align:center;padding:10px;font-size:12px;color:#888;">🚗 정확한 거리 계산 중입니다…</div><div id="rg-list" style="background:#fff"></div>';
+  const results=new Array(prelim.length).fill(null);let done=0;
+  prelim.forEach((x,i)=>{
+    fetch(`${_NAV}?origin=${lng},${lat}&destination=${x.s.lng},${x.s.lat}&priority=RECOMMEND`,_AH)
+    .then(r=>r.json()).then(data=>{const route=data.routes?.[0];if(route&&route.result_code===0)results[i]={km:route.summary.distance/1000,dur:route.summary.duration};else results[i]={km:x.d*1.35,dur:null};})
+    .catch(()=>{results[i]={km:x.d*1.35,dur:null};})
+    .finally(()=>{ done++;
+      if(done===prelim.length){
+        const sorted=prelim.map((x,i)=>({x,r:results[i]||{km:x.d*1.35,dur:null}})).sort((a,b)=>a.r.km-b.r.km).slice(0,10);
+        _regionCache=sorted.map(o=>o.x.s);
+        if(_mode==='shrine'&&_map) _showItemsOnMap(_regionCache);
+        const rgl=$('rg-list');
+        const loadEl=$('region-body').querySelector('div[style*="계산 중"]');
+        if(loadEl) loadEl.remove();
+        if(rgl) rgl.innerHTML=sorted.map((o,i)=>{
+          const idx=items.indexOf(o.x.s);const c=_getModeMarkerColor(o.x.s);const lbl=_getModeTypeLabel(o.x.s);
+          const km=o.r.km.toFixed(1);const dur=o.r.dur?`<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:3px">${_fmtTime(o.r.dur)}</span>`:'';
+          return `<div class="region-item" onclick="selectItem(${idx},{fromRegion:true})"><div class="nearby-num" style="background:${c};width:28px;height:28px;font-size:12px">${i+1}</div><div class="nearby-info"><div class="nearby-name">${o.x.s.name}</div><div class="nearby-addr">${o.x.s.addr.substring(0,26)}${o.x.s.addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${lbl}</div><div class="nearby-dist">🚗${km}km${dur}</div></div></div>`;
+        }).join('');
+      }
+    });
+  });
 }
 
 function _showRegionFallback(q){
@@ -1895,15 +1949,14 @@ function _drawLine(s1,s2,path){
    const isRoute=(_rS&&_rS.idx===i)||(_rE&&_rE.idx===i);
    m.marker.setMap(isRoute?_map:null);
   });
-  // parish/retreat 마커도 경로 안내 시 숨김
   if(_mode==='parish'){
-   _hideDioOverlays();
-   if(_activeDio){ _hideParishDioMkrs(_activeDio); }
+    _hideDioOverlays();
+    if(_activeDio) _hideParishDioMkrs(_activeDio);
   } else if(_mode==='retreat'){
-   _retreatMarkers.forEach(o=>{
-    const isRoute=(_rS&&_rS.idx===o.index)||(_rE&&_rE.idx===o.index);
-    o.marker.setMap(isRoute?_map:null);
-   });
+    _retreatMarkers.forEach(o=>{
+      const isRoute=(_rS&&_rS.idx===o.index)||(_rE&&_rE.idx===o.index);
+      o.marker.setMap(isRoute?_map:null);
+    });
   }
   const bounds=new _LB();
   pts.forEach(p=>bounds.extend(p));
@@ -1988,7 +2041,14 @@ function filterModal(q){
   _getCurrentItems().forEach((s,i)=>{
   const matchDio=q?true:(_smDio==='all'||s.diocese===_smDio);
   if(!matchDio) return;
-  if(q&&!s.name.includes(q)&&!s.diocese.includes(q)&&!s.addr.includes(q)) return;
+  if(q){
+    const nq=q.replace(/\s+/g,'');
+    const tokens=q.trim().split(/\s+/);
+    const matchAll=tokens.length>=2
+      ?tokens.every(t=>{const nt=t.replace(/\s+/g,'');return s.name.replace(/\s+/g,'').includes(nt)||s.diocese.replace(/\s+/g,'').includes(nt)||s.addr.replace(/\s+/g,'').includes(nt);})
+      :s.name.replace(/\s+/g,'').includes(nq)||s.diocese.replace(/\s+/g,'').includes(nq)||s.addr.replace(/\s+/g,'').includes(nq);
+    if(!matchAll) return;
+  }
   if(!s.lat||!s.lng) return;
   if(!groups[s.diocese]) groups[s.diocese]=[];
   groups[s.diocese].push({s,i});
@@ -2044,34 +2104,9 @@ function _fetchDist(lat,lng,iLat,iLng,distId){
   const route=data.routes?.[0];
   if(route&&route.result_code===0){
    const km=(route.summary.distance/1000).toFixed(1);
-   const dur=route.summary.duration;
-   const el=$(distId);if(el){el.innerHTML=`🚗${km}km<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:3px">${_fmtTime(dur)}</span>`;el.dataset.dur=dur;}
-   _trySortNearbyByDur();
+   const el=$(distId);if(el)el.innerHTML=`🚗${km}km<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:3px">${_fmtTime(route.summary.duration)}</span>`;
   }
  }).catch(()=>{});
-}
-let _nearbyDurTimer=null;
-function _trySortNearbyByDur(){
- clearTimeout(_nearbyDurTimer);
- _nearbyDurTimer=setTimeout(()=>{
-  const body=$('nearby-body');
-  if(!body) return;
-  const items=[...body.querySelectorAll('.nearby-item')];
-  const withDur=items.filter(el=>el.querySelector('.nearby-dist[data-dur]'));
-  if(withDur.length===0) return;
-  // 전체 완료 or 절반 이상 완료 시 정렬
-  if(withDur.length<Math.min(items.length,5)) return;
-  items.sort((a,b)=>{
-   const da=parseInt(a.querySelector('.nearby-dist')?.dataset?.dur||'999999');
-   const db=parseInt(b.querySelector('.nearby-dist')?.dataset?.dur||'999999');
-   return da-db;
-  });
-  items.forEach((el,i)=>{
-   const num=el.querySelector('.nearby-num');
-   if(num) num.textContent=i+1;
-   body.appendChild(el);
-  });
- },800);
 }
 function _nearbyHtml(idx,i,name,addr,c,tLabel,distId,estKm){
  return `<div class="nearby-item" onclick="selectItem(${idx},{fromNearby:true})"><div class="nearby-num" style="background:${c}">${i+1}</div><div class="nearby-info"><div class="nearby-name">${name}</div><div class="nearby-addr">${addr.substring(0,26)}${addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${tLabel}</div><div class="nearby-dist" id="${distId}">🚗${estKm}km</div></div></div>`;
