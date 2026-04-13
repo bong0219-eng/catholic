@@ -20,46 +20,80 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  /* Primary Theme */
-  --navy:#FFFFFF;
-  --navy2:#F8FAFC;
-  --navy3:#EEF2F7;
+/* =========================
+   White Primary Theme Fix
+   ========================= */
 
-  /* Main Primary */
-  --gold:#0F766E;
-  --gold2:#0D5F59;
+/* 상단 탭바 글자/아이콘 */
+.tab-btn{
+  color:#6B7280;
+}
 
-  /* Base */
-  --cream:#FFFFFF;
-  --ink:#111827;
-  --border:#E5E7EB;
+.tab-btn.active{
+  color:#0F766E;
+  background:rgba(15,118,110,.08);
+  border-bottom-color:#0F766E;
+}
 
-  /* Category Colors */
-  --shrine:#2563EB;
-  --pilgrim:#2563EB;
+/* Parish / Retreat 모드 탭 글자 */
+html.parish-mode .tab-btn,
+html.retreat-mode .tab-btn{
+  color:#6B7280;
+}
 
-  --martyr:#B7791F;
+html.parish-mode .tab-btn.active{
+  color:#B7791F;
+  background:rgba(183,121,31,.10);
+  border-bottom-color:#B7791F;
+}
 
-  /* Parish / Cathedral */
-  --parish-bg:#FFFFFF;
-  --parish-active:#B7791F;
-  --parish-accent:#111827;
+html.retreat-mode .tab-btn.active{
+  color:#2F855A;
+  background:rgba(47,133,90,.10);
+  border-bottom-color:#2F855A;
+}
 
-  /* Retreat */
-  --retreat-bg:#FFFFFF;
-  --retreat-active:#2F855A;
-  --retreat-accent:#111827;
+/* Sheet Header 글자 */
+.sheet-title{
+  color:#111827;
+}
 
-  /* Text / Distance */
-  --addr-color:#6B7280;
+.sheet-x{
+  color:#6B7280;
+  background:#F3F4F6;
+  border-color:#E5E7EB;
+}
 
-  --dist-parish:#B7791F;
-  --dist-retreat:#2F855A;
+/* 검색 영역 */
+.srch-inner input,
+.srch-inner input::placeholder{
+  color:#111827;
+}
 
-  --tab-h:52px;
-  --sb:env(safe-area-inset-bottom,0);
-  --st:env(safe-area-inset-top,0);
+.srch-inner input::placeholder{
+  color:#9CA3AF;
+}
+
+/* Modal Header */
+.sm-title{
+  color:#111827;
+}
+
+.sm-x{
+  color:#6B7280;
+  background:#F3F4F6;
+  border-color:#E5E7EB;
+}
+
+/* Missa Header */
+#missa-bar-title{
+  color:#111827;
+}
+
+#missa-close{
+  color:#6B7280;
+  background:#F3F4F6;
+  border-color:#E5E7EB;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
