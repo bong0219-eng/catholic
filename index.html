@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -39,9 +38,9 @@ html,body{width:100%;height:100%;background:var(--navy);font-family:'Noto Sans K
 ::-webkit-scrollbar-thumb{background:rgba(26,36,86,.15);border-radius:2px}
 #cover{
   position:fixed;inset:0;z-index:0;background:#0e1535;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   padding:env(safe-area-inset-top,0) 20px env(safe-area-inset-bottom,0);
-  overflow:hidden;
+  overflow:hidden;overflow-y:auto;
 }
 .cv-bg{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(45,58,122,.65) 0%,transparent 65%),
@@ -53,7 +52,7 @@ html,body{width:100%;height:100%;background:var(--navy);font-family:'Noto Sans K
 .cv-wave{position:absolute;bottom:0;left:0;right:0;height:100px;
   background:linear-gradient(to bottom,transparent,rgba(14,21,53,.7));pointer-events:none;}
 .cv-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;
-  padding:0 16px 20px;max-width:540px;width:100%;}
+  padding:calc(env(safe-area-inset-top,0) + 18px) 16px 92px;max-width:540px;width:100%;}
 .cv-orn{display:flex;align-items:center;gap:18px;margin-bottom:22px;}
 .cv-orn-line{height:1px;width:56px;background:linear-gradient(90deg,transparent,#d4aa6a);}
 .cv-orn-line.r{background:linear-gradient(270deg,transparent,#d4aa6a);}
@@ -61,16 +60,16 @@ html,body{width:100%;height:100%;background:var(--navy);font-family:'Noto Sans K
 .cv-title{font-size:clamp(26px,6.5vw,48px);font-weight:300;letter-spacing:3px;line-height:1.55;color:#f5edd8;margin-bottom:8px;}
 .cv-title em{font-style:normal;color:#d4aa6a;font-weight:700;}
 .cv-sub{font-size:13px;color:rgba(245,237,216,.72);letter-spacing:1.5px;margin-bottom:4px;}
-.cv-div{width:38px;height:1px;background:#b8965a;margin:16px auto 24px;}
-.cv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:400px;}
-.cv-btn{padding:20px 12px;border:none;border-radius:16px;cursor:pointer;font-family:inherit;
-  display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;overflow:hidden;
+.cv-div{width:38px;height:1px;background:#b8965a;margin:14px auto 18px;}
+.cv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:420px;}
+.cv-btn{padding:16px 10px;border:none;border-radius:16px;cursor:pointer;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;position:relative;overflow:hidden;min-height:120px;
   transition:transform .2s,box-shadow .2s;}
 .cv-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 55%);}
 .cv-btn:active{transform:scale(.97);}
 .cv-btn-icon{font-size:30px;line-height:1;}
-.cv-btn-label{font-size:14px;font-weight:700;letter-spacing:.3px;word-break:keep-all;text-align:center;line-height:1.4;}
-.cv-btn-desc{font-size:10px;opacity:.72;font-weight:400;line-height:1.55;word-break:keep-all;text-align:center;}
+.cv-btn-label{font-size:13px;font-weight:700;letter-spacing:.2px;word-break:keep-all;text-align:center;line-height:1.34;}
+.cv-btn-desc{font-size:9.5px;opacity:.72;font-weight:400;line-height:1.45;word-break:keep-all;text-align:center;}
 .cv-btn-shrine{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#e8f0fe;
   box-shadow:0 6px 26px rgba(21,101,192,.45),inset 0 1px 0 rgba(255,255,255,.1);}
 .cv-btn-parish{background:linear-gradient(135deg,#6D4C28,#4a3728);color:#f5e6d0;
@@ -110,7 +109,7 @@ html.parish-mode .tab-btn{color:rgba(245,230,208,.7);}
 html.retreat-mode .tab-btn{color:rgba(255,255,255,.75);}
 html.parish-mode .tab-btn.active{color:#f5e6d0;background:var(--parish-active);border-bottom-color:#f5e6d0;}
 html.retreat-mode .tab-btn.active{color:#fff;background:var(--retreat-active);border-bottom-color:#fff;}
-.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   background:none;border:none;color:rgba(255,255,255,.45);font-size:12px;font-weight:600;
   font-family:inherit;cursor:pointer;padding:4px 0;gap:2px;
   border-bottom:3px solid transparent;margin-bottom:-2px;
@@ -394,7 +393,7 @@ html.retreat-mode .ric-lbl{color:var(--retreat-accent);}
   border-top:1px solid #eee;border-bottom:1px solid #eee;letter-spacing:.04em;}
 html.parish-mode .region-list-hd{color:var(--parish-accent);}
 html.retreat-mode .region-list-hd{color:var(--retreat-accent);}
-.map-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
+.map-loading{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   background:var(--navy);height:100%;}
 @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .map-loading-icon{font-size:36px;margin-bottom:14px;animation:spin 2s linear infinite;}
@@ -455,7 +454,7 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
   cursor:pointer;border:none;flex-shrink:0;margin-top:env(safe-area-inset-top,0);}
 #missa-frame{flex:1;width:100%;border:none;background:#fff;}
 #missa-loading{position:absolute;inset:0;top:calc(52px + env(safe-area-inset-top,0));
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   background:#F8F6F2;z-index:1;pointer-events:none;}
 .missa-spinner{width:40px;height:40px;border:4px solid #E5DED3;
   border-top:4px solid #B89B72;border-radius:50%;
@@ -493,7 +492,7 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
 .web-cat-btn.on{color:#fff;border-color:transparent;}
 .web-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 13px calc(72px + env(safe-area-inset-bottom,0));display:flex;flex-direction:column;gap:9px;}
 .web-list::-webkit-scrollbar{display:none;}
-.web-card{background:#fefefe;border-radius:13px;border:1px solid #e4ddd6;box-shadow:0 1px 8px rgba(0,0,0,.06);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.web-card{background:#fefefe;border-radius:13px;border:1px solid #e4ddd6;box-shadow:0 1px 8px rgba(0,0,0,.06);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;display:block;flex:0 0 auto;width:100%;min-height:118px;}
 .web-card:active{transform:scale(.983);box-shadow:none;}
 .web-card-top{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 0;gap:8px;}
 .web-card-badge{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;flex-shrink:0;}
@@ -517,7 +516,7 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
 #trail-map{position:absolute;inset:0;}
 #trail-list{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 13px calc(74px + env(safe-area-inset-bottom,0));display:flex;flex-direction:column;gap:10px;}
 #trail-list::-webkit-scrollbar{display:none;}
-.trail-card{background:#fefefe;border-radius:13px;border:1px solid #e4ddd6;box-shadow:0 1px 8px rgba(0,0,0,.06);overflow:hidden;cursor:pointer;transition:transform .12s;}
+.trail-card{background:#fefefe;border-radius:13px;border:1px solid #e4ddd6;box-shadow:0 1px 8px rgba(0,0,0,.06);overflow:hidden;cursor:pointer;transition:transform .12s;display:block;flex:0 0 auto;width:100%;}
 .trail-card:active{transform:scale(.983);}
 .trail-r1{display:flex;align-items:center;gap:7px;padding:12px 14px 0;}
 .trail-bdg{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;flex-shrink:0;}
@@ -536,7 +535,7 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
 .trail-sheet{position:absolute;left:0;right:0;bottom:0;z-index:6;background:#fefefe;border-radius:20px 20px 0 0;border-top:1px solid #e4ddd6;box-shadow:0 -4px 24px rgba(0,0,0,.12);padding:0 0 calc(28px + env(safe-area-inset-bottom,0));transform:translateY(110%);transition:transform .25s cubic-bezier(.4,0,.2,1);pointer-events:none;overflow:hidden;}
 .trail-sheet.open{transform:translateY(0);pointer-events:all;}
 .trail-sh-handle{width:36px;height:4px;border-radius:2px;background:#e4ddd6;margin:10px auto 0;}
-.trail-sh-close{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;background:#f5f3ee;border:none;cursor:pointer;font-size:13px;color:#706858;display:flex;align-items:center;justify-content:center;}
+.trail-sh-close{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;background:#f5f3ee;border:none;cursor:pointer;font-size:13px;color:#706858;display:none;align-items:center;justify-content:center;}
 .trail-sh-top{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0;gap:8px;}
 .trail-sh-bdg{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;flex-shrink:0;}
 .trail-sh-bdg.d{background:#1D4ED8;}
@@ -576,9 +575,7 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
 </div>
 <div id="exit-dlg"><div class="exit-box"><h3>앱을 종료할까요?</h3><p>성지순례 앱을 종료합니다.</p><div class="exit-btns"><button class="exit-cancel" onclick="closeExitDlg()">취소</button><button class="exit-ok" onclick="doExit()">종료</button></div></div>
 </div><!-- ══ 표지 ══ -->
-<div id="cover"><div id="cv-pull"><div id="cv-pull-arrow">↓</div><span id="cv-pull-txt">당겨서 새로고침</span></div><div class="cv-bg"></div><div class="cv-stars" id="cv-stars"></div><div class="cv-wave"></div><div class="cv-inner"><div class="cv-orn"><div class="cv-orn-line"></div><div class="cv-cross">✞</div><div class="cv-orn-line r"></div></div><h1 class="cv-title">한국 천주교<br><em>순례 지도</em></h1><p class="cv-sub">성지 · 성당 · 피정 · 순례길</p><div class="cv-div"></div><div class="cv-grid"><button class="cv-btn cv-btn-shrine" onclick="startApp('shrine')"><span class="cv-btn-icon">✝</span><span class="cv-btn-label">성지순례<br>스탬프 167</span><span class="cv-btn-desc">카카오맵 · 경로탐색<br>내 주변 성지 찾기</span></button><button class="cv-btn cv-btn-parish" onclick="startApp('parish')"><span class="cv-btn-icon">⛪</span><span class="cv-btn-label">내 주변<br>성당 찾기</span><span class="cv-btn-desc">전국 1,696개 성당<br>교구별 검색 · 전화</span></button><button class="cv-btn cv-btn-retreat" onclick="startApp('retreat')"><span class="cv-btn-icon">🏔</span><span class="cv-btn-label">피정의 집</span><span class="cv-btn-desc">전국 피정의 집 검색<br>전화 · 길찾기</span></button><button class="cv-btn cv-btn-missa" onclick="openMissa()"><span class="cv-btn-icon">📖</span><span class="cv-btn-label">매일미사</span><span class="cv-btn-desc">오늘의 말씀 · 기도</span></button><button class="cv-btn cv-btn-trail" onclick="openTrailView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v8" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M8 7h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M12 13c-2.4 2.1-3.8 4.3-4.4 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 13c2.4 2.1 3.8 4.3 4.4 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">순례길</span><span class="cv-btn-desc">전국 11개 순례길<br>지도 · 목록 바로 보기</span></button><button class="cv-btn cv-btn-web" onclick="openWebView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="2.1"/><path d="M3.8 12h16.4" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M12 3.8c2.2 2.2 3.4 5.2 3.4 8.2S14.2 18 12 20.2C9.8 18 8.6 15 8.6 12S9.8 6 12 3.8Z" stroke="white" stroke-width="2.1" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">가톨릭 웹</span><span class="cv-btn-desc">공식 사이트 27곳<br>카테고리별 모음</span></button></div></div><div class="cv-footer"><div id="cv-install-wrap"><button class="cv-install-btn" onclick="cvInstall()">
-        📲 <span id="cv-install-txt">홈 화면에 앱 설치</span></button></div><p class="cv-footer-txt">성지 167곳 · 성당 1,696개 · 피정 190곳 · 순례길 11개 · 웹 27곳</p></div>
-</div><!-- ══ 앱 ══ -->
+<div id="cover"><div id="cv-pull"><div id="cv-pull-arrow">↓</div><span id="cv-pull-txt">당겨서 새로고침</span></div><div class="cv-bg"></div><div class="cv-stars" id="cv-stars"></div><div class="cv-wave"></div><div class="cv-inner"><div class="cv-orn"><div class="cv-orn-line"></div><div class="cv-cross">✞</div><div class="cv-orn-line r"></div></div><h1 class="cv-title">한국 천주교<br><em>순례 지도</em></h1><p class="cv-sub">매일미사 · 기도문 · 성지 · 성당 · 순례길 · 피정 · 웹</p><div class="cv-div"></div><div class="cv-grid"><button class="cv-btn cv-btn-missa" onclick="openMissa()"><span class="cv-btn-icon">📖</span><span class="cv-btn-label">매일미사</span><span class="cv-btn-desc">오늘의 말씀 · 기도</span></button><button class="cv-btn cv-btn-soon" type="button" aria-disabled="true"><span class="cv-btn-icon">🙏</span><span class="cv-btn-label">주요 기도문</span><span class="cv-btn-desc">추후 통합 예정</span></button><button class="cv-btn cv-btn-shrine" onclick="startApp('shrine')"><span class="cv-btn-icon">✝</span><span class="cv-btn-label">한국 천주교<br>성지순례 167곳</span><span class="cv-btn-desc">카카오맵 · 경로탐색<br>내 주변 성지 찾기</span></button><button class="cv-btn cv-btn-parish" onclick="startApp('parish')"><span class="cv-btn-icon">⛪</span><span class="cv-btn-label">내주변 성당찾기</span><span class="cv-btn-desc">전국 1,696개 성당<br>교구별 검색 · 전화</span></button><button class="cv-btn cv-btn-trail" onclick="openTrailView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.2v4.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M9.4 5.3h5.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M5 10.2 12 6l7 4.2" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 10.5v7.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M17.5 10.5v7.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M9.3 17.7v-3.8h5.4v3.8" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 17.7h14.6" stroke="white" stroke-width="2.1" stroke-linecap="round"/></svg></span><span class="cv-btn-label">순례길찾기</span><span class="cv-btn-desc">전국 11개 순례길<br>지도 · 목록 바로 보기</span></button><button class="cv-btn cv-btn-retreat" onclick="startApp('retreat')"><span class="cv-btn-icon">🏔</span><span class="cv-btn-label">피정의 집 찾기</span><span class="cv-btn-desc">전국 피정의 집 검색<br>전화 · 길찾기</span></button><button class="cv-btn cv-btn-web" onclick="openWebView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="2.1"/><path d="M3.8 12h16.4" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M12 3.8c2.2 2.2 3.4 5.2 3.4 8.2S14.2 18 12 20.2C9.8 18 8.6 15 8.6 12S9.8 6 12 3.8Z" stroke="white" stroke-width="2.1" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">주요 가톨릭 웹사이트</span><span class="cv-btn-desc">공식 사이트 27곳<br>카테고리별 모음</span></button><button class="cv-btn cv-btn-soon" type="button" aria-disabled="true"><span class="cv-btn-icon">🗂️</span><span class="cv-btn-label">한국 천주교<br>관구/교구현황</span><span class="cv-btn-desc">추후 통합 예정</span></button></div></div><div class="cv-footer"><div id="cv-install-wrap"><button class="cv-install-btn" onclick="cvInstall()">📲 <span id="cv-install-txt">홈 화면에 앱 설치</span></button></div><p class="cv-footer-txt">성지 167곳 · 성당 1,696개 · 피정 190곳 · 순례길 11개 · 웹 27곳</p></div></div><!-- ══ 앱 ══ -->
 <div id="app"><!-- 탭바 --><div id="tabbar"><button class="tab-btn" data-tab="nearby" onclick="toggleTab('nearby')"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button class="tab-btn" data-tab="list" onclick="toggleTab('list')"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button class="tab-btn" data-tab="region" onclick="toggleTab('region')"><span class="tab-icon">🔍</span>지역검색
     </button><button class="tab-btn" data-tab="route" onclick="toggleTab('route')"><span class="tab-icon">🧭</span>길찾기
     </button></div><!-- 지도 --><div id="map-wrap"><div id="map"></div><button id="loc-btn" onclick="goMyLoc()">📍<span style="font-size:12px">내위치</span></button><div id="legend"><div class="leg-row"><div class="leg-dot" style="background:var(--shrine)"></div><span>성지</span></div><div class="leg-row"><div class="leg-dot" style="background:var(--pilgrim)"></div><span>순례지</span></div><div class="leg-row"><div class="leg-dot" style="background:var(--martyr)"></div><span>순교사적지</span></div></div><div id="route-guide"></div></div><!-- 시트: 내주변 --><div class="sheet" id="sheet-nearby"><div class="sheet-body" id="nearby-body"><div class="empty-msg">📍 위치를 확인하는 중...</div></div></div><!-- 시트: 목록 --><div class="sheet" id="sheet-list"><div class="srch-bar"><div class="srch-inner"><span style="font-size:14px;opacity:.5;margin-right:8px;color:#fff">🔍</span><input type="text" id="list-srch-inp" placeholder="이름, 주소 검색"
@@ -846,15 +843,12 @@ function cvInstall(){
     // ── 표지 화면 ──────────────────────────────────────────────────
     if(_screen === 'cover'){
       if(_exitReady){
-        // 2번째 뒤로가기: 종료 시도
         _exitReady=false;
         clearTimeout(_exitTimer);
         var bt=$('_bt'); if(bt) bt.remove();
-        try{ window.close(); }catch(e){}
-        // window.close() 실패 시: 위치0에 그대로 → 다음 back에 Chrome 탈출
+        attemptAppExit();
         return;
       }
-      // 1번째: 위치 복원 + 토스트
       _restoring=true;
       history.go(1);
       _showBackToast();
@@ -928,12 +922,22 @@ function _showBackToast(){
   _exitTimer=setTimeout(()=>{_exitReady=false;if(t.parentNode)t.remove();},2500);
 }
 
+function attemptAppExit(){
+  try{ window.close(); }catch(e){}
+  setTimeout(()=>{
+    try{
+      if(history.length > 1){
+        history.back();
+        return;
+      }
+    }catch(e){}
+    try{ location.replace('about:blank'); }catch(e){}
+  }, 80);
+}
 function closeExitDlg(){$('exit-dlg').classList.remove('open');}
 function doExit(){
   closeExitDlg();
-  // PWA에서는 window.close() 대신 표지로 이동
-  try{window.close();}catch(e){}
-  goToCover();
+  attemptAppExit();
 }
 
 function startApp(mode){
@@ -2453,7 +2457,7 @@ function _fmtTime(s){
 <div id="trail-view" class="module-view">
   <div class="module-bar trail">
     <div class="module-bar-main">
-      <div class="module-bar-ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v8" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M8 7h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M12 13c-2.4 2.1-3.8 4.3-4.4 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 13c2.4 2.1 3.8 4.3 4.4 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="module-bar-ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.2v4.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M9.4 5.3h5.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M5 10.2 12 6l7 4.2" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 10.5v7.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M17.5 10.5v7.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M9.3 17.7v-3.8h5.4v3.8" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 17.7h14.6" stroke="white" stroke-width="2.1" stroke-linecap="round"/></svg></div>
       <div class="module-bar-txt">
         <div class="module-bar-title">순례길 <span class="module-count" id="trail-count">11개</span></div>
         <div class="module-bar-sub"></div>
@@ -2924,7 +2928,7 @@ function _fmtTime(s){
     ig$('trail-sh-ico').textContent = d.ico;
     ig$('trail-sh-ico').className = 'trail-sh-ico ' + d.t;
     ig$('trail-sh-name').textContent = d.n;
-    ig$('trail-sh-sub').textContent = (d.t==='d' ? '교구 운영' : '지자체·단체 운영') + ' · ' + d.r;
+    ig$('trail-sh-sub').textContent = d.op + ' · ' + d.r;
     ig$('trail-sh-url').textContent = shortUrl(d.url);
     const openFn = function(){
       openExternalUrl(d.url, {
