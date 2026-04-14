@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -70,12 +71,12 @@ html,body{width:100%;height:100%;background:var(--navy);font-family:'Noto Sans K
 .cv-btn-icon{font-size:30px;line-height:1;}
 .cv-btn-label{font-size:13px;font-weight:700;letter-spacing:.2px;word-break:keep-all;text-align:center;line-height:1.34;}
 .cv-btn-desc{font-size:9.5px;opacity:.72;font-weight:400;line-height:1.45;word-break:keep-all;text-align:center;}
-.cv-btn-shrine{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#e8f0fe;
-  box-shadow:0 6px 26px rgba(21,101,192,.45),inset 0 1px 0 rgba(255,255,255,.1);}
-.cv-btn-parish{background:linear-gradient(135deg,#6D4C28,#4a3728);color:#f5e6d0;
-  box-shadow:0 6px 24px rgba(93,58,26,.45),inset 0 1px 0 rgba(255,255,255,.15);border:1px solid rgba(212,170,106,.2);}
-.cv-btn-retreat{background:linear-gradient(135deg,#689F38,#33691E);color:#f1f8e9;
-  box-shadow:0 6px 24px rgba(85,139,47,.45),inset 0 1px 0 rgba(255,255,255,.15);}
+.cv-btn-shrine{background:linear-gradient(135deg,#1d4ed8,#0f3b8f);color:#eef4ff;
+  box-shadow:0 8px 28px rgba(29,78,216,.38),inset 0 1px 0 rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.10);}
+.cv-btn-parish{background:linear-gradient(135deg,#8b5e34,#5e3d23);color:#fff3df;
+  box-shadow:0 8px 26px rgba(110,73,34,.34),inset 0 1px 0 rgba(255,255,255,.18);border:1px solid rgba(244,210,160,.22);}
+.cv-btn-retreat{background:linear-gradient(135deg,#5b9a3a,#2f6b1c);color:#f4faee;
+  box-shadow:0 8px 26px rgba(63,120,34,.34),inset 0 1px 0 rgba(255,255,255,.16);border:1px solid rgba(223,245,207,.18);}
 
 .cv-btn-missa{background:linear-gradient(135deg,#8B4513,#5C2D0A);color:#f5e6d0;
   box-shadow:0 6px 24px rgba(139,69,19,.45),inset 0 1px 0 rgba(255,255,255,.15);}
@@ -475,15 +476,15 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
   display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.18);}
 .module-bar.web{background:linear-gradient(135deg,#7f1d1d,#b91c1c);}
 .module-bar.trail{background:linear-gradient(135deg,#0f3b8f,#2563eb);}
-.module-bar-main{display:flex;align-items:center;gap:12px;min-width:0;}
-.module-bar-ico{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16);}
+.module-bar-main{display:flex;align-items:center;gap:14px;min-width:0;}
+.module-bar-ico{width:46px;height:46px;border-radius:15px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);}
 .module-bar-ico svg{width:24px;height:24px;display:block;}
 .module-bar-txt{min-width:0;}
-.module-bar-title{font-size:17px;font-weight:800;line-height:1.2;letter-spacing:-.2px;}
+.module-bar-title{font-size:21px;font-weight:800;line-height:1.25;letter-spacing:-.3px;}
 .module-bar-sub{font-size:11px;opacity:.78;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .module-close{width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:22px;cursor:pointer;flex-shrink:0;}
-.module-count{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);margin-left:8px;}
+.module-count{display:none!important;}
 .web-body{display:flex;flex-direction:column;min-height:0;flex:1;background:#f5f3ee;}
 .web-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:12px 14px 10px;background:#fff;border-bottom:1px solid #e4ddd6;}
 .web-cats::-webkit-scrollbar{display:none;}
@@ -621,6 +622,70 @@ function missaLoaded(){
   const loading=$('missa-loading');
   if(loading) loading.style.display='none';
 }
+
+const CORE_RETURN_KEY='catholic_core_return_v1';
+function saveCoreReturnState(extra){
+  const state={
+    mode:_mode||'shrine',
+    activeTab:_activeTab||'',
+    filterDio:_filterDio||'all',
+    listSrch:_listSrch||'',
+    infoIdx:(_curInfoItem&&Number.isInteger(_curInfoItem.idx))?_curInfoItem.idx:-1,
+    fromRegion:!!_curFromRegion
+  };
+  try{ sessionStorage.setItem(CORE_RETURN_KEY, JSON.stringify(Object.assign(state, extra||{}))); }catch(e){}
+}
+function openCoreExternalUrl(url, extra){
+  if(!url) return;
+  saveCoreReturnState(extra);
+  location.href = url;
+}
+function restoreCoreReturnState(){
+  let raw=null;
+  try{ raw=sessionStorage.getItem(CORE_RETURN_KEY); }catch(e){}
+  if(!raw) return false;
+  let state=null;
+  try{ state=JSON.parse(raw); }catch(e){}
+  try{ sessionStorage.removeItem(CORE_RETURN_KEY); }catch(e){}
+  if(!state||!state.mode) return false;
+  const reopenTab=state.activeTab||'';
+  _mode=state.mode;
+  _filterDio=state.filterDio||'all';
+  _listSrch=state.listSrch||'';
+  _screen='map';
+  document.documentElement.classList.add('app-active');
+  document.documentElement.classList.toggle('parish-mode',_mode==='parish');
+  document.documentElement.classList.toggle('retreat-mode',_mode==='retreat');
+  const cover=$('cover'); if(cover) cover.style.display='none';
+  closeAllTabs();
+  closeInfoCard();
+  resetRoute();
+  _resetMapState();
+  _mapInited=true;
+  _loadMap();
+  setTimeout(()=>{
+    if(reopenTab) openTab(reopenTab);
+    else _restoreMapMarkers();
+    if(Number.isInteger(state.infoIdx) && state.infoIdx>=0){
+      setTimeout(()=>{
+        try{ selectItem(state.infoIdx,{fromRegion:!!state.fromRegion}); }catch(e){}
+      },180);
+    }
+  },700);
+  return true;
+}
+window.addEventListener('pageshow', function(){
+  setTimeout(()=>{
+    if(restoreCoreReturnState()) return;
+    if(_screen==='map' && (!_map || !$('map')?.children.length)){
+      const reopenTab=_activeTab||'';
+      _resetMapState();
+      _mapInited=true;
+      _loadMap();
+      setTimeout(()=>{ if(reopenTab) openTab(reopenTab); },700);
+    }
+  },0);
+});
 // 뒤로가기로 매일미사 닫기 - 메인 popstate에서 처리
 
 
@@ -942,6 +1007,20 @@ function doExit(){
 
 function startApp(mode){
   _mode=mode;
+  _filterDio='all';
+  _listSrch='';
+  _regionLat=null; _regionLng=null; _regionCache=[];
+  _regionName=''; _regionPlaceName='';
+  _nearbyCache=[];
+  _curFromRegion=false;
+  _curInfoItem=null;
+  closeAllTabs();
+  closeInfoCard();
+  resetRoute();
+  const _ls=$('list-srch-inp'); if(_ls) _ls.value='';
+  const _lsx=$('list-srch-x'); if(_lsx) _lsx.style.display='none';
+  $$('.filter-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  $$('.sm-fb').forEach((b,i)=>b.classList.toggle('on',i===0));
 
  if(!$('list-filter-bar').children.length){
   const fb=$('list-filter-bar'),sm=$('sm-filter-bar');
@@ -1199,14 +1278,18 @@ function _showInfoCard(item, idx){
   })();
   }
   const hp=$('ic-hp');
-  if(item.hp){hp.href=item.hp;_show(hp);}
+  if(item.hp){
+    hp.href=item.hp;
+    hp.onclick=(e)=>{e.preventDefault(); openCoreExternalUrl(item.hp,{infoIdx:idx});};
+    _show(hp);
+  }
   else _hide(hp);
   const guide=$('ic-guide');
   if(_mode==='shrine'){
-    if(item.seq){ guide.onclick=()=>window.open(_SU+item.seq,'_blank'); guide.textContent='✝ 성지 상세페이지'; _show(guide);}
+    if(item.seq){ guide.onclick=()=>openCoreExternalUrl(_SU+item.seq,{infoIdx:idx}); guide.textContent='✝ 성지 상세페이지'; _show(guide);}
     else _hide(guide);
   } else {
-    if(item.url){ guide.onclick=()=>window.open(item.url,'_blank'); guide.textContent=(_mode==='retreat'?'🏔 피정의 집 상세페이지':'⛪ 성당 상세페이지'); _show(guide);}
+    if(item.url){ guide.onclick=()=>openCoreExternalUrl(item.url,{infoIdx:idx}); guide.textContent=(_mode==='retreat'?'🏔 피정의 집 상세페이지':'⛪ 성당 상세페이지'); _show(guide);}
     else _hide(guide);
   }
   const linksRow=$('ic-links-row');
@@ -2442,8 +2525,8 @@ function _fmtTime(s){
     <div class="module-bar-main">
       <div class="module-bar-ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="2.1"/><path d="M3.8 12h16.4" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M12 3.8c2.2 2.2 3.4 5.2 3.4 8.2S14.2 18 12 20.2C9.8 18 8.6 15 8.6 12S9.8 6 12 3.8Z" stroke="white" stroke-width="2.1" stroke-linejoin="round"/></svg></div>
       <div class="module-bar-txt">
-        <div class="module-bar-title">가톨릭 웹 <span class="module-count" id="web-count">27개</span></div>
-        <div class="module-bar-sub">공식 중앙기구 · 신앙 포털 · 미디어 · 언론 · 출판 · 교구</div>
+        <div class="module-bar-title">주요 가톨릭 웹사이트 <span class="module-count" id="web-count">27개</span></div>
+        <div class="module-bar-sub"></div>
       </div>
     </div>
     <button class="module-close" onclick="goToCover()">×</button>
@@ -2459,7 +2542,7 @@ function _fmtTime(s){
     <div class="module-bar-main">
       <div class="module-bar-ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.2v4.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M9.4 5.3h5.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M5 10.2 12 6l7 4.2" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 10.5v7.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M17.5 10.5v7.2" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M9.3 17.7v-3.8h5.4v3.8" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 17.7h14.6" stroke="white" stroke-width="2.1" stroke-linecap="round"/></svg></div>
       <div class="module-bar-txt">
-        <div class="module-bar-title">순례길 <span class="module-count" id="trail-count">11개</span></div>
+        <div class="module-bar-title">전국 순례길 <span class="module-count" id="trail-count">11개</span></div>
         <div class="module-bar-sub"></div>
       </div>
     </div>
@@ -2659,12 +2742,27 @@ function _fmtTime(s){
     ig$(id)?.classList.add('open');
   }
 
-  window.openWebView = function(){
+  window.openWebView = function(opts){
+    const restore = !!(opts&&opts.restore);
+    if(!restore){
+      webState.curCat='전체';
+      const list=ig$('web-list');
+      if(list) list.scrollTop=0;
+    }
     enterIntegratedView('web-view');
     initWebModule();
+    setWebCat(webState.curCat||'전체');
   };
 
-  window.openTrailView = function(){
+  window.openTrailView = function(opts){
+    const restore = !!(opts&&opts.restore);
+    if(!restore){
+      trailState.view='map';
+      trailState.pendingOpenIndex=null;
+      trailCloseSheet();
+      const list=ig$('trail-list');
+      if(list) list.scrollTop=0;
+    }
     enterIntegratedView('trail-view');
     initTrailModule();
     trailSetView(trailState.view || 'map');
@@ -2684,7 +2782,7 @@ function _fmtTime(s){
     if(!state || !state.module) return;
 
     if(state.module === 'web'){
-      openWebView();
+      openWebView({restore:true});
       initWebModule();
       if(state.cat) setWebCat(state.cat);
       requestAnimationFrame(function(){
@@ -2696,7 +2794,7 @@ function _fmtTime(s){
 
     if(state.module === 'trail'){
       trailState.pendingOpenIndex = Number.isInteger(state.openIndex) ? state.openIndex : null;
-      openTrailView();
+      openTrailView({restore:true});
       trailSetView(state.view === 'list' ? 'list' : 'map');
       requestAnimationFrame(function(){
         const list = ig$('trail-list');
@@ -2728,7 +2826,7 @@ function _fmtTime(s){
       btn.addEventListener('click', function(){ setWebCat(c); });
       wrap.appendChild(btn);
     });
-    renderWebList();
+    setWebCat(webState.curCat||'전체');
   }
 
   function setWebCat(cat){
