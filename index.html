@@ -526,10 +526,7 @@ function missaLoaded(){
   const loading=$('missa-loading');
   if(loading) loading.style.display='none';
 }
-// 뒤로가기로 매일미사 닫기
-window.addEventListener('popstate',function(e){
-  if($('missa-view')?.classList.contains('open')) closeMissa();
-});
+// 뒤로가기로 매일미사 닫기 - 메인 popstate에서 처리
 
 
 // ════════════════════════════════════════════════
@@ -735,6 +732,8 @@ function cvInstall(){
 
   var _restoring = false;
   window.addEventListener('popstate', function(){
+    // 매일미사 열려있으면 닫기만
+    if($('missa-view')?.classList.contains('open')){ closeMissa(); return; }
     if(_restoring){
       _restoring = false;
       // go(1) 후 popstate — URL을 현재 화면에 맞게 고정
@@ -933,8 +932,13 @@ function _onMapReady(){
   closeInfoCard();
   document.activeElement?.blur();
   });
-  _buildShrineMarkers();
-  if(_mode==='parish'||_mode==='retreat') _clearShrineMarkers();
+  // 성지 모드일 때만 성지 마커 빌드 (parish/retreat에서는 절대 빌드 안 함)
+  if(_mode==='shrine'){
+    _buildShrineMarkers();
+  } else {
+    // 성지 마커 배열은 비워둠 (잔류 방지)
+    _markers=new Array(SHRINES.length).fill(null);
+  }
   renderList();
   _autoLocate();
   if(_mode==='parish') _buildParishDioSystem();
@@ -1726,25 +1730,30 @@ function doRegionSearch(){
   const inp=$('region-inp');
   const q=(inp.value||'').trim();
   if(!q) return;
-  inp.blur(); // 키보드 숨김
+  inp.blur();
   const body=$('region-body');
-  body.innerHTML=`<div class="empty-msg">🔍 "${q}" 검색 중...</div>`;
-
-  fetch(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${_EC(q)}&size=1`,
-  _AH)
-  .then(r=>r.json())
-  .then(data=>{
-  const doc=data.documents&&data.documents[0];
-  if(!doc){
-   body.innerHTML='<div class="empty-msg">⚠️ 지역을 찾을 수 없습니다</div>';
-   return;
-  }
-  const lat=parseFloat(doc.y), lng=parseFloat(doc.x);
-  _regionLat=lat; _regionLng=lng; _regionName=q;
-  _regionPlaceName=doc.place_name||q;
-  _showRegionResults(q,lat,lng,doc);
-  })
-  .catch(()=>_showRegionFallback(q));
+  body.innerHTML='<div class="empty-msg">🔍 장소 검색 중...</div>';
+  fetch(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${_EC(q)}&size=8`,_AH)
+  .then(r=>r.json()).then(data=>{
+    const docs=data.documents||[];
+    if(!docs.length){ _showRegionFallback(q); return; }
+    let html='<div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#888;background:#f8f9fc;border-bottom:1px solid #eee;">📍 지역을 선택하세요</div>';
+    docs.forEach(d=>{
+      const nm=d.place_name, ad=d.road_address_name||d.address_name;
+      html+=`<div class="region-place-cand" data-lat="${parseFloat(d.y)}" data-lng="${parseFloat(d.x)}" data-name="${nm.replace(/"/g,'&quot;')}" style="padding:11px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;background:#fff;display:flex;align-items:center;gap:10px;"><div style="font-size:20px">📍</div><div><div style="font-size:14px;font-weight:600;color:#1F2937">${nm}</div><div style="font-size:12px;color:#888;margin-top:2px">${ad}</div></div></div>`;
+    });
+    body.innerHTML=html;
+    body.onclick=function(e){
+      const cand=e.target.closest('.region-place-cand');
+      if(!cand) return;
+      body.onclick=null;
+      const clat=parseFloat(cand.dataset.lat),clng=parseFloat(cand.dataset.lng),cname=cand.dataset.name;
+      _regionLat=clat;_regionLng=clng;_regionName=cname;_regionPlaceName=cname;
+      body.innerHTML='<div class="empty-msg">🚗 자동차 거리 계산 중...</div>';
+      _showRegionResults(cname,clat,clng,{place_name:cname,road_address_name:'',address_name:'',category_name:'',place_url:''});
+      if(_map) _map.setCenter(new _LL(clat,clng));
+    };
+  }).catch(()=>_showRegionFallback(q));
 }
 
 function _showRegionResults(q,lat,lng,doc){
@@ -2089,7 +2098,8 @@ function _searchKakaoPlace(q){
     const cat=docs[0].category_group_name||'';
     body.innerHTML=docs.map(d=>{
       const icon=d.category_group_code==='MT1'?'🏪':d.category_group_code==='SC4'?'🏫':d.category_group_code==='HP8'?'🏥':d.category_group_code==='PM9'?'💊':d.category_group_code==='OL7'?'⛽':'📍';
-      return `<div class="sm-place-item" onclick="selectFromPlaceModal(${parseFloat(d.y)},${parseFloat(d.x)},${JSON.stringify(d.place_name).replace(/'/g,'&#39;')},${JSON.stringify(d.road_address_name||d.address_name).replace(/'/g,'&#39;')})"><div class="sm-place-icon">${icon}</div><div class="sm-place-info"><div class="sm-place-name">${d.place_name}</div><div class="sm-place-addr">${d.road_address_name||d.address_name}</div></div></div>`;
+      const lat=parseFloat(d.y),lng=parseFloat(d.x),nm=d.place_name,ad=d.road_address_name||d.address_name;
+      return `<div class="sm-place-item" data-lat="${lat}" data-lng="${lng}" data-name="${nm.replace(/"/g,'&quot;')}" data-addr="${ad.replace(/"/g,'&quot;')}"><div class="sm-place-icon">${icon}</div><div class="sm-place-info"><div class="sm-place-name">${nm}</div><div class="sm-place-addr">${ad}</div></div></div>`;
     }).join('');
   }).catch(()=>{ const b=$('sm-body-place'); if(b) b.innerHTML='<div class="sm-place-loading">검색 실패</div>'; });
 }
@@ -2128,7 +2138,23 @@ function openSearchModal(role){
   if($('sm-tab-cat')) $('sm-tab-cat').classList.add('active');
   if($('sm-tab-place')) $('sm-tab-place').classList.remove('active');
   if($('sm-body')) $('sm-body').style.display='';
-  if($('sm-body-place')) {$('sm-body-place').style.display='none';$('sm-body-place').innerHTML='';}
+  if($('sm-body-place')) {
+    $('sm-body-place').style.display='none';
+    $('sm-body-place').innerHTML='';
+    // 이벤트 위임 (한 번만 등록)
+    if(!$('sm-body-place')._hasDelegate){
+      $('sm-body-place')._hasDelegate=true;
+      $('sm-body-place').addEventListener('click',function(e){
+        const item=e.target.closest('.sm-place-item');
+        if(!item) return;
+        const lat=parseFloat(item.dataset.lat);
+        const lng=parseFloat(item.dataset.lng);
+        const name=item.dataset.name;
+        const addr=item.dataset.addr;
+        selectFromPlaceModal(lat,lng,name,addr);
+      });
+    }
+  }
   // 모달 헤더 색상 모드별 적용
   const hd=$('srch-modal')?.querySelector('.sm-hd');
   if(hd){
