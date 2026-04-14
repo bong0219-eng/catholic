@@ -553,6 +553,10 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
 .trail-sh-url{font-size:11px;color:#1D4ED8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
 .trail-sh-arr{font-size:16px;color:#b8ada0;flex-shrink:0;}
 .trail-myloc{width:16px;height:16px;border-radius:50%;background:#2255CC;border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(34,85,204,.22);}
+.module-view{background:#C0B8B0;align-items:center;}
+.module-bar,.web-body,.trail-body{width:100%;max-width:520px;}
+.module-bar-sub:empty{display:none;}
+.module-close{display:none!important;}
 
 </style>
 </head>
@@ -572,7 +576,7 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
 </div>
 <div id="exit-dlg"><div class="exit-box"><h3>앱을 종료할까요?</h3><p>성지순례 앱을 종료합니다.</p><div class="exit-btns"><button class="exit-cancel" onclick="closeExitDlg()">취소</button><button class="exit-ok" onclick="doExit()">종료</button></div></div>
 </div><!-- ══ 표지 ══ -->
-<div id="cover"><div id="cv-pull"><div id="cv-pull-arrow">↓</div><span id="cv-pull-txt">당겨서 새로고침</span></div><div class="cv-bg"></div><div class="cv-stars" id="cv-stars"></div><div class="cv-wave"></div><div class="cv-inner"><div class="cv-orn"><div class="cv-orn-line"></div><div class="cv-cross">✞</div><div class="cv-orn-line r"></div></div><h1 class="cv-title">한국 천주교<br><em>순례 지도</em></h1><p class="cv-sub">성지 · 성당 · 피정 · 순례길</p><div class="cv-div"></div><div class="cv-grid"><button class="cv-btn cv-btn-shrine" onclick="startApp('shrine')"><span class="cv-btn-icon">✝</span><span class="cv-btn-label">성지순례<br>스탬프 167</span><span class="cv-btn-desc">카카오맵 · 경로탐색<br>내 주변 성지 찾기</span></button><button class="cv-btn cv-btn-parish" onclick="startApp('parish')"><span class="cv-btn-icon">⛪</span><span class="cv-btn-label">내 주변<br>성당 찾기</span><span class="cv-btn-desc">전국 1,696개 성당<br>교구별 검색 · 전화</span></button><button class="cv-btn cv-btn-retreat" onclick="startApp('retreat')"><span class="cv-btn-icon">🏔</span><span class="cv-btn-label">피정의 집</span><span class="cv-btn-desc">전국 피정의 집 검색<br>전화 · 길찾기</span></button><button class="cv-btn cv-btn-missa" onclick="openMissa()"><span class="cv-btn-icon">📖</span><span class="cv-btn-label">매일미사</span><span class="cv-btn-desc">오늘의 말씀 · 기도</span></button><button class="cv-btn cv-btn-trail" onclick="openTrailView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3v7" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M3.5 6.5h7" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M12 18c2-3 3.8-5 7-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 9h3v3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 20c1.3-2 2.2-3 4-4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">순례길</span><span class="cv-btn-desc">전국 11개 순례길<br>지도 · 목록 바로 보기</span></button><button class="cv-btn cv-btn-web" onclick="openWebView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="2.1"/><path d="M3.8 12h16.4" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M12 3.8c2.2 2.2 3.4 5.2 3.4 8.2S14.2 18 12 20.2C9.8 18 8.6 15 8.6 12S9.8 6 12 3.8Z" stroke="white" stroke-width="2.1" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">가톨릭 웹</span><span class="cv-btn-desc">공식 사이트 27곳<br>카테고리별 모음</span></button></div></div><div class="cv-footer"><div id="cv-install-wrap"><button class="cv-install-btn" onclick="cvInstall()">
+<div id="cover"><div id="cv-pull"><div id="cv-pull-arrow">↓</div><span id="cv-pull-txt">당겨서 새로고침</span></div><div class="cv-bg"></div><div class="cv-stars" id="cv-stars"></div><div class="cv-wave"></div><div class="cv-inner"><div class="cv-orn"><div class="cv-orn-line"></div><div class="cv-cross">✞</div><div class="cv-orn-line r"></div></div><h1 class="cv-title">한국 천주교<br><em>순례 지도</em></h1><p class="cv-sub">성지 · 성당 · 피정 · 순례길</p><div class="cv-div"></div><div class="cv-grid"><button class="cv-btn cv-btn-shrine" onclick="startApp('shrine')"><span class="cv-btn-icon">✝</span><span class="cv-btn-label">성지순례<br>스탬프 167</span><span class="cv-btn-desc">카카오맵 · 경로탐색<br>내 주변 성지 찾기</span></button><button class="cv-btn cv-btn-parish" onclick="startApp('parish')"><span class="cv-btn-icon">⛪</span><span class="cv-btn-label">내 주변<br>성당 찾기</span><span class="cv-btn-desc">전국 1,696개 성당<br>교구별 검색 · 전화</span></button><button class="cv-btn cv-btn-retreat" onclick="startApp('retreat')"><span class="cv-btn-icon">🏔</span><span class="cv-btn-label">피정의 집</span><span class="cv-btn-desc">전국 피정의 집 검색<br>전화 · 길찾기</span></button><button class="cv-btn cv-btn-missa" onclick="openMissa()"><span class="cv-btn-icon">📖</span><span class="cv-btn-label">매일미사</span><span class="cv-btn-desc">오늘의 말씀 · 기도</span></button><button class="cv-btn cv-btn-trail" onclick="openTrailView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v8" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M8 7h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M12 13c-2.4 2.1-3.8 4.3-4.4 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 13c2.4 2.1 3.8 4.3 4.4 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">순례길</span><span class="cv-btn-desc">전국 11개 순례길<br>지도 · 목록 바로 보기</span></button><button class="cv-btn cv-btn-web" onclick="openWebView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="2.1"/><path d="M3.8 12h16.4" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M12 3.8c2.2 2.2 3.4 5.2 3.4 8.2S14.2 18 12 20.2C9.8 18 8.6 15 8.6 12S9.8 6 12 3.8Z" stroke="white" stroke-width="2.1" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">가톨릭 웹</span><span class="cv-btn-desc">공식 사이트 27곳<br>카테고리별 모음</span></button></div></div><div class="cv-footer"><div id="cv-install-wrap"><button class="cv-install-btn" onclick="cvInstall()">
         📲 <span id="cv-install-txt">홈 화면에 앱 설치</span></button></div><p class="cv-footer-txt">성지 167곳 · 성당 1,696개 · 피정 190곳 · 순례길 11개 · 웹 27곳</p></div>
 </div><!-- ══ 앱 ══ -->
 <div id="app"><!-- 탭바 --><div id="tabbar"><button class="tab-btn" data-tab="nearby" onclick="toggleTab('nearby')"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button class="tab-btn" data-tab="list" onclick="toggleTab('list')"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button class="tab-btn" data-tab="region" onclick="toggleTab('region')"><span class="tab-icon">🔍</span>지역검색
@@ -2449,10 +2453,10 @@ function _fmtTime(s){
 <div id="trail-view" class="module-view">
   <div class="module-bar trail">
     <div class="module-bar-main">
-      <div class="module-bar-ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3v7" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M3.5 6.5h7" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M12 18c2-3 3.8-5 7-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 9h3v3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 20c1.3-2 2.2-3 4-4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="module-bar-ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v8" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M8 7h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M12 13c-2.4 2.1-3.8 4.3-4.4 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 13c2.4 2.1 3.8 4.3 4.4 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="module-bar-txt">
         <div class="module-bar-title">순례길 <span class="module-count" id="trail-count">11개</span></div>
-        <div class="module-bar-sub">교구 운영 순례길과 지자체·단체 운영 코스를 한 화면에 통합</div>
+        <div class="module-bar-sub"></div>
       </div>
     </div>
     <button class="module-close" onclick="goToCover()">×</button>
@@ -2615,9 +2619,9 @@ function _fmtTime(s){
     "교구":"#f0f5f0"
   };
   const TRAIL_COLORS = {d:'#1D4ED8', l:'#2A8040'};
-  const trailState = {inited:false, map:null, markers:[], selected:-1, myOverlay:null, view:'map'};
+  const RETURN_KEY = 'catholic_integrated_return_v2';
+  const trailState = {inited:false, map:null, markers:[], selected:-1, myOverlay:null, view:'map', pendingOpenIndex:null};
   const webState = {built:false, curCat:'전체'};
-  const _missaDefaultTitle = '✝ 매일미사';
 
   function ig$(id){ return document.getElementById(id); }
   function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -2625,32 +2629,20 @@ function _fmtTime(s){
   function hideIntegratedViews(){
     ig$('web-view')?.classList.remove('open');
     ig$('trail-view')?.classList.remove('open');
-    trailCloseSheet();
+    if(typeof trailCloseSheet === 'function') trailCloseSheet();
+  }
+  function saveReturnState(state){
+    try{ sessionStorage.setItem(RETURN_KEY, JSON.stringify(state)); }catch(e){}
+  }
+  function openExternalUrl(url, state){
+    saveReturnState(state);
+    location.href = url;
   }
 
   const _origGoToCover = window.goToCover;
   window.goToCover = function(){
     hideIntegratedViews();
     if(typeof _origGoToCover === 'function') return _origGoToCover();
-  };
-
-  const _origCloseMissa = window.closeMissa;
-  window.closeMissa = function(){
-    if(typeof _origCloseMissa === 'function') _origCloseMissa();
-    const t = ig$('missa-bar-title');
-    if(t) t.textContent = _missaDefaultTitle;
-  };
-
-  window.openIntegratedPage = function(title, url){
-    const barTitle = ig$('missa-bar-title');
-    const view = ig$('missa-view');
-    const frame = ig$('missa-frame');
-    const loading = ig$('missa-loading');
-    if(barTitle) barTitle.textContent = title || _missaDefaultTitle;
-    if(loading) loading.style.display = 'flex';
-    if(frame) frame.src = url;
-    if(view) view.classList.add('open');
-    try{ history.pushState({_missa:true},'',location.href); }catch(e){}
   };
 
   function enterIntegratedView(id){
@@ -2673,6 +2665,45 @@ function _fmtTime(s){
     initTrailModule();
     trailSetView(trailState.view || 'map');
   };
+
+  function restoreIntegratedState(){
+    let raw = null;
+    try{ raw = sessionStorage.getItem(RETURN_KEY); }catch(e){}
+    if(!raw) return;
+    if(_screen !== 'cover'){
+      try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){}
+      return;
+    }
+    let state = null;
+    try{ state = JSON.parse(raw); }catch(e){}
+    try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){}
+    if(!state || !state.module) return;
+
+    if(state.module === 'web'){
+      openWebView();
+      initWebModule();
+      if(state.cat) setWebCat(state.cat);
+      requestAnimationFrame(function(){
+        const list = ig$('web-list');
+        if(list) list.scrollTop = Number(state.scroll||0);
+      });
+      return;
+    }
+
+    if(state.module === 'trail'){
+      trailState.pendingOpenIndex = Number.isInteger(state.openIndex) ? state.openIndex : null;
+      openTrailView();
+      trailSetView(state.view === 'list' ? 'list' : 'map');
+      requestAnimationFrame(function(){
+        const list = ig$('trail-list');
+        if(list && state.view === 'list') list.scrollTop = Number(state.scroll||0);
+      });
+    }
+  }
+
+  window.addEventListener('pageshow', function(){
+    setTimeout(restoreIntegratedState, 0);
+  });
 
   function initWebModule(){
     if(webState.built){
@@ -2700,7 +2731,7 @@ function _fmtTime(s){
     webState.curCat = cat;
     const btns = document.querySelectorAll('#web-cats .web-cat-btn');
     btns.forEach(btn => {
-      const name = btn.id.replace('web_cat_','');
+      const name = btn.id.replace('web-cat_','');
       const active = name===cat;
       btn.classList.toggle('on', active);
       if(active){
@@ -2747,7 +2778,11 @@ function _fmtTime(s){
           <span class="web-card-arrow">›</span>
         </div>`;
       card.addEventListener('click', function(){
-        openIntegratedPage('🌐 ' + s.name, s.url);
+        openExternalUrl(s.url, {
+          module:'web',
+          cat:webState.curCat,
+          scroll:(ig$('web-list')?.scrollTop||0)
+        });
       });
       wrap.appendChild(card);
     });
@@ -2823,6 +2858,14 @@ function _fmtTime(s){
       });
       kakao.maps.event.addListener(trailState.map,'click', trailCloseSheet);
       trailState.inited = true;
+      if(Number.isInteger(trailState.pendingOpenIndex) && TRAIL_ITEMS[trailState.pendingOpenIndex]){
+        const idx = trailState.pendingOpenIndex;
+        trailState.pendingOpenIndex = null;
+        setTimeout(function(){
+          trailSelectMarker(idx);
+          trailOpenSheet(idx);
+        }, 120);
+      }
     });
   }
 
@@ -2849,12 +2892,11 @@ function _fmtTime(s){
           <span class="trail-arr">›</span>
         </div>`;
       card.addEventListener('click', function(){
-        trailSelectMarker(i);
-        trailOpenSheet(i);
-        trailSetView('map');
-        if(trailState.map && window.kakao && window.kakao.maps){
-          trailState.map.panTo(new kakao.maps.LatLng(d.lat,d.lng));
-        }
+        openExternalUrl(d.url, {
+          module:'trail',
+          view:'list',
+          scroll:(ig$('trail-list')?.scrollTop||0)
+        });
       });
       wrap.appendChild(card);
     });
@@ -2884,7 +2926,13 @@ function _fmtTime(s){
     ig$('trail-sh-name').textContent = d.n;
     ig$('trail-sh-sub').textContent = (d.t==='d' ? '교구 운영' : '지자체·단체 운영') + ' · ' + d.r;
     ig$('trail-sh-url').textContent = shortUrl(d.url);
-    const openFn = function(){ openIntegratedPage('🚶 ' + d.n, d.url); };
+    const openFn = function(){
+      openExternalUrl(d.url, {
+        module:'trail',
+        view:'map',
+        openIndex:i
+      });
+    };
     ig$('trail-sh-body').onclick = openFn;
     ig$('trail-sh-foot').onclick = openFn;
     ig$('trail-sheet').classList.add('open');
