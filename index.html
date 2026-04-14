@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -460,6 +461,99 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
   border-top:4px solid #B89B72;border-radius:50%;
   animation:spin 1s linear infinite;margin-bottom:14px;}
 .missa-loading-txt{font-size:13px;color:#8a7060;font-weight:600;}
+
+/* ===== 통합 모듈: 순례길 + 가톨릭 웹 ===== */
+.cv-btn-trail{background:linear-gradient(135deg,#2563eb,#1e40af);color:#eaf2ff;
+  box-shadow:0 6px 24px rgba(37,99,235,.38),inset 0 1px 0 rgba(255,255,255,.14);}
+.cv-btn-web{background:linear-gradient(135deg,#b91c1c,#7f1d1d);color:#fff1f1;
+  box-shadow:0 6px 24px rgba(185,28,28,.38),inset 0 1px 0 rgba(255,255,255,.12);}
+.cv-btn-badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:14px;
+  background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.16);}
+.cv-btn-badge svg{width:24px;height:24px;display:block;}
+.module-view{display:none;position:fixed;inset:0;z-index:1800;background:#f5f3ee;color:#252018;flex-direction:column;}
+.module-view.open{display:flex;}
+.module-bar{padding:calc(12px + env(safe-area-inset-top,0)) 14px 12px;background:#0e1535;color:#f5edd8;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.18);}
+.module-bar.web{background:linear-gradient(135deg,#7f1d1d,#b91c1c);}
+.module-bar.trail{background:linear-gradient(135deg,#0f3b8f,#2563eb);}
+.module-bar-main{display:flex;align-items:center;gap:12px;min-width:0;}
+.module-bar-ico{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16);}
+.module-bar-ico svg{width:24px;height:24px;display:block;}
+.module-bar-txt{min-width:0;}
+.module-bar-title{font-size:17px;font-weight:800;line-height:1.2;letter-spacing:-.2px;}
+.module-bar-sub{font-size:11px;opacity:.78;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.module-close{width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:22px;cursor:pointer;flex-shrink:0;}
+.module-count{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);margin-left:8px;}
+.web-body{display:flex;flex-direction:column;min-height:0;flex:1;background:#f5f3ee;}
+.web-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:12px 14px 10px;background:#fff;border-bottom:1px solid #e4ddd6;}
+.web-cats::-webkit-scrollbar{display:none;}
+.web-cat-btn{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:20px;border:1.5px solid #e4ddd6;background:#fff;color:#706858;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.web-cat-btn .cnt{font-size:10px;color:#b8ada0;background:#f0ede8;padding:1px 5px;border-radius:8px;font-weight:700;}
+.web-cat-btn.on{color:#fff;border-color:transparent;}
+.web-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 13px calc(72px + env(safe-area-inset-bottom,0));display:flex;flex-direction:column;gap:9px;}
+.web-list::-webkit-scrollbar{display:none;}
+.web-card{background:#fefefe;border-radius:13px;border:1px solid #e4ddd6;box-shadow:0 1px 8px rgba(0,0,0,.06);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.web-card:active{transform:scale(.983);box-shadow:none;}
+.web-card-top{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 0;gap:8px;}
+.web-card-badge{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;flex-shrink:0;}
+.web-card-op{font-size:11.5px;color:#b8ada0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.web-card-body{padding:9px 14px 10px;display:flex;align-items:center;gap:12px;}
+.web-card-ico{width:44px;height:44px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.web-card-info{flex:1;min-width:0;}
+.web-card-name{font-size:16px;font-weight:700;color:#252018;word-break:keep-all;line-height:1.38;margin-bottom:4px;}
+.web-card-desc{font-size:12px;color:#706858;line-height:1.55;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.web-card-foot{border-top:1px solid #f0ede8;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;background:#faf8f5;}
+.web-card-url{font-size:11px;color:#c42b2b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+.web-card-arrow{font-size:15px;color:#b8ada0;flex-shrink:0;margin-left:6px;}
+.web-empty{display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;color:#b8ada0;font-size:13px;text-align:center;}
+.web-empty.show{display:flex;}
+.trail-body{flex:1;display:flex;flex-direction:column;min-height:0;background:#f5f3ee;}
+.trail-tabs{display:flex;gap:6px;padding:12px 14px;background:#fff;border-bottom:1px solid #e4ddd6;}
+.trail-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;border-radius:14px;border:1px solid #d7deec;background:#f8fbff;color:#5c6984;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
+.trail-tab.on{background:#2563eb;color:#fff;border-color:#2563eb;box-shadow:0 6px 16px rgba(37,99,235,.24);}
+.trail-panel{position:relative;flex:1;min-height:0;display:none;}
+.trail-panel.on{display:block;}
+#trail-map{position:absolute;inset:0;}
+#trail-list{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 13px calc(74px + env(safe-area-inset-bottom,0));display:flex;flex-direction:column;gap:10px;}
+#trail-list::-webkit-scrollbar{display:none;}
+.trail-card{background:#fefefe;border-radius:13px;border:1px solid #e4ddd6;box-shadow:0 1px 8px rgba(0,0,0,.06);overflow:hidden;cursor:pointer;transition:transform .12s;}
+.trail-card:active{transform:scale(.983);}
+.trail-r1{display:flex;align-items:center;gap:7px;padding:12px 14px 0;}
+.trail-bdg{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;flex-shrink:0;}
+.trail-bdg.d{background:#1D4ED8;}
+.trail-bdg.l{background:#2A8040;}
+.trail-reg{font-size:12px;color:#706858;}
+.trail-r2{display:flex;align-items:center;gap:12px;padding:9px 14px 12px;}
+.trail-ico{width:44px;height:44px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.trail-ico.d{background:#EFF6FF;}
+.trail-ico.l{background:#EEF7F1;}
+.trail-nm{font-size:16px;font-weight:700;color:#252018;word-break:keep-all;line-height:1.38;}
+.trail-foot{border-top:1px solid #f0ede8;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;background:#faf8f5;}
+.trail-url{font-size:11px;color:#1D4ED8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+.trail-arr{font-size:15px;color:#b8ada0;flex-shrink:0;margin-left:6px;}
+.trail-loc-btn{position:absolute;right:14px;bottom:calc(18px + env(safe-area-inset-bottom,0));z-index:5;background:#fff;border:1.5px solid #d7deec;border-radius:22px;box-shadow:0 2px 12px rgba(0,0,0,.15);padding:10px 16px;display:flex;align-items:center;gap:6px;font-family:inherit;font-size:13px;font-weight:700;color:#1D4ED8;cursor:pointer;}
+.trail-sheet{position:absolute;left:0;right:0;bottom:0;z-index:6;background:#fefefe;border-radius:20px 20px 0 0;border-top:1px solid #e4ddd6;box-shadow:0 -4px 24px rgba(0,0,0,.12);padding:0 0 calc(28px + env(safe-area-inset-bottom,0));transform:translateY(110%);transition:transform .25s cubic-bezier(.4,0,.2,1);pointer-events:none;overflow:hidden;}
+.trail-sheet.open{transform:translateY(0);pointer-events:all;}
+.trail-sh-handle{width:36px;height:4px;border-radius:2px;background:#e4ddd6;margin:10px auto 0;}
+.trail-sh-close{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;background:#f5f3ee;border:none;cursor:pointer;font-size:13px;color:#706858;display:flex;align-items:center;justify-content:center;}
+.trail-sh-top{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0;gap:8px;}
+.trail-sh-bdg{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;flex-shrink:0;}
+.trail-sh-bdg.d{background:#1D4ED8;}
+.trail-sh-bdg.l{background:#2A8040;}
+.trail-sh-region{font-size:12px;color:#b8ada0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.trail-sh-body{display:flex;align-items:center;gap:12px;padding:10px 16px 12px;cursor:pointer;}
+.trail-sh-ico{width:44px;height:44px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.trail-sh-ico.d{background:#EFF6FF;}
+.trail-sh-ico.l{background:#EEF7F1;}
+.trail-sh-info{flex:1;min-width:0;}
+.trail-sh-name{font-size:17px;font-weight:800;color:#252018;line-height:1.38;word-break:keep-all;margin-bottom:3px;}
+.trail-sh-sub{font-size:12px;color:#706858;}
+.trail-sh-foot{border-top:1px solid #f0ede8;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#faf8f5;cursor:pointer;}
+.trail-sh-url{font-size:11px;color:#1D4ED8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+.trail-sh-arr{font-size:16px;color:#b8ada0;flex-shrink:0;}
+.trail-myloc{width:16px;height:16px;border-radius:50%;background:#2255CC;border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(34,85,204,.22);}
+
 </style>
 </head>
 
@@ -478,8 +572,8 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
 </div>
 <div id="exit-dlg"><div class="exit-box"><h3>앱을 종료할까요?</h3><p>성지순례 앱을 종료합니다.</p><div class="exit-btns"><button class="exit-cancel" onclick="closeExitDlg()">취소</button><button class="exit-ok" onclick="doExit()">종료</button></div></div>
 </div><!-- ══ 표지 ══ -->
-<div id="cover"><div id="cv-pull"><div id="cv-pull-arrow">↓</div><span id="cv-pull-txt">당겨서 새로고침</span></div><div class="cv-bg"></div><div class="cv-stars" id="cv-stars"></div><div class="cv-wave"></div><div class="cv-inner"><div class="cv-orn"><div class="cv-orn-line"></div><div class="cv-cross">✞</div><div class="cv-orn-line r"></div></div><h1 class="cv-title">한국 천주교<br><em>순례 지도</em></h1><p class="cv-sub">성지 · 성당 · 피정 · 순례길</p><div class="cv-div"></div><div class="cv-grid"><button class="cv-btn cv-btn-shrine" onclick="startApp('shrine')"><span class="cv-btn-icon">✝</span><span class="cv-btn-label">성지순례<br>스탬프 167</span><span class="cv-btn-desc">카카오맵 · 경로탐색<br>내 주변 성지 찾기</span></button><button class="cv-btn cv-btn-parish" onclick="startApp('parish')"><span class="cv-btn-icon">⛪</span><span class="cv-btn-label">내 주변<br>성당 찾기</span><span class="cv-btn-desc">전국 1,696개 성당<br>교구별 검색 · 전화</span></button><button class="cv-btn cv-btn-retreat" onclick="startApp('retreat')"><span class="cv-btn-icon">🏔</span><span class="cv-btn-label">피정의 집</span><span class="cv-btn-desc">전국 피정의 집 검색<br>전화 · 길찾기</span></button><button class="cv-btn cv-btn-missa" onclick="openMissa()"><span class="cv-btn-icon">📖</span><span class="cv-btn-label">매일미사</span><span class="cv-btn-desc">오늘의 말씀 · 기도</span></button></div></div><div class="cv-footer"><div id="cv-install-wrap"><button class="cv-install-btn" onclick="cvInstall()">
-        📲 <span id="cv-install-txt">홈 화면에 앱 설치</span></button></div><p class="cv-footer-txt">성지 167곳 · 성당 1,696개 · 16교구</p></div>
+<div id="cover"><div id="cv-pull"><div id="cv-pull-arrow">↓</div><span id="cv-pull-txt">당겨서 새로고침</span></div><div class="cv-bg"></div><div class="cv-stars" id="cv-stars"></div><div class="cv-wave"></div><div class="cv-inner"><div class="cv-orn"><div class="cv-orn-line"></div><div class="cv-cross">✞</div><div class="cv-orn-line r"></div></div><h1 class="cv-title">한국 천주교<br><em>순례 지도</em></h1><p class="cv-sub">성지 · 성당 · 피정 · 순례길</p><div class="cv-div"></div><div class="cv-grid"><button class="cv-btn cv-btn-shrine" onclick="startApp('shrine')"><span class="cv-btn-icon">✝</span><span class="cv-btn-label">성지순례<br>스탬프 167</span><span class="cv-btn-desc">카카오맵 · 경로탐색<br>내 주변 성지 찾기</span></button><button class="cv-btn cv-btn-parish" onclick="startApp('parish')"><span class="cv-btn-icon">⛪</span><span class="cv-btn-label">내 주변<br>성당 찾기</span><span class="cv-btn-desc">전국 1,696개 성당<br>교구별 검색 · 전화</span></button><button class="cv-btn cv-btn-retreat" onclick="startApp('retreat')"><span class="cv-btn-icon">🏔</span><span class="cv-btn-label">피정의 집</span><span class="cv-btn-desc">전국 피정의 집 검색<br>전화 · 길찾기</span></button><button class="cv-btn cv-btn-missa" onclick="openMissa()"><span class="cv-btn-icon">📖</span><span class="cv-btn-label">매일미사</span><span class="cv-btn-desc">오늘의 말씀 · 기도</span></button><button class="cv-btn cv-btn-trail" onclick="openTrailView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3v7" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M3.5 6.5h7" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M12 18c2-3 3.8-5 7-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 9h3v3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 20c1.3-2 2.2-3 4-4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">순례길</span><span class="cv-btn-desc">전국 11개 순례길<br>지도 · 목록 바로 보기</span></button><button class="cv-btn cv-btn-web" onclick="openWebView()"><span class="cv-btn-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="2.1"/><path d="M3.8 12h16.4" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M12 3.8c2.2 2.2 3.4 5.2 3.4 8.2S14.2 18 12 20.2C9.8 18 8.6 15 8.6 12S9.8 6 12 3.8Z" stroke="white" stroke-width="2.1" stroke-linejoin="round"/></svg></span><span class="cv-btn-label">가톨릭 웹</span><span class="cv-btn-desc">공식 사이트 27곳<br>카테고리별 모음</span></button></div></div><div class="cv-footer"><div id="cv-install-wrap"><button class="cv-install-btn" onclick="cvInstall()">
+        📲 <span id="cv-install-txt">홈 화면에 앱 설치</span></button></div><p class="cv-footer-txt">성지 167곳 · 성당 1,696개 · 피정 190곳 · 순례길 11개 · 웹 27곳</p></div>
 </div><!-- ══ 앱 ══ -->
 <div id="app"><!-- 탭바 --><div id="tabbar"><button class="tab-btn" data-tab="nearby" onclick="toggleTab('nearby')"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button class="tab-btn" data-tab="list" onclick="toggleTab('list')"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button class="tab-btn" data-tab="region" onclick="toggleTab('region')"><span class="tab-icon">🔍</span>지역검색
     </button><button class="tab-btn" data-tab="route" onclick="toggleTab('route')"><span class="tab-icon">🧭</span>길찾기
@@ -2334,5 +2428,521 @@ function _fmtTime(s){
 })();
 
 </script>
+
+<div id="web-view" class="module-view">
+  <div class="module-bar web">
+    <div class="module-bar-main">
+      <div class="module-bar-ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="2.1"/><path d="M3.8 12h16.4" stroke="white" stroke-width="2.1" stroke-linecap="round"/><path d="M12 3.8c2.2 2.2 3.4 5.2 3.4 8.2S14.2 18 12 20.2C9.8 18 8.6 15 8.6 12S9.8 6 12 3.8Z" stroke="white" stroke-width="2.1" stroke-linejoin="round"/></svg></div>
+      <div class="module-bar-txt">
+        <div class="module-bar-title">가톨릭 웹 <span class="module-count" id="web-count">27개</span></div>
+        <div class="module-bar-sub">공식 중앙기구 · 신앙 포털 · 미디어 · 언론 · 출판 · 교구</div>
+      </div>
+    </div>
+    <button class="module-close" onclick="goToCover()">×</button>
+  </div>
+  <div class="web-body">
+    <div class="web-cats" id="web-cats"></div>
+    <div class="web-list" id="web-list"><div class="web-empty" id="web-empty"><div style="font-size:40px">🔍</div><div>해당 항목이 없습니다.</div></div></div>
+  </div>
+</div>
+
+<div id="trail-view" class="module-view">
+  <div class="module-bar trail">
+    <div class="module-bar-main">
+      <div class="module-bar-ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3v7" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M3.5 6.5h7" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M12 18c2-3 3.8-5 7-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 9h3v3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 20c1.3-2 2.2-3 4-4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="module-bar-txt">
+        <div class="module-bar-title">순례길 <span class="module-count" id="trail-count">11개</span></div>
+        <div class="module-bar-sub">교구 운영 순례길과 지자체·단체 운영 코스를 한 화면에 통합</div>
+      </div>
+    </div>
+    <button class="module-close" onclick="goToCover()">×</button>
+  </div>
+  <div class="trail-body">
+    <div class="trail-tabs">
+      <button class="trail-tab on" id="trail-tab-map" onclick="trailSetView('map')">🗺 지도</button>
+      <button class="trail-tab" id="trail-tab-list" onclick="trailSetView('list')">☰ 목록</button>
+    </div>
+    <div class="trail-panel on" id="trail-panel-map">
+      <div id="trail-map"></div>
+      <div class="trail-sheet" id="trail-sheet">
+        <div class="trail-sh-handle"></div>
+        <button class="trail-sh-close" onclick="trailCloseSheet()">✕</button>
+        <div class="trail-sh-top">
+          <span class="trail-sh-bdg" id="trail-sh-bdg"></span>
+          <span class="trail-sh-region" id="trail-sh-region"></span>
+        </div>
+        <div class="trail-sh-body" id="trail-sh-body">
+          <div class="trail-sh-ico" id="trail-sh-ico"></div>
+          <div class="trail-sh-info">
+            <div class="trail-sh-name" id="trail-sh-name"></div>
+            <div class="trail-sh-sub" id="trail-sh-sub"></div>
+          </div>
+        </div>
+        <div class="trail-sh-foot" id="trail-sh-foot">
+          <span class="trail-sh-url" id="trail-sh-url"></span>
+          <span class="trail-sh-arr">›</span>
+        </div>
+      </div>
+      <button class="trail-loc-btn" onclick="trailMyLoc()">📍 내 위치</button>
+    </div>
+    <div class="trail-panel" id="trail-panel-list">
+      <div id="trail-list"></div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  const WEB_SITES = [
+  /* 공식 중앙기구 */
+  {cat:"중앙기구", ico:"🏛️", name:"한국천주교주교회의 (CBCK)",
+   op:"한국천주교주교회의", url:"https://cbck.or.kr",
+   desc:"한국 천주교 공식 문헌·교리·전례·교회법·발표 자료 제공"},
+  {cat:"중앙기구", ico:"📋", name:"한국 천주교 주소록",
+   op:"한국천주교주교회의", url:"https://directory.cbck.or.kr/OnlineAddress/Default.aspx",
+   desc:"전국 교구·본당·수도회·기관·단체 연락처 및 주소 제공"},
+  {cat:"중앙기구", ico:"⛪", name:"한국 천주교 순교자 현양",
+   op:"한국천주교주교회의", url:"https://cbck.or.kr/koreanmartyrs",
+   desc:"한국 순교자·성지·교회사 관련 자료 제공"},
+
+  /* 신앙 포털 */
+  {cat:"신앙 포털", ico:"✝️", name:"가톨릭인터넷 굿뉴스",
+   op:"천주교 서울대교구", url:"https://www.catholic.or.kr",
+   desc:"매일미사·성경·성인·기도문·전례력·신앙자료 제공"},
+
+  /* 미디어/방송 */
+  {cat:"미디어", ico:"📺", name:"cpbc 가톨릭평화방송",
+   op:"가톨릭평화방송", url:"https://www.cpbc.co.kr",
+   desc:"매일미사·강론·라디오·영상·신앙 프로그램 제공"},
+  {cat:"미디어", ico:"▶️", name:"cpbc 유튜브 채널",
+   op:"가톨릭평화방송", url:"https://www.youtube.com/@cpbc",
+   desc:"미사·강론·방송 프로그램 영상 제공"},
+  {cat:"미디어", ico:"📹", name:"가톨릭신문 유튜브 채널",
+   op:"가톨릭신문사", url:"https://www.youtube.com/@KoreaCatholictimes",
+   desc:"가톨릭 뉴스·인터뷰·영상 콘텐츠 제공"},
+
+  /* 언론 */
+  {cat:"언론", ico:"📰", name:"가톨릭신문",
+   op:"가톨릭신문사", url:"https://www.catholictimes.org",
+   desc:"교회 뉴스·사목·교구 소식·인터뷰·사회 이슈 기사 제공"},
+  {cat:"언론", ico:"📄", name:"가톨릭평화신문",
+   op:"cpbc", url:"https://news.cpbc.co.kr",
+   desc:"가톨릭 뉴스·인물 기사·사목 기사 제공"},
+
+  /* 출판/교육 */
+  {cat:"출판·교육", ico:"📚", name:"가톨릭출판사",
+   op:"가톨릭출판사", url:"https://www.catholicbook.kr",
+   desc:"교리·영성·교육용 도서 및 신앙서적 제공"},
+  {cat:"출판·교육", ico:"🕊️", name:"성바오로딸",
+   op:"성바오로딸수도회", url:"https://www.pauline.or.kr",
+   desc:"묵상·영성·생활 신앙 콘텐츠 제공"},
+
+  /* 교구 */
+  {cat:"교구", ico:"🔴", name:"서울대교구",
+   op:"천주교 서울대교구", url:"https://aos.catholic.or.kr",
+   desc:"교구 공지·교육·사목 자료·기관 정보 제공"},
+  {cat:"교구", ico:"🔴", name:"인천교구",
+   op:"천주교 인천교구", url:"http://www.caincheon.or.kr/",
+   desc:"교구 공지·사목 자료·기관 정보 제공"},
+  {cat:"교구", ico:"🔴", name:"수원교구",
+   op:"천주교 수원교구", url:"https://www.casuwon.or.kr/",
+   desc:"교구 소식·교육·행사·사목 자료 제공"},
+  {cat:"교구", ico:"🔴", name:"의정부교구",
+   op:"천주교 의정부교구", url:"http://ucatholic.or.kr/",
+   desc:"교구 공지·본당 안내·사목 자료 제공"},
+  {cat:"교구", ico:"🔵", name:"원주교구",
+   op:"천주교 원주교구", url:"http://www.wjcatholic.or.kr/",
+   desc:"교구 소식·교육 자료·공지 제공"},
+  {cat:"교구", ico:"🔵", name:"춘천교구",
+   op:"천주교 춘천교구", url:"https://www.cccatholic.or.kr/",
+   desc:"교구 공지·기관 안내·행사 정보 제공"},
+  {cat:"교구", ico:"🟤", name:"대전교구",
+   op:"천주교 대전교구", url:"https://www.djcatholic.or.kr/home/",
+   desc:"교구 행사·교육·공지·사목 자료 제공"},
+  {cat:"교구", ico:"🟤", name:"대구대교구",
+   op:"천주교 대구대교구", url:"https://www.daegu-archdiocese.or.kr/",
+   desc:"교구 소식·본당·기관 정보·행사 안내 제공"},
+  {cat:"교구", ico:"🟤", name:"청주교구",
+   op:"천주교 청주교구", url:"https://www.cdcj.or.kr/",
+   desc:"교구 공지·교육·사목 자료 제공"},
+  {cat:"교구", ico:"🟤", name:"안동교구",
+   op:"천주교 안동교구", url:"https://www.acatholic.or.kr/",
+   desc:"교구 소식·본당 안내·행사 정보 제공"},
+  {cat:"교구", ico:"🟢", name:"마산교구",
+   op:"천주교 마산교구", url:"https://cathms.kr/",
+   desc:"교구 공지·기관 정보·교육 자료 제공"},
+  {cat:"교구", ico:"🟢", name:"부산교구",
+   op:"천주교 부산교구", url:"https://www.catholicbusan.or.kr/",
+   desc:"교구 소식·행사·교육 자료 제공"},
+  {cat:"교구", ico:"🟠", name:"광주대교구",
+   op:"천주교 광주대교구", url:"https://www.gjcatholic.or.kr/",
+   desc:"교구 공지·사목 자료·기관 안내 제공"},
+  {cat:"교구", ico:"🟠", name:"전주교구",
+   op:"천주교 전주교구", url:"https://jcatholic.or.kr/index.php",
+   desc:"교구 행사·공지·사목 자료 제공"},
+  {cat:"교구", ico:"🟡", name:"제주교구",
+   op:"천주교 제주교구", url:"https://www.diocesejeju.or.kr/",
+   desc:"교구 소식·기관 안내·행사 정보 제공"},
+];
+  const TRAIL_ITEMS = [
+  {n:"천주교 서울 순례길",       op:"서울대교구",            t:"d", r:"서울시",                   lat:37.5644,lng:127.0104, ico:"✝️", url:"https://martyrs.or.kr/_web/mpilgrims/about.html"},
+  {n:"성지순례길 '디딤길'",      op:"수원교구",              t:"d", r:"경기 수원시",               lat:37.2832,lng:127.0170, ico:"🙏", url:"https://www.casuwon.or.kr/holyland/pilgrimage"},
+  {n:"원주교구 순례길 '님의 길'",   op:"원주교구",              t:"d", r:"강원 원주·횡성, 충북 제천", lat:37.3420,lng:127.9200, ico:"🌿", url:"https://sunraegil.seoji.net/course/all"},
+  {n:"한티가는길",               op:"대구대교구",            t:"d", r:"경북 칠곡 (가실성당~한티순교성지)",  lat:36.0168,lng:128.6299, ico:"⛰️", url:"https://hantigil.or.kr/index"},
+  {n:"광주대교구 순례길",        op:"광주대교구",            t:"d", r:"전남 나주·영광",             lat:35.0369,lng:126.7152, ico:"🕊️", url:"https://www.gjcatholic.or.kr/holyland/pilgrimage/noan_naju"},
+  {n:"천주교 제주교구 순례길",       op:"제주교구",              t:"d", r:"제주",                      lat:33.4463,lng:126.3027, ico:"🌊", url:"http://santoviaggio.com/"},
+  {n:"사제와 함께하는 도보순례", op:"안동교구",              t:"d", r:"경북 문경·상주",             lat:36.8001,lng:128.2113, ico:"👣", url:"https://www.acatholic.or.kr/sub4/sub2.asp"},
+  {n:"전주교구 교우촌 도보순례",   op:"전주교구",              t:"d", r:"전북 전주·완주",             lat:35.8031,lng:127.1677, ico:"🌾", url:"https://www.jcatholic.or.kr/theme/main/pages/pilgrimage01.html"},
+  {n:"보령 갈매못 성지순례길",   op:"보령시",                t:"l", r:"충남 보령",                 lat:36.4280,lng:126.5075, ico:"🌅", url:"https://www.brcn.go.kr/tour/sub02_02_02.do"},
+  {n:"내포 천주교 순례길",       op:"사단법인 내포문화숲길", t:"l", r:"충남 예산·서산",             lat:36.7127,lng:126.5380, ico:"🌲", url:"https://naepotrail.org/course/catholic"},
+  {n:"버그내순례길",             op:"당진시청",              t:"l", r:"충남 당진",                 lat:36.8199,lng:126.7848, ico:"🏞️", url:"https://beogeunae.dangjin.go.kr/pil1.html"}
+];
+  const WEB_CAT_COLORS = {
+    "중앙기구":"#8B1C2A",
+    "신앙 포털":"#1A6B3C",
+    "미디어":"#1A4F8B",
+    "언론":"#5A3E8B",
+    "출판·교육":"#7A5230",
+    "교구":"#4A6A4A"
+  };
+  const WEB_CAT_BG = {
+    "중앙기구":"#fdf0f0",
+    "신앙 포털":"#eef7f2",
+    "미디어":"#eef3fd",
+    "언론":"#f3effe",
+    "출판·교육":"#f8f3ee",
+    "교구":"#f0f5f0"
+  };
+  const TRAIL_COLORS = {d:'#1D4ED8', l:'#2A8040'};
+  const trailState = {inited:false, map:null, markers:[], selected:-1, myOverlay:null, view:'map'};
+  const webState = {built:false, curCat:'전체'};
+  const _missaDefaultTitle = '✝ 매일미사';
+
+  function ig$(id){ return document.getElementById(id); }
+  function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function shortUrl(url){ return String(url||'').replace(/^https?:\/\//,'').replace(/\/$/,''); }
+  function hideIntegratedViews(){
+    ig$('web-view')?.classList.remove('open');
+    ig$('trail-view')?.classList.remove('open');
+    trailCloseSheet();
+  }
+
+  const _origGoToCover = window.goToCover;
+  window.goToCover = function(){
+    hideIntegratedViews();
+    if(typeof _origGoToCover === 'function') return _origGoToCover();
+  };
+
+  const _origCloseMissa = window.closeMissa;
+  window.closeMissa = function(){
+    if(typeof _origCloseMissa === 'function') _origCloseMissa();
+    const t = ig$('missa-bar-title');
+    if(t) t.textContent = _missaDefaultTitle;
+  };
+
+  window.openIntegratedPage = function(title, url){
+    const barTitle = ig$('missa-bar-title');
+    const view = ig$('missa-view');
+    const frame = ig$('missa-frame');
+    const loading = ig$('missa-loading');
+    if(barTitle) barTitle.textContent = title || _missaDefaultTitle;
+    if(loading) loading.style.display = 'flex';
+    if(frame) frame.src = url;
+    if(view) view.classList.add('open');
+    try{ history.pushState({_missa:true},'',location.href); }catch(e){}
+  };
+
+  function enterIntegratedView(id){
+    hideIntegratedViews();
+    _screen = 'map';
+    document.documentElement.classList.add('app-active');
+    document.documentElement.classList.remove('parish-mode','retreat-mode');
+    const cover = ig$('cover');
+    if(cover) cover.style.display = 'none';
+    ig$(id)?.classList.add('open');
+  }
+
+  window.openWebView = function(){
+    enterIntegratedView('web-view');
+    initWebModule();
+  };
+
+  window.openTrailView = function(){
+    enterIntegratedView('trail-view');
+    initTrailModule();
+    trailSetView(trailState.view || 'map');
+  };
+
+  function initWebModule(){
+    if(webState.built){
+      renderWebList();
+      return;
+    }
+    webState.built = true;
+    const wrap = ig$('web-cats');
+    if(!wrap) return;
+    const cats = ['전체'];
+    WEB_SITES.forEach(s => { if(!cats.includes(s.cat)) cats.push(s.cat); });
+    cats.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'web-cat-btn' + (c===webState.curCat ? ' on' : '');
+      btn.id = 'web-cat_' + c;
+      const count = c==='전체' ? WEB_SITES.length : WEB_SITES.filter(s => s.cat===c).length;
+      btn.innerHTML = esc(c) + '<span class="cnt">' + count + '</span>';
+      btn.addEventListener('click', function(){ setWebCat(c); });
+      wrap.appendChild(btn);
+    });
+    renderWebList();
+  }
+
+  function setWebCat(cat){
+    webState.curCat = cat;
+    const btns = document.querySelectorAll('#web-cats .web-cat-btn');
+    btns.forEach(btn => {
+      const name = btn.id.replace('web_cat_','');
+      const active = name===cat;
+      btn.classList.toggle('on', active);
+      if(active){
+        btn.style.background = name==='전체' ? '#C42B2B' : (WEB_CAT_COLORS[name] || '#555');
+        btn.style.color = '#fff';
+        btn.style.borderColor = 'transparent';
+      } else {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }
+    });
+    renderWebList();
+  }
+
+  function renderWebList(){
+    const wrap = ig$('web-list');
+    const empty = ig$('web-empty');
+    if(!wrap || !empty) return;
+    Array.from(wrap.querySelectorAll('.web-card')).forEach(el => el.remove());
+    const filtered = webState.curCat==='전체' ? WEB_SITES : WEB_SITES.filter(s => s.cat===webState.curCat);
+    const countEl = ig$('web-count');
+    if(countEl) countEl.textContent = filtered.length + '개';
+    empty.classList.toggle('show', filtered.length===0);
+    filtered.forEach(s => {
+      const color = WEB_CAT_COLORS[s.cat] || '#555';
+      const bg = WEB_CAT_BG[s.cat] || '#f8f8f8';
+      const card = document.createElement('div');
+      card.className = 'web-card';
+      card.innerHTML = `
+        <div class="web-card-top">
+          <span class="web-card-badge" style="background:${color}">${esc(s.cat)}</span>
+          <span class="web-card-op">${esc(s.op)}</span>
+        </div>
+        <div class="web-card-body">
+          <div class="web-card-ico" style="background:${bg}">${esc(s.ico)}</div>
+          <div class="web-card-info">
+            <div class="web-card-name">${esc(s.name)}</div>
+            <div class="web-card-desc">${esc(s.desc)}</div>
+          </div>
+        </div>
+        <div class="web-card-foot">
+          <span class="web-card-url">${esc(shortUrl(s.url))}</span>
+          <span class="web-card-arrow">›</span>
+        </div>`;
+      card.addEventListener('click', function(){
+        openIntegratedPage('🌐 ' + s.name, s.url);
+      });
+      wrap.appendChild(card);
+    });
+  }
+
+  function ensureKakaoSdk(cb){
+    if(window.kakao && window.kakao.maps){
+      try{ kakao.maps.load(cb); }catch(e){ cb(); }
+      return;
+    }
+    if(window.__trailKakaoLoading){
+      window.__trailKakaoQueue = window.__trailKakaoQueue || [];
+      window.__trailKakaoQueue.push(cb);
+      return;
+    }
+    window.__trailKakaoLoading = true;
+    window.__trailKakaoQueue = [cb];
+    const sc = document.createElement('script');
+    const key = (typeof JSKEY!=='undefined' && JSKEY) ? JSKEY : '07f7989e29fdfb425fff924f36fb3ec0';
+    sc.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + key + '&autoload=false';
+    sc.onload = function(){
+      kakao.maps.load(function(){
+        const q = window.__trailKakaoQueue || [];
+        window.__trailKakaoLoading = false;
+        window.__trailKakaoQueue = [];
+        q.forEach(fn => { try{ fn(); }catch(e){} });
+      });
+    };
+    sc.onerror = function(){
+      window.__trailKakaoLoading = false;
+      const el = ig$('trail-map');
+      if(el) el.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:28px;text-align:center;color:#6b7280"><div style="font-size:40px">🗺️</div><div style="font-size:15px;font-weight:700;color:#1D4ED8">지도를 불러올 수 없습니다</div><div style="font-size:12px;line-height:1.7">카카오맵 도메인 설정을 확인해 주세요.</div></div>';
+    };
+    document.head.appendChild(sc);
+  }
+
+  function trailMkSvg(color, big){
+    const w = big ? 54 : 42, h = big ? 66 : 52;
+    let s = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 100 124">';
+    s += '<ellipse cx="50" cy="121" rx="'+(big?24:20)+'" ry="'+(big?8:6)+'" fill="rgba(0,0,0,'+(big?0.2:0.12)+')" />';
+    if(big) s += '<path d="M50 1C27 1 8 19 8 41 8 70 50 121 50 121 50 121 92 70 92 41 92 19 73 1 50 1Z" fill="white" opacity="0.25"/>';
+    s += '<path d="M50 5C29.5 5 13 21.5 13 42 13 69 50 119 50 119 50 119 87 69 87 42 87 21.5 70.5 5 50 5Z" fill="'+color+'" stroke="white" stroke-width="'+(big?5:3.5)+'"/>';
+    s += '<rect x="44" y="17" width="12" height="48" rx="3" fill="white"/>';
+    s += '<rect x="29" y="30" width="42" height="12" rx="3" fill="white"/>';
+    s += '</svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  }
+
+  function initTrailModule(){
+    buildTrailList();
+    if(trailState.inited){
+      if(trailState.map) setTimeout(function(){ try{ kakao.maps.event.trigger(trailState.map,'resize'); }catch(e){} }, 10);
+      return;
+    }
+    ensureKakaoSdk(function(){
+      if(trailState.inited){
+        if(trailState.map) setTimeout(function(){ try{ kakao.maps.event.trigger(trailState.map,'resize'); }catch(e){} }, 10);
+        return;
+      }
+      const container = ig$('trail-map');
+      if(!container || !(window.kakao && window.kakao.maps)) return;
+      trailState.map = new kakao.maps.Map(container, { center:new kakao.maps.LatLng(36.2,127.9), level:13 });
+      trailState.map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
+      TRAIL_ITEMS.forEach(function(d, i){
+        const marker = new kakao.maps.Marker({
+          position:new kakao.maps.LatLng(d.lat,d.lng),
+          map:trailState.map,
+          image:new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[d.t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)}),
+          zIndex:1
+        });
+        kakao.maps.event.addListener(marker, 'click', function(){ trailSelectMarker(i); trailOpenSheet(i); });
+        trailState.markers.push(marker);
+      });
+      kakao.maps.event.addListener(trailState.map,'click', trailCloseSheet);
+      trailState.inited = true;
+    });
+  }
+
+  function buildTrailList(){
+    const wrap = ig$('trail-list');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+    const countEl = ig$('trail-count');
+    if(countEl) countEl.textContent = TRAIL_ITEMS.length + '개';
+    TRAIL_ITEMS.forEach(function(d,i){
+      const card = document.createElement('div');
+      card.className = 'trail-card';
+      card.innerHTML = `
+        <div class="trail-r1">
+          <span class="trail-bdg ${d.t}">${esc(d.op)}</span>
+          <span class="trail-reg">📍 ${esc(d.r)}</span>
+        </div>
+        <div class="trail-r2">
+          <div class="trail-ico ${d.t}">${esc(d.ico)}</div>
+          <div class="trail-nm">${esc(d.n)}</div>
+        </div>
+        <div class="trail-foot">
+          <span class="trail-url">${esc(shortUrl(d.url))}</span>
+          <span class="trail-arr">›</span>
+        </div>`;
+      card.addEventListener('click', function(){
+        trailSelectMarker(i);
+        trailOpenSheet(i);
+        trailSetView('map');
+        if(trailState.map && window.kakao && window.kakao.maps){
+          trailState.map.panTo(new kakao.maps.LatLng(d.lat,d.lng));
+        }
+      });
+      wrap.appendChild(card);
+    });
+  }
+
+  function trailSelectMarker(i){
+    if(!(trailState.map && window.kakao && window.kakao.maps)) return;
+    if(trailState.selected >= 0 && trailState.markers[trailState.selected]){
+      trailState.markers[trailState.selected].setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[trailState.selected].t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)}));
+      trailState.markers[trailState.selected].setZIndex(1);
+    }
+    trailState.selected = i;
+    if(trailState.markers[i]){
+      trailState.markers[i].setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[i].t], true), new kakao.maps.Size(54,66), {offset:new kakao.maps.Point(27,66)}));
+      trailState.markers[i].setZIndex(999);
+    }
+  }
+
+  window.trailOpenSheet = function(i){
+    const d = TRAIL_ITEMS[i];
+    if(!d) return;
+    ig$('trail-sh-bdg').textContent = d.op;
+    ig$('trail-sh-bdg').className = 'trail-sh-bdg ' + d.t;
+    ig$('trail-sh-region').textContent = '📍 ' + d.r;
+    ig$('trail-sh-ico').textContent = d.ico;
+    ig$('trail-sh-ico').className = 'trail-sh-ico ' + d.t;
+    ig$('trail-sh-name').textContent = d.n;
+    ig$('trail-sh-sub').textContent = (d.t==='d' ? '교구 운영' : '지자체·단체 운영') + ' · ' + d.r;
+    ig$('trail-sh-url').textContent = shortUrl(d.url);
+    const openFn = function(){ openIntegratedPage('🚶 ' + d.n, d.url); };
+    ig$('trail-sh-body').onclick = openFn;
+    ig$('trail-sh-foot').onclick = openFn;
+    ig$('trail-sheet').classList.add('open');
+    if(trailState.map && window.kakao && window.kakao.maps){
+      trailState.map.panTo(new kakao.maps.LatLng(d.lat,d.lng));
+    }
+  };
+
+  window.trailCloseSheet = function(){
+    ig$('trail-sheet')?.classList.remove('open');
+    if(!(trailState.map && window.kakao && window.kakao.maps)) return;
+    if(trailState.selected >= 0 && trailState.markers[trailState.selected]){
+      const idx = trailState.selected;
+      trailState.markers[idx].setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[idx].t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)}));
+      trailState.markers[idx].setZIndex(1);
+      trailState.selected = -1;
+    }
+  };
+
+  window.trailSetView = function(v){
+    trailState.view = v;
+    ig$('trail-panel-map')?.classList.toggle('on', v==='map');
+    ig$('trail-panel-list')?.classList.toggle('on', v==='list');
+    ig$('trail-tab-map')?.classList.toggle('on', v==='map');
+    ig$('trail-tab-list')?.classList.toggle('on', v==='list');
+    if(v==='map'){
+      initTrailModule();
+      setTimeout(function(){ try{ if(trailState.map) kakao.maps.event.trigger(trailState.map,'resize'); }catch(e){} }, 10);
+    } else {
+      trailCloseSheet();
+      buildTrailList();
+    }
+  };
+
+  window.trailMyLoc = function(){
+    if(!(window.navigator && navigator.geolocation)){ alert('위치 서비스를 지원하지 않습니다.'); return; }
+    if(!(trailState.map && window.kakao && window.kakao.maps)){ initTrailModule(); return; }
+    function show(pos){
+      const ll = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+      trailState.map.panTo(ll); trailState.map.setLevel(7);
+      if(trailState.myOverlay) trailState.myOverlay.setMap(null);
+      const dot = document.createElement('div');
+      dot.className = 'trail-myloc';
+      trailState.myOverlay = new kakao.maps.CustomOverlay({content:dot, position:ll, yAnchor:.5, zIndex:100});
+      trailState.myOverlay.setMap(trailState.map);
+    }
+    navigator.geolocation.getCurrentPosition(show, function(e){
+      alert(e && e.code===1 ? '위치 권한을 허용해 주세요.' : '위치를 가져올 수 없습니다.');
+    }, {enableHighAccuracy:false, timeout:5000, maximumAge:60000});
+    navigator.geolocation.getCurrentPosition(show, function(){}, {enableHighAccuracy:true, timeout:12000, maximumAge:0});
+  };
+
+  // 초기 선택 상태 반영
+  document.addEventListener('DOMContentLoaded', function(){
+    setWebCat(webState.curCat);
+  });
+})();
+</script>
+
 </body>
 </html>
