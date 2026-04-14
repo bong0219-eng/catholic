@@ -1349,7 +1349,7 @@ function openInAppRoute(){
 function openKakaoNav(){
   if(!_curInfoItem) return;
   const {item,idx}=_curInfoItem;
-  const isJuk = idx === JUKRIMGUL_IDX && JUKRIMGUL_IDX >= 0;
+  const isJuk = _mode==='shrine' && idx === JUKRIMGUL_IDX && JUKRIMGUL_IDX >= 0;
   const navItem = isJuk ? {...item, lat:JUKRIMGUL_PARKING.lat, lng:JUKRIMGUL_PARKING.lng, kw:JUKRIMGUL_PARKING.kw, name:JUKRIMGUL_PARKING.name} : item;
   const ep=_EC(navItem.kw||navItem.name);
   function launch(spLat,spLng){
@@ -2131,7 +2131,7 @@ async function _calcRoute(){
   const sBtn=$('rs-search-btn');
   if(sBtn) sBtn.style.display='none';
   if(_polyline){_polyline.setMap(null);_polyline=null;}
-  const isJuk = _rE.idx === JUKRIMGUL_IDX && JUKRIMGUL_IDX >= 0;
+  const isJuk = _mode==='shrine' && _rE.idx === JUKRIMGUL_IDX && JUKRIMGUL_IDX >= 0;
   const navDest = isJuk ? JUKRIMGUL_PARKING : _rE;
   _showJukrimgulParkingMkr(isJuk);
   const note=$('rs-note');
@@ -2774,10 +2774,6 @@ function _fmtTime(s){
     let raw = null;
     try{ raw = sessionStorage.getItem(RETURN_KEY); }catch(e){}
     if(!raw) return;
-    if(_screen !== 'cover'){
-      try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){}
-      return;
-    }
     let state = null;
     try{ state = JSON.parse(raw); }catch(e){}
     try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){}
@@ -2954,9 +2950,35 @@ function _fmtTime(s){
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
   }
 
+  function syncTrailMarkers(){
+    if(!(trailState.map && window.kakao && window.kakao.maps)) return;
+    if(trailState.markers.length !== TRAIL_ITEMS.length){
+      trailState.markers.forEach(function(marker){ try{ marker.setMap(null); }catch(e){} });
+      trailState.markers = [];
+      TRAIL_ITEMS.forEach(function(d, i){
+        const marker = new kakao.maps.Marker({
+          position:new kakao.maps.LatLng(d.lat,d.lng),
+          map:trailState.map,
+          image:new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[d.t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)}),
+          zIndex:1
+        });
+        kakao.maps.event.addListener(marker, 'click', function(){ trailSelectMarker(i); trailOpenSheet(i); });
+        trailState.markers.push(marker);
+      });
+      return;
+    }
+    trailState.markers.forEach(function(marker, i){
+      try{ marker.setMap(trailState.map); }catch(e){}
+      try{ marker.setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[i].t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)})); }catch(e){}
+      try{ marker.setZIndex(1); }catch(e){}
+    });
+    trailState.selected = -1;
+  }
+
   function initTrailModule(){
     buildTrailList();
     if(trailState.inited){
+      syncTrailMarkers();
       if(trailState.map) setTimeout(function(){ try{ kakao.maps.event.trigger(trailState.map,'resize'); }catch(e){} }, 10);
       return;
     }
@@ -2969,16 +2991,7 @@ function _fmtTime(s){
       if(!container || !(window.kakao && window.kakao.maps)) return;
       trailState.map = new kakao.maps.Map(container, { center:new kakao.maps.LatLng(36.2,127.9), level:13 });
       trailState.map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
-      TRAIL_ITEMS.forEach(function(d, i){
-        const marker = new kakao.maps.Marker({
-          position:new kakao.maps.LatLng(d.lat,d.lng),
-          map:trailState.map,
-          image:new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[d.t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)}),
-          zIndex:1
-        });
-        kakao.maps.event.addListener(marker, 'click', function(){ trailSelectMarker(i); trailOpenSheet(i); });
-        trailState.markers.push(marker);
-      });
+      syncTrailMarkers();
       kakao.maps.event.addListener(trailState.map,'click', trailCloseSheet);
       trailState.inited = true;
       if(Number.isInteger(trailState.pendingOpenIndex) && TRAIL_ITEMS[trailState.pendingOpenIndex]){
@@ -3083,6 +3096,7 @@ function _fmtTime(s){
     ig$('trail-tab-list')?.classList.toggle('on', v==='list');
     if(v==='map'){
       initTrailModule();
+      syncTrailMarkers();
       setTimeout(function(){ try{ if(trailState.map) kakao.maps.event.trigger(trailState.map,'resize'); }catch(e){} }, 10);
     } else {
       trailCloseSheet();
