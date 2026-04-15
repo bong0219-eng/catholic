@@ -1104,7 +1104,7 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     </div>
 </div>
 <script>
-// 표지를 서서히 사라지게 한 뒤 원래 앱의 함수를 실행하는 마법의 스크립트!
+// 표지를 서서히 사라지게 한 뒤 원래 앱의 함수를 실행합니다.
 function hideCoverAndRun(callback) {
     var cv = document.getElementById('cover');
     if(cv) {
@@ -1118,6 +1118,23 @@ function hideCoverAndRun(callback) {
         if(callback) callback();
     }
 }
+
+// [핵심 추가 패치] 안드로이드 뒤로가기(팝스테이트) 감지
+// 앱 내부 로직을 건드리지 않고, 초기 상태(다크 블루 화면)로 돌아왔을 때만 표지를 다시 띄웁니다.
+window.addEventListener('popstate', function(e) {
+    var cv = document.getElementById('cover');
+    
+    // 해시(Hash)가 비어있거나 state가 없는 경우(기존 앱이 뷰를 모두 닫고 초기화된 시점)
+    if (cv && (!window.location.hash || window.location.hash === '#') && (!e.state)) {
+        if (cv.style.display === 'none') {
+            // 커버를 다시 활성화 (다크 블루 스크린 방어)
+            cv.style.display = 'flex';
+            setTimeout(function(){
+                cv.style.opacity = '1';
+            }, 10);
+        }
+    }
+});
 </script>
 
 <!-- ══ 앱 ══ -->
