@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -1135,6 +1134,42 @@ window.addEventListener('popstate', function(e) {
         }
     }
 });
+
+// [핵심 추가 패치] 당겨서 새로고침 (오직 표지 화면에서만 작동)
+var coverEl = document.getElementById('cover');
+if (coverEl) {
+    var pStartY = 0;
+    var pIsPulling = false;
+
+    coverEl.addEventListener('touchstart', function(e) {
+        // 표지가 숨겨져 있으면 무시 (다른 화면 개입 완벽 차단)
+        if (coverEl.style.display === 'none') return;
+        pStartY = e.touches[0].clientY;
+        pIsPulling = false;
+    }, {passive: true});
+
+    coverEl.addEventListener('touchmove', function(e) {
+        if (coverEl.style.display === 'none') return;
+        var currentY = e.touches[0].clientY;
+        // 아래로 120px 이상 당겼을 때만 새로고침 플래그 활성화
+        if (currentY - pStartY > 120) { 
+            pIsPulling = true;
+        } else {
+            pIsPulling = false;
+        }
+    }, {passive: true});
+
+    coverEl.addEventListener('touchend', function(e) {
+        if (coverEl.style.display === 'none') return;
+        // 당기기 조건이 충족된 상태에서 손을 떼면 새로고침 실행
+        if (pIsPulling) {
+            window.location.reload();
+        }
+        pIsPulling = false;
+    });
+}
+
+
 </script>
 
 <!-- ══ 앱 ══ -->
