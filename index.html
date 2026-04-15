@@ -965,6 +965,24 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
         overflow: hidden !important;
         padding: env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0) !important;
         font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+        transition: transform 0.2s ease-out; /* For pull to refresh */
+    }
+    
+    #ptr-indicator {
+        position: absolute;
+        top: -50px;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-sub);
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.2s;
     }
 
     .cover-header {
@@ -1059,6 +1077,7 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     #cc-8 .cover-icon-wrap { background-color: var(--color-8); }
 </style>
 
+<div id="ptr-indicator">↓ 당겨서 새로고침</div>
 <div id="cover">
     <div class="cover-header">
         <div class="cover-subtitle">CATHOLIC APP</div>
@@ -1101,9 +1120,16 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     </div>
 </div>
 <script>
+// --- [Fix 1] Reliable Back Button Logic ---
+// We push a history state when leaving the cover so the back button has something to pop.
 function hideCoverAndRun(callback) {
     var cv = document.getElementById('cover');
     if(cv) {
+        // Push state BEFORE hiding cover, so popping returns to cover state
+        if (!history.state || history.state.page !== 'insideApp') {
+            history.pushState({page: 'insideApp'}, '', '#app');
+        }
+        
         cv.style.transition = 'opacity 0.25s ease-out';
         cv.style.opacity = '0';
         setTimeout(function(){
@@ -1115,43 +1141,75 @@ function hideCoverAndRun(callback) {
     }
 }
 
+// Ensure the popstate always reliably intercepts back button to show cover.
 window.addEventListener('popstate', function(e) {
     var cv = document.getElementById('cover');
-    if (cv && (!window.location.hash || window.location.hash === '#') && (!e.state)) {
+    // If state is null or hash is empty, user pressed back to the root state
+    if (cv && (!e.state || e.state.page !== 'insideApp')) {
         if (cv.style.display === 'none') {
             cv.style.display = 'flex';
             setTimeout(function(){
                 cv.style.opacity = '1';
             }, 10);
+            
+            // To ensure we don't trap the user in an infinite loop, 
+            // the next back press will naturally exit the app since history stack is empty.
         }
     }
 });
 
+// Set initial state for the cover
+if (window.history && (!window.history.state || window.history.state.page !== 'cover')) {
+    window.history.replaceState({page: 'cover'}, '', window.location.pathname);
+}
+
+// --- [Fix 2] Pull-to-refresh with Visual Feedback ---
 var coverEl = document.getElementById('cover');
-if (coverEl) {
+var ptrIndicator = document.getElementById('ptr-indicator');
+if (coverEl && ptrIndicator) {
     var pStartY = 0;
     var pIsPulling = false;
 
     coverEl.addEventListener('touchstart', function(e) {
         if (coverEl.style.display === 'none') return;
+        if (coverEl.scrollTop > 0) return; // Only trigger at top
         pStartY = e.touches[0].clientY;
         pIsPulling = false;
+        coverEl.style.transition = 'none';
     }, {passive: true});
 
     coverEl.addEventListener('touchmove', function(e) {
         if (coverEl.style.display === 'none') return;
         var currentY = e.touches[0].clientY;
-        if (currentY - pStartY > 120) { 
-            pIsPulling = true;
-        } else {
-            pIsPulling = false;
+        var diff = currentY - pStartY;
+        
+        if (diff > 0) {
+            // Apply visual dragging effect
+            coverEl.style.transform = 'translateY(' + (diff * 0.4) + 'px)';
+            ptrIndicator.style.opacity = Math.min(diff / 100, 1);
+            
+            if (diff > 120) { 
+                pIsPulling = true;
+                ptrIndicator.innerText = "↻ 손을 놓아서 새로고침";
+            } else {
+                pIsPulling = false;
+                ptrIndicator.innerText = "↓ 당겨서 새로고침";
+            }
         }
     }, {passive: true});
 
     coverEl.addEventListener('touchend', function(e) {
         if (coverEl.style.display === 'none') return;
+        coverEl.style.transition = 'transform 0.3s ease-out';
+        coverEl.style.transform = 'translateY(0)';
+        ptrIndicator.style.opacity = '0';
+        
         if (pIsPulling) {
-            window.location.reload();
+            ptrIndicator.innerText = "새로고침 중...";
+            ptrIndicator.style.opacity = '1';
+            setTimeout(function() {
+                window.location.reload();
+            }, 300);
         }
         pIsPulling = false;
     });
