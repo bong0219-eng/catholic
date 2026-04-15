@@ -939,22 +939,21 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
 <div id="exit-dlg"><div class="exit-box"><h3>앱을 종료할까요?</h3><p>성지순례 앱을 종료합니다.</p><div class="exit-btns"><button class="exit-cancel" onclick="closeExitDlg()">취소</button><button class="exit-ok" onclick="doExit()">종료</button></div></div>
 </div><!-- ══ 표지 ══ -->
 <style>
-    /* New Warm Theme Cover Styles */
+    /* New Warm Theme Cover Styles (Size Increased) */
     :root {
-        --bg-color: #F7F0E5; /* Image based warm beige */
+        --bg-color: #F7F0E5;
         --text-main: #3E362E;
         --text-sub: #7A7065;
         --card-bg: #FFFFFF;
         
-        /* Muted, warm palette for icons */
-        --color-1: #E07A5F; /* 매일미사 - Warm Red */
-        --color-2: #F2CC8F; /* 주요기도문 - Warm Yellow */
-        --color-3: #81B29A; /* 성지순례 - Sage Green */
-        --color-4: #6B8E23; /* 성당찾기 - Olive Drab */
-        --color-5: #9FA0C3; /* 피정의 집 - Muted Purple */
-        --color-6: #5F797B; /* 순례길 - Slate */
-        --color-7: #F4A261; /* 웹사이트 - Soft Orange */
-        --color-8: #B5838D; /* 관구교구 - Dusty Rose */
+        --color-1: #E07A5F;
+        --color-2: #F2CC8F;
+        --color-3: #81B29A;
+        --color-4: #6B8E23;
+        --color-5: #9FA0C3;
+        --color-6: #5F797B;
+        --color-7: #F4A261;
+        --color-8: #B5838D;
     }
 
     #cover {
@@ -965,7 +964,7 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
         color: var(--text-main);
         display: flex;
         flex-direction: column;
-        overflow: hidden !important; /* 스크롤 방지 */
+        overflow: hidden !important;
         padding: env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0) !important;
         font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
     }
@@ -978,7 +977,7 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     }
 
     .cover-title {
-        font-size: clamp(28px, 8vw, 36px); /* 글자 크기 키움 */
+        font-size: clamp(28px, 8vw, 36px);
         font-weight: 800;
         letter-spacing: -0.5px;
         color: var(--text-main);
@@ -1030,23 +1029,23 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     }
 
     .cover-icon-wrap {
-        width: clamp(40px, 11vw, 50px);
-        height: clamp(40px, 11vw, 50px);
+        width: clamp(50px, 14vw, 65px); /* Size Increased! */
+        height: clamp(50px, 14vw, 65px); /* Size Increased! */
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
 
     .cover-icon-wrap svg {
-        width: 55%;
-        height: 55%;
+        width: 65%; /* Inner SVG Size Increased! */
+        height: 65%;
         fill: #ffffff;
     }
 
     .cover-name {
-        font-size: clamp(13px, 3.5vw, 16px);
+        font-size: clamp(15px, 4vw, 18px); /* Font Size Increased! */
         font-weight: 600;
         text-align: center;
         word-break: keep-all;
@@ -1070,48 +1069,56 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     </div>
 
     <div class="cover-grid">
-        <!-- 1 -->
-        <button id="cc-1" class="cover-card" onclick="openMissa()">
+        <button id="cc-1" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof openMissa === 'function') openMissa(); })">
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,7V11H7V13H11V17H13V13H17V11H13V7H11Z" /></svg></div>
             <span class="cover-name">매일미사</span>
         </button>
-        <!-- 2 -->
-        <button id="cc-2" class="cover-card" onclick="openPrayerBook()">
+        <button id="cc-2" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof openPrayerBook === 'function') openPrayerBook(); else alert('기도문 기능이 연결되지 않았습니다.'); })">
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M14,10H19.5L14,4.5V10M5,3H15L21,9V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5C3,3.89 3.89,3 5,3M12,6V10H9V12H12V18H14V12H17V10H14V6H12Z" /></svg></div>
             <span class="cover-name">주요기도문</span>
         </button>
-        <!-- 3 -->
-        <button id="cc-3" class="cover-card" onclick="startApp('shrine')">
+        <button id="cc-3" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof startApp === 'function') startApp('shrine'); })">
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12,2C15.86,2 19,5.13 19,9C19,14.25 12,22 12,22C12,22 5,14.25 5,9A7,7 0 0,1 12,2M12,4A5,5 0 0,0 7,9C7,12.09 10.5,17.43 12,19.5C13.5,17.43 17,12.09 17,9A5,5 0 0,0 12,4M12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5Z" /></svg></div>
             <span class="cover-name">성지순례 167곳</span>
         </button>
-        <!-- 4 -->
-        <button id="cc-4" class="cover-card" onclick="startApp('parish')">
+        <button id="cc-4" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof startApp === 'function') startApp('parish'); })">
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12,3L1,9L3,10.18V21H21V10.18L23,9L12,3M12,5.24L18,8.5V19H14V13H10V19H6V8.5L12,5.24Z" /></svg></div>
             <span class="cover-name">내 주변 성당찾기</span>
         </button>
-        <!-- 5 -->
-        <button id="cc-5" class="cover-card" onclick="startApp('retreat')">
+        <button id="cc-5" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof startApp === 'function') startApp('retreat'); })">
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M17,18H7V16H17V18M17,14H7V12H17V14M17,10H7V8H17V10M19,4H5A2,2 0 0,0 3,6V20A2,2 0 0,0 5,22H19A2,2 0 0,0 21,20V6A2,2 0 0,0 19,4M19,20H5V6H19V20Z" /></svg></div>
             <span class="cover-name">피정의 집 찾기</span>
         </button>
-        <!-- 6 -->
-        <button id="cc-6" class="cover-card" onclick="openTrail()">
+        <button id="cc-6" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof openTrailView === 'function') openTrailView(); })">
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M13.5,5.5C13.5,6.33 12.83,7 12,7C11.17,7 10.5,6.33 10.5,5.5C10.5,4.67 11.17,4 12,4C12.83,4 13.5,4.67 13.5,5.5M10.14,21.5H8.05L10.23,12L7.91,12.72L7,15.5H5L6.2,11.5L10.73,9.82C11.05,9.72 11.41,9.78 11.66,10C12.44,10.63 13.43,11.64 14.64,13.06L18.06,12.6V15.5L13.88,16L12.55,11.64L11.5,15.65L12.4,21.5H10.14Z" /></svg></div>
             <span class="cover-name">가톨릭 순례길</span>
         </button>
-        <!-- 7 -->
-        <button id="cc-7" class="cover-card" onclick="openWeb()">
+        <button id="cc-7" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof openWebView === 'function') openWebView(); })">
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.66 9.66,10H14.34C14.43,10.66 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.16,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.84,18.76 12,19.96M8.03,16H5.08C6.04,17.65 7.57,18.93 9.41,19.56C8.81,18.45 8.35,17.25 8.03,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M5.08,8H8.03C8.35,6.75 8.81,5.55 9.41,4.44C7.57,5.07 6.04,6.35 5.08,8M9.41,4.44C8.81,5.55 8.35,6.75 8.03,8H5.08C6.04,6.35 7.57,5.07 9.41,4.44M12,4.04C12.84,5.24 13.5,6.57 13.91,8H10.09C10.5,6.57 11.16,5.24 12,4.04M14.59,4.44C15.19,5.55 15.65,6.75 15.97,8H18.92C17.96,6.35 16.43,5.07 14.59,4.44Z" /></svg></div>
-            <span class="cover-name">주요 가톨릭 웹사이트</span>
+            <span class="cover-name">가톨릭 웹사이트</span>
         </button>
-        <!-- 8 -->
-        <button id="cc-8" class="cover-card" onclick="openDiocese()">
+        <button id="cc-8" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof openDioceseView === 'function') openDioceseView(); })">
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" /></svg></div>
             <span class="cover-name">관구·교구 알아보기</span>
         </button>
     </div>
 </div>
+<script>
+// 표지를 서서히 사라지게 한 뒤 원래 앱의 함수를 실행하는 마법의 스크립트!
+function hideCoverAndRun(callback) {
+    var cv = document.getElementById('cover');
+    if(cv) {
+        cv.style.transition = 'opacity 0.25s ease-out';
+        cv.style.opacity = '0';
+        setTimeout(function(){
+            cv.style.display = 'none';
+            if(callback) callback();
+        }, 250);
+    } else {
+        if(callback) callback();
+    }
+}
+</script>
 
 <!-- ══ 앱 ══ -->
 
