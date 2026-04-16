@@ -1090,7 +1090,8 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,7V11H7V13H11V17H13V13H17V11H13V7H11Z" /></svg></div>
             <span class="cover-name">매일미사</span>
         </button>
-        <button id="cc-2" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof openPrayerBook === 'function') openPrayerBook(); else alert('기도문 기능이 연결되지 않았습니다.'); })">
+        <button id="cc-2" class="cover-card" onclick="if(typeof openPrayerBook === 'function') openPrayerBook(); else alert('기도문 기능이 연결되지 않았습니다.');">
+
             <div class="cover-icon-wrap"><svg viewBox="0 0 24 24"><path d="M14,10H19.5L14,4.5V10M5,3H15L21,9V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5C3,3.89 3.89,3 5,3M12,6V10H9V12H12V18H14V12H17V10H14V6H12Z" /></svg></div>
             <span class="cover-name">주요기도문</span>
         </button>
