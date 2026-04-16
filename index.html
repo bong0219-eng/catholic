@@ -1111,65 +1111,8 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
 
 
 
-/* [최종] 버튼 크기 및 수평 정렬 일치 패치 */
 
-/* 1. 하단 링크 구역 레이아웃 */
-.c-link-row {
-    display: flex !important;
-    align-items: center !important;   /* 세로 중앙 정렬로 줄 맞춤 */
-    justify-content: space-between !important;
-    gap: 12px !important;
-    margin-top: 12px !important;
-    padding-top: 10px !important;
-    border-top: 1px solid rgba(0,0,0,0.06) !important;
-}
 
-/* 2. 성지 상세페이지 버튼 (가로는 길찾기처럼, 세로는 홈페이지처럼) */
-.ic-guide-btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background-color: #555555 !important; /* 차분한 다크 그레이 */
-    color: #ffffff !important;
-    font-size: 13px !important;
-    font-weight: 800 !important;
-    
-    /* [핵심] 가로 길이를 길찾기 버튼과 맞춤 (flex: 1 또는 특정 폭) */
-    flex: 1 !important; 
-    min-width: 100px !important; 
-    
-    /* [핵심] 세로 높이를 홈페이지 링크와 통일 */
-    height: 32px !important; 
-    
-    border-radius: 6px !important;
-    text-decoration: none !important;
-    box-sizing: border-box !important;
-    white-space: nowrap !important;
-}
-
-/* 3. 홈페이지 링크 (세로 높이 버튼과 일치) */
-.c-link {
-    display: inline-flex !important;
-    align-items: center !important;
-    height: 32px !important;           /* 버튼과 동일한 높이 */
-    line-height: 1 !important;
-    font-size: 14px !important;
-    color: #2563eb !important;
-    font-weight: 700 !important;
-    text-decoration: underline !important;
-    flex-shrink: 0 !important;         /* 글자가 찌그러지지 않게 방지 */
-}
-
-/* 4. 길찾기 버튼과의 일관성 (참고용) */
-#ic-road {
-    /* 길찾기 버튼의 가로 폭도 flex: 1 혹은 동일한 폭인지 확인하세요 */
-    height: 32px !important;
-}
-
-/* 버튼에 마우스를 올렸을 때 효과 */
-.ic-guide-btn:hover {
-    background-color: #374151 !important; /* 약간 연한 남색으로 변경 */
-    transform: translateY(-1px);       /* 살짝 위로 이동 */
 </style>
 
 <div id="ptr-indicator">↓ 당겨서 새로고침</div>
