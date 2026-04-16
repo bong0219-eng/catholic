@@ -1279,8 +1279,9 @@ function goToCover() {
   closeInfoCard();
   resetRoute();
   document.documentElement.classList.remove('app-active', 'parish-mode', 'retreat-mode');
-  const cover = document.getElementById('cover');
+const cover = document.getElementById('cover');
   if (cover) cover.style.display = '';
+  document.documentElement.classList.remove('app-active'); // [패치] 지도/앱 모드를 완전히 끕니다
   try { history.replaceState({ page: 'cover' }, '', location.pathname); } catch (e) {}
 }
 window.addEventListener('pageshow', function () {
