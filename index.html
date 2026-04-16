@@ -934,7 +934,7 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     <div class="missa-spinner"></div>
     <div class="missa-loading-txt">오늘의 매일미사 불러오는 중…</div>
   </div>
-  <iframe id="missa-frame" src="about:blank" onload="missaLoaded()"></iframe>
+  <iframe id="missa-frame" src="about:blank" onload="if(window.missaLoaded) window.missaLoaded()"></iframe>
 </div>
 <div id="exit-dlg"><div class="exit-box"><h3>앱을 종료할까요?</h3><p>성지순례 앱을 종료합니다.</p><div class="exit-btns"><button class="exit-cancel" onclick="closeExitDlg()">취소</button><button class="exit-ok" onclick="doExit()">종료</button></div></div>
 </div><!-- ══ 표지 ══ -->
@@ -1328,17 +1328,9 @@ function restoreCoreReturnState(){
   closeInfoCard();
   resetRoute();
   _resetMapState();
-  _mapInited=true;
+_mapInited=true;
+  window._pendingRestoreState = { reopenTab: reopenTab, infoIdx: state.infoIdx, fromRegion: !!state.fromRegion };
   _loadMap();
-  setTimeout(()=>{
-    if(reopenTab) openTab(reopenTab);
-    else _restoreMapMarkers();
-    if(Number.isInteger(state.infoIdx) && state.infoIdx>=0){
-      setTimeout(()=>{
-        try{ selectItem(state.infoIdx,{fromRegion:!!state.fromRegion}); }catch(e){}
-      },180);
-    }
-  },700);
   return true;
 }
 window.addEventListener('pageshow', function(){
@@ -1782,9 +1774,19 @@ function _onMapReady(){
   }
   renderList();
   _autoLocate();
-  if(_mode==='parish') _buildParishDioSystem();
+if(_mode==='parish') _buildParishDioSystem();
   else if(_mode==='retreat') _buildRetreatMarkers();
   openTab('nearby');
+  
+  if (window._pendingRestoreState) {
+    const s = window._pendingRestoreState;
+    window._pendingRestoreState = null;
+    if (s.reopenTab) openTab(s.reopenTab);
+    else _restoreMapMarkers();
+    if (Number.isInteger(s.infoIdx) && s.infoIdx >= 0) {
+      setTimeout(() => { try { selectItem(s.infoIdx, {fromRegion: s.fromRegion}); } catch(e){} }, 200);
+    }
+  }
 }
 
 function openTab(name){
