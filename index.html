@@ -1307,32 +1307,45 @@ function openCoreExternalUrl(url, extra){
   saveCoreReturnState(extra);
   location.href = url;
 }
-function restoreCoreReturnState(){
-  let raw=null;
-  try{ raw=sessionStorage.getItem(CORE_RETURN_KEY); }catch(e){}
-  if(!raw) return false;
-  let state=null;
-  try{ state=JSON.parse(raw); }catch(e){}
-  try{ sessionStorage.removeItem(CORE_RETURN_KEY); }catch(e){}
-  if(!state||!state.mode) return false;
-  const reopenTab=state.activeTab||'';
-  _mode=state.mode;
-  _filterDio=state.filterDio||'all';
-  _listSrch=state.listSrch||'';
-  _screen='map';
-  document.documentElement.classList.add('app-active');
-  document.documentElement.classList.toggle('parish-mode',_mode==='parish');
-  document.documentElement.classList.toggle('retreat-mode',_mode==='retreat');
-  const cover=$('cover'); if(cover) cover.style.display='none';
-  closeAllTabs();
+
+
+function _onMapReady(){
+  const KM=kakao.maps;window._LL=KM.LatLng;window._MM=KM.Marker;window._MI=KM.MarkerImage;window._SZ=KM.Size;window._PT=KM.Point;window._LB=KM.LatLngBounds;window._PL=KM.Polyline;window._EL=KM.event.addListener;
+  _map=new kakao.maps.Map($('map'),{
+  center:new _LL(36.2,127.9),level:8
+  });
+  _map.addControl(new kakao.maps.ZoomControl(),kakao.maps.ControlPosition.RIGHT);
+  kakao.maps.event.addListener(_map,'click',()=>{
   closeInfoCard();
-  resetRoute();
-  _resetMapState();
-_mapInited=true;
-  window._pendingRestoreState = { reopenTab: reopenTab, infoIdx: state.infoIdx, fromRegion: !!state.fromRegion };
-  _loadMap();
-  return true;
+  document.activeElement?.blur();
+  });
+  // 성지 모드일 때만 성지 마커 빌드 (parish/retreat에서는 절대 빌드 안 함)
+  if(_mode==='shrine'){
+    _buildShrineMarkers();
+  } else {
+    // 성지 마커 배열은 비워둠 (잔류 방지)
+    _markers=new Array(SHRINES.length).fill(null);
+  }
+  renderList();
+  _autoLocate();
+  if(_mode==='parish') _buildParishDioSystem();
+  else if(_mode==='retreat') _buildRetreatMarkers();
+  openTab('nearby');
+  
+  // 패치된 지도 로드 직후 복원 로직 실행
+  if (window._pendingRestoreState) {
+    const s = window._pendingRestoreState;
+    window._pendingRestoreState = null;
+    if (s.reopenTab) openTab(s.reopenTab);
+    else _restoreMapMarkers();
+    if (Number.isInteger(s.infoIdx) && s.infoIdx >= 0) {
+      setTimeout(() => { try { selectItem(s.infoIdx, {fromRegion: s.fromRegion}); } catch(e){} }, 300);
+    }
+  }
 }
+
+
+
 window.addEventListener('pageshow', function(){
   setTimeout(()=>{
     if(restoreCoreReturnState()) return;
@@ -1778,13 +1791,13 @@ if(_mode==='parish') _buildParishDioSystem();
   else if(_mode==='retreat') _buildRetreatMarkers();
   openTab('nearby');
   
-  if (window._pendingRestoreState) {
+if (window._pendingRestoreState) {
     const s = window._pendingRestoreState;
     window._pendingRestoreState = null;
     if (s.reopenTab) openTab(s.reopenTab);
     else _restoreMapMarkers();
     if (Number.isInteger(s.infoIdx) && s.infoIdx >= 0) {
-      setTimeout(() => { try { selectItem(s.infoIdx, {fromRegion: s.fromRegion}); } catch(e){} }, 200);
+      setTimeout(() => { try { selectItem(s.infoIdx, {fromRegion: s.fromRegion}); } catch(e){} }, 300);
     }
   }
 }
