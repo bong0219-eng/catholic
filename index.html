@@ -1358,16 +1358,32 @@ function _onMapReady(){
   _autoLocate();
   if(_mode==='parish') _buildParishDioSystem();
   else if(_mode==='retreat') _buildRetreatMarkers();
-  openTab('nearby');
+  
+  openTab('nearby'); // 지도를 화면에 보이게 활성화
 
-  // [패치] 지도가 완벽히 준비된 직후, 저장해둔 대기 상태가 있다면 실행합니다.
+  // [최종 패치] 순서 변경: 마커 복원 및 지도 이동을 먼저 실행 후 탭 전환
   if (window._pendingRestoreState) {
     const s = window._pendingRestoreState;
     window._pendingRestoreState = null;
-    if (s.reopenTab) openTab(s.reopenTab);
-    else _restoreMapMarkers();
+    
+    // 1. 숨겨진 탭이든 아니든 마커를 무조건 먼저 복원
+    _restoreMapMarkers();
+    
     if (Number.isInteger(s.infoIdx) && s.infoIdx >= 0) {
-      setTimeout(() => { try { selectItem(s.infoIdx, {fromRegion: s.fromRegion}); } catch(e){} }, 300);
+      setTimeout(() => { 
+        try { 
+          // 2. 지도가 보이는 안전한 상태에서 아이템 선택(지도 중심 이동)
+          selectItem(s.infoIdx, {fromRegion: s.fromRegion}); 
+          
+          // 3. 지도 이동이 안전하게 끝난 직후(150ms 뒤)에 이전 탭으로 화면 전환
+          if (s.reopenTab && s.reopenTab !== 'map') {
+            setTimeout(() => openTab(s.reopenTab), 150);
+          }
+        } catch(e){} 
+      }, 300);
+    } else {
+      // 선택할 아이템이 없으면 바로 탭 전환
+      if (s.reopenTab && s.reopenTab !== 'map') openTab(s.reopenTab);
     }
   }
 }
