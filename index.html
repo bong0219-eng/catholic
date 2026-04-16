@@ -1239,30 +1239,35 @@ if (coverEl && ptrIndicator) {
             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div></div><div style="display:flex;border-bottom:1px solid #eee;flex-shrink:0;background:#f8f9fc;" id="sm-tab-bar"><button class="sm-tab active" id="sm-tab-cat" onclick="smSwitchTab(&#39;cat&#39;)">📋 성지/성당/피정</button><button class="sm-tab" id="sm-tab-place" onclick="smSwitchTab(&#39;place&#39;)">🔍 일반장소</button></div><div class="sm-body" id="sm-body"></div><div class="sm-body" id="sm-body-place" style="display:none;"></div></div></div></div><!-- /#app -->
 <script>
 
-function openMissa(){
-  const today=new Date();
-  const yyyy=today.getFullYear();
-  const mm=String(today.getMonth()+1).padStart(2,'0');
-  const dd=String(today.getDate()).padStart(2,'0');
-  const url='https://missa.cbck.or.kr/DailyMissa/'+yyyy+mm+dd;
-  const view=$('missa-view');
-  const frame=$('missa-frame');
-  const loading=$('missa-loading');
-  if(loading) loading.style.display='flex';
-  frame.src=url;
-  view.classList.add('open');
-  // 히스토리에 상태 추가 (뒤로가기 지원)
-  try{history.pushState({_missa:true},'',location.href);}catch(e){}
+window.missaLoaded = function () {
+  const loading = document.getElementById('missa-loading');
+  if (loading) loading.style.display = 'none';
+};
+
+function openMissa() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const url = `https://missa.cbck.or.kr/dailyMissa/${yyyy}${mm}${dd}`;
+
+  const view = document.getElementById('missa-view');
+  const frame = document.getElementById('missa-frame');
+  const loading = document.getElementById('missa-loading');
+
+  if (loading) loading.style.display = 'flex';
+  if (view) view.classList.add('open');
+  if (frame) frame.src = url;
 }
-function closeMissa(){
-  const view=$('missa-view');
-  const frame=$('missa-frame');
-  view.classList.remove('open');
-  frame.src='about:blank';
-}
-function missaLoaded(){
-  const loading=$('missa-loading');
-  if(loading) loading.style.display='none';
+
+function closeMissa() {
+  const view = document.getElementById('missa-view');
+  const frame = document.getElementById('missa-frame');
+  const loading = document.getElementById('missa-loading');
+
+  if (view) view.classList.remove('open');
+  if (frame) frame.src = 'about:blank';
+  if (loading) loading.style.display = 'flex';
 }
 
 function openPrayerBook(){
