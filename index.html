@@ -1216,6 +1216,26 @@ if (coverEl && ptrIndicator) {
         pIsPulling = false;
     });
 }
+
+
+/* [패치] 인포카드 거리 표시 공간 미리 확보 */
+#ic-dist {
+  display: block !important; /* 항상 보이게 함 */
+  height: 18px !important;   /* 높이를 18px로 강제 고정 */
+  line-height: 18px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #cc3e65;
+  margin-top: 2px;
+}
+
+/* 거리가 없을 때도 영역이 줄어들지 않게 함 */
+.ic-dist-col {
+  min-height: 40px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
 </script>
 
 <!-- ══ 앱 ══ -->
