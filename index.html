@@ -1079,16 +1079,19 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
 
 
 
-/* [패치] 인포카드 거리 표시 공간 미리 확보 */
+/* [패치] 거리 표시 공간 확보 및 중앙 정렬 */
 #ic-dist {
-  display: block !important;
-  min-height: 24px !important; /* 높이를 18px에서 24px로 키웠습니다 */
-  line-height: 24px !important; /* 글자가 박스 중앙에 오도록 맞췄습니다 */
+  display: flex !important;           /* flex로 변경하여 중앙 정렬 */
+  align-items: center !important;     /* 세로 중앙 */
+  justify-content: flex-start !important;
+  min-height: 28px !important;        /* 높이를 28px로 상향 */
   font-size: 14px;
   font-weight: 800;
   color: #cc3e65;
   margin-top: 4px;
-  padding: 0 2px;
+  padding: 0 4px;
+  background: rgba(204, 62, 101, 0.05); /* 박스 위치 확인용 연한 배경 */
+  border-radius: 4px;
 }
 
 /* 거리가 없을 때도 영역이 줄어들지 않게 함 */
