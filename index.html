@@ -3540,6 +3540,7 @@ function doSearch() {
   /* 2. 동음이의어 검사 */
   for (var city2 in NAME_SAME) {
     var groups = NAME_SAME[city2];
+    
     if (city2 === '광주') {
       for (var j = 0; j < groups.gwangyeok.length; j++) {
         if (groups.gwangyeok[j].replace(/\s+/g, '') === q) { res.innerHTML = makeRow('광주광역시', '광주대교구'); return; }
@@ -3631,15 +3632,623 @@ function doSearch() {
   res.innerHTML = finalHtml;
 }
 
-document.getElementById('si').addEventListener('keydown', function(e) { if(e.key === 'Enter') doSearch(); });
-
-window.addEventListener('pageshow', function() {
-  var lv = document.getElementById('list-view');
-  if (lv && lv.classList.contains('on')) {
-    var sv = sessionStorage.getItem('listScroll');
-    if (sv) { setTimeout(function() { lv.scrollTop = parseInt(sv); }, 30); }
+  for(var city in NAME_SAME){
+    var groups = NAME_SAME[city];
+    if(city==='\uad11\uc8fc'){
+      if(groups.gwangyeok.map(function(a){return a.replace(/\\s+/g,'');}).includes(q)){ res.innerHTML=makeRow('\uad11\uc8fc\uad11\uc5ed\uc2dc','\uad11\uc8fc\ub300\uad50\uad6c');return; }
+      if(groups.gyeonggi.map(function(a){return a.replace(/\\s+/g,'');}).includes(q)){ res.innerHTML=makeRow('\uacbd\uae30 \uad11\uc8fc','\uc218\uc6d0\uad50\uad6c');return; }
+    } else if(city==='\uace0\uc131'){
+      if(groups.gangwon.map(function(a){return a.replace(/\\s+/g,'');}).includes(q)){ res.innerHTML=makeRow('\uac15\uc6d0 \uace0\uc131','\ucd98\ucc9c\uad50\uad6c');return; }
+      if(groups.gyeongnam.map(function(a){return a.replace(/\\s+/g,'');}).includes(q)){ res.innerHTML=makeRow('\uacbd\ub0a8 \uace0\uc131','\ub9c8\uc0b0\uad50\uad6c');return; }
+    }
+    if(groups.plain.map(function(a){return a.replace(/\\s+/g,'');}).includes(q)){
+      var rows='';
+      if(city==='\uad11\uc8fc'){ rows=makeRow('\uad11\uc8fc\uad11\uc5ed\uc2dc','\uad11\uc8fc\ub300\uad50\uad6c')+makeRow('\uacbd\uae30 \uad11\uc8fc','\uc218\uc6d0\uad50\uad6c'); }
+      else if(city==='\uace0\uc131'){ rows=makeRow('\uac15\uc6d0 \uace0\uc131','\ucd98\ucc9c\uad50\uad6c')+makeRow('\uacbd\ub0a8 \uace0\uc131','\ub9c8\uc0b0\uad50\uad6c'); }
+      res.innerHTML=rows;return;
+    }
   }
-});
+  var matched=SEARCH_DB.filter(function(i){ var aliases=i.aliases||[i.k]; return aliases.some(function(alias){return alias.replace(/\\s+/g,'')===q;}); });
+  var results=matched.length?matched:SEARCH_DB.filter(function(i){ var aliases=i.aliases||[i.k]; return aliases.some(function(alias){ var af=alias.replace(/\\s+/g,''); return af.includes(q)&&q.length>=2; }); });
+  if(!results.length){res.innerHTML='<div class=\"se\">\"'+raw+'\"\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4</div>';return;}
+  var seen=new Set();
+  var u=results.filter(function(i){var k=i.k+'|'+i.d;if(seen.has(k))return false;seen.add(k);return true;});
+  res.innerHTML=u.slice(0,20).map(function(i){ var disp=i.display||i.k; return makeRow(disp, i.d); }).join('')+(u.length>20?'<div class=\"se\" style=\"font-size:11px;padding:10px 0\">\uc0c1\uc704 20\uac74\ub9cc \ud45c\uc2dc</div>':'');
+}
+
+
+
+
+  for(const [city,groups] of Object.entries(NAME_SAME)){
+    if(city==='광주'){
+      if(groups.gwangyeok.map(a=>a.replace(/\s+/g,'')).includes(q)){
+        res.innerHTML=makeRow('광주광역시','광주대교구');return;
+      }
+      if(groups.gyeonggi.map(a=>a.replace(/\s+/g,'')).includes(q)){
+        res.innerHTML=makeRow('경기 광주','수원교구');return;
+      }
+    } else if(city==='고성'){
+      if(groups.gangwon.map(a=>a.replace(/\s+/g,'')).includes(q)){
+        res.innerHTML=makeRow('강원 고성','춘천교구');return;
+      }
+      if(groups.gyeongnam.map(a=>a.replace(/\s+/g,'')).includes(q)){
+        res.innerHTML=makeRow('경남 고성','마산교구');return;
+      }
+    }
+    if(groups.plain.map(a=>a.replace(/\s+/g,'')).includes(q)){
+      let rows='';
+      if(city==='광주'){
+        rows=makeRow('광주광역시','광주대교구')+makeRow('경기 광주','수원교구');
+      } else if(city==='고성'){
+        rows=makeRow('강원 고성','춘천교구')+makeRow('경남 고성','마산교구');
+      }
+      res.innerHTML=rows;return;
+    }
+  }
+
+  const matched=SEARCH_DB.filter(i=>{
+    const aliases=i.aliases||[i.k];
+    return aliases.some(alias=>alias.replace(/\s+/g,'')===q);
+  });
+
+  const results=matched.length?matched:SEARCH_DB.filter(i=>{
+    const aliases=i.aliases||[i.k];
+    return aliases.some(alias=>{
+      const af=alias.replace(/\s+/g,'');
+      return af.includes(q)&&q.length>=2;
+    });
+  });
+
+  if(!results.length){res.innerHTML=`<div class="se">"${raw}"을 찾을 수 없습니다</div>`;return;}
+  const seen=new Set();
+  const u=results.filter(i=>{const k=i.k+'|'+i.d;if(seen.has(k))return false;seen.add(k);return true;});
+  
+  // [패치] 일반 검색 결과 배열 처리 시 패치된 makeRow 함수를 사용하여 디자인 통일
+  res.innerHTML=u.slice(0,20).map(i=>{
+    const disp=i.display||i.k;
+    return makeRow(disp, i.d);
+  }).join('')+(u.length>20?'<div class="se" style="font-size:11px;padding:10px 0">상위 20건만 표시</div>':'');
+}
+
+
+
+).join('')+(u.length>20?'<div class=\"se\" style=\"font-size:11px;padding:10px 0\">\uc0c1\uc704 20\uac74\ub9cc \ud45c\uc2dc</div>':'');\n}\ndocument.getElementById('si').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});\n\nwindow.addEventListener('pageshow',function(){\n  var lv=document.getElementById('list-view');\n  if(lv && lv.classList.contains('on')){\n    var sv=sessionStorage.getItem('listScroll');\n    if(sv){setTimeout(function(){lv.scrollTop=parseInt(sv);},30);}\n  }\n});\n<\/script>\n</body>\n</html>";
+
+  function ig$(id){ return document.getElementById(id); }
+  function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function shortUrl(url){ return String(url||'').replace(/^https?:\/\//,'').replace(/\/$/,''); }
+  function hideIntegratedViews(){
+    ig$('web-view')?.classList.remove('open');
+    ig$('trail-view')?.classList.remove('open');
+    ig$('diocese-view')?.classList.remove('open');
+    if(typeof trailCloseSheet === 'function') trailCloseSheet();
+  }
+  function saveReturnState(state){
+    try{ sessionStorage.setItem(RETURN_KEY, JSON.stringify(state)); }catch(e){}
+  }
+  function openExternalUrl(url, state){
+    const payload = Object.assign({}, state||{});
+    if(payload.module==='trail' && trailState.map && window.kakao && window.kakao.maps){
+      try{
+        const center = trailState.map.getCenter();
+        payload.center = {lat:center.getLat(), lng:center.getLng()};
+        payload.level = trailState.map.getLevel();
+      }catch(e){}
+    }
+    saveReturnState(payload);
+    location.href = url;
+  }
+
+  const _origGoToCover = window.goToCover;
+  window.goToCover = function(){
+    hideIntegratedViews();
+    if(typeof _origGoToCover === 'function') return _origGoToCover();
+  };
+
+  function enterIntegratedView(id){
+    hideIntegratedViews();
+    _screen = 'map';
+    document.documentElement.classList.add('app-active');
+    document.documentElement.classList.remove('parish-mode','retreat-mode');
+    const cover = ig$('cover');
+    if(cover) cover.style.display = 'none';
+    ig$(id)?.classList.add('open');
+  }
+
+  window.openWebView = function(opts){
+    const restore = !!(opts&&opts.restore);
+    if(!restore){
+      webState.curCat='전체';
+      const list=ig$('web-list');
+      if(list) list.scrollTop=0;
+    }
+    enterIntegratedView('web-view');
+    initWebModule();
+    scheduleWebCatSync(webState.curCat||'전체');
+  };
+
+  function ensureDioceseModule(){
+    const frame = ig$('diocese-frame');
+    if(!frame) return;
+    if(!dioceseState.blobUrl){
+      try{
+        dioceseState.blobUrl = URL.createObjectURL(new Blob([DIOCESE_EMBED_HTML], {type:'text/html;charset=utf-8'}));
+      }catch(e){}
+    }
+    if(dioceseState.blobUrl && frame.dataset.loaded !== '1'){
+      frame.src = dioceseState.blobUrl;
+      frame.dataset.loaded = '1';
+      dioceseState.loaded = true;
+    }
+  }
+
+  window.openDioceseView = function(opts){
+    const restore = !!(opts&&opts.restore);
+    enterIntegratedView('diocese-view');
+    ensureDioceseModule();
+    const frame = ig$('diocese-frame');
+    if(frame && !restore){
+      try{
+        if(frame.contentWindow){ frame.contentWindow.scrollTo(0,0); }
+      }catch(e){}
+    }
+  };
+
+  window.openTrailView = function(opts){
+    const restore = !!(opts&&opts.restore);
+    const forceRebuild = !!(opts&&(opts.forceRebuild||opts.hardReset));
+    if(forceRebuild || trailState.needsHardReset){
+      hardResetTrailModule();
+      trailState.needsHardReset = false;
+    }
+    if(!restore){
+      trailState.view='map';
+      trailState.pendingOpenIndex=null;
+      trailState.restoreCenter=null;
+      trailState.restoreLevel=null;
+      trailState.pendingFitBounds=true;
+      trailCloseSheet();
+      const list=ig$('trail-list');
+      if(list) list.scrollTop=0;
+    }else{
+      trailState.pendingFitBounds=false;
+    }
+    enterIntegratedView('trail-view');
+    initTrailModule();
+    trailSetView(trailState.view || 'map');
+    relayoutTrailMap(80);
+    relayoutTrailMap(260);
+    relayoutTrailMap(520);
+  };
+
+  function restoreIntegratedState(){
+    let raw = null;
+    try{ raw = sessionStorage.getItem(RETURN_KEY); }catch(e){}
+    if(!raw) return;
+    let state = null;
+    try{ state = JSON.parse(raw); }catch(e){}
+    try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){}
+    if(!state || !state.module) return;
+
+    if(state.module === 'web'){
+      openWebView({restore:true});
+      initWebModule();
+      if(state.cat) setWebCat(state.cat);
+      requestAnimationFrame(function(){
+        const list = ig$('web-list');
+        if(list) list.scrollTop = Number(state.scroll||0);
+      });
+      return;
+    }
+
+    if(state.module === 'diocese'){
+      openDioceseView({restore:true});
+      return;
+    }
+
+    if(state.module === 'trail'){
+      trailState.pendingOpenIndex = Number.isInteger(state.openIndex) ? state.openIndex : null;
+      trailState.restoreCenter = state.center || null;
+      trailState.restoreLevel = Number.isFinite(Number(state.level)) ? Number(state.level) : null;
+      trailState.needsHardReset = true;
+      openTrailView({restore:true, forceRebuild:true});
+      trailSetView(state.view === 'list' ? 'list' : 'map');
+      requestAnimationFrame(function(){
+        const list = ig$('trail-list');
+        if(list && state.view === 'list') list.scrollTop = Number(state.scroll||0);
+      });
+    }
+  }
+
+  window.addEventListener('pageshow', function(){
+    setTimeout(restoreIntegratedState, 0);
+    setTimeout(function(){ relayoutTrailMap(0); }, 180);
+    setTimeout(function(){ relayoutTrailMap(0); }, 420);
+  });
+
+  function initWebModule(){
+    if(webState.built){
+      scheduleWebCatSync(webState.curCat||'전체');
+      renderWebList();
+      return;
+    }
+    webState.built = true;
+    const wrap = ig$('web-cats');
+    if(!wrap) return;
+    const cats = ['전체'];
+    WEB_SITES.forEach(s => { if(!cats.includes(s.cat)) cats.push(s.cat); });
+    cats.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'web-cat-btn' + (c===webState.curCat ? ' on' : '');
+      btn.id = 'web-cat_' + c;
+      btn.dataset.webCat = c;
+      btn.setAttribute('aria-pressed', c===webState.curCat ? 'true' : 'false');
+      const count = c==='전체' ? WEB_SITES.length : WEB_SITES.filter(s => s.cat===c).length;
+      btn.innerHTML = esc(c) + '<span class="cnt">' + count + '</span>';
+      btn.addEventListener('click', function(){ setWebCat(c); });
+      wrap.appendChild(btn);
+    });
+    scheduleWebCatSync(webState.curCat||'전체');
+    renderWebList();
+  }
+
+  function applyWebCatState(cat){
+    webState.curCat = cat || '전체';
+    const btns = document.querySelectorAll('#web-cats .web-cat-btn');
+    if(!btns.length) return false;
+    btns.forEach(btn => {
+      const name = btn.dataset.webCat || btn.id.replace('web-cat_','');
+      const active = name===webState.curCat;
+      btn.classList.toggle('on', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      if(active){
+        btn.style.background = name==='전체' ? '#C42B2B' : (WEB_CAT_COLORS[name] || '#555');
+        btn.style.color = '#fff';
+        btn.style.borderColor = 'transparent';
+      } else {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }
+    });
+    return true;
+  }
+
+  function scheduleWebCatSync(cat){
+    const nextCat = cat || webState.curCat || '전체';
+    applyWebCatState(nextCat);
+    requestAnimationFrame(function(){ applyWebCatState(nextCat); });
+    setTimeout(function(){ applyWebCatState(nextCat); }, 60);
+  }
+
+  function setWebCat(cat){
+    applyWebCatState(cat || '전체');
+    renderWebList();
+  }
+
+  function renderWebList(){
+    const wrap = ig$('web-list');
+    const empty = ig$('web-empty');
+    if(!wrap || !empty) return;
+    applyWebCatState(webState.curCat || '전체');
+    Array.from(wrap.querySelectorAll('.web-card')).forEach(el => el.remove());
+    const filtered = webState.curCat==='전체' ? WEB_SITES : WEB_SITES.filter(s => s.cat===webState.curCat);
+    const countEl = ig$('web-count');
+    if(countEl) countEl.textContent = filtered.length + '개';
+    empty.classList.toggle('show', filtered.length===0);
+    filtered.forEach(s => {
+      const color = WEB_CAT_COLORS[s.cat] || '#555';
+      const bg = WEB_CAT_BG[s.cat] || '#f8f8f8';
+      const card = document.createElement('div');
+      card.className = 'web-card';
+      card.innerHTML = `
+        <div class="web-card-top">
+          <span class="web-card-badge" style="background:${color}">${esc(s.cat)}</span>
+          <span class="web-card-op">${esc(s.op)}</span>
+        </div>
+        <div class="web-card-body">
+          <div class="web-card-ico" style="background:${bg}">${esc(s.ico)}</div>
+          <div class="web-card-info">
+            <div class="web-card-name">${esc(s.name)}</div>
+            <div class="web-card-desc">${esc(s.desc)}</div>
+          </div>
+        </div>
+        <div class="web-card-foot">
+          <span class="web-card-url">${esc(shortUrl(s.url))}</span>
+          <span class="web-card-arrow">›</span>
+        </div>`;
+      card.addEventListener('click', function(){
+        openExternalUrl(s.url, {
+          module:'web',
+          cat:webState.curCat,
+          scroll:(ig$('web-list')?.scrollTop||0)
+        });
+      });
+      wrap.appendChild(card);
+    });
+  }
+
+  function ensureKakaoSdk(cb){
+    if(window.kakao && window.kakao.maps){
+      try{ kakao.maps.load(cb); }catch(e){ cb(); }
+      return;
+    }
+    if(window.__trailKakaoLoading){
+      window.__trailKakaoQueue = window.__trailKakaoQueue || [];
+      window.__trailKakaoQueue.push(cb);
+      return;
+    }
+    window.__trailKakaoLoading = true;
+    window.__trailKakaoQueue = [cb];
+    const sc = document.createElement('script');
+    const key = (typeof JSKEY!=='undefined' && JSKEY) ? JSKEY : '07f7989e29fdfb425fff924f36fb3ec0';
+    sc.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + key + '&autoload=false';
+    sc.onload = function(){
+      kakao.maps.load(function(){
+        const q = window.__trailKakaoQueue || [];
+        window.__trailKakaoLoading = false;
+        window.__trailKakaoQueue = [];
+        q.forEach(fn => { try{ fn(); }catch(e){} });
+      });
+    };
+    sc.onerror = function(){
+      window.__trailKakaoLoading = false;
+      const el = ig$('trail-map');
+      if(el) el.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:28px;text-align:center;color:#6b7280"><div style="font-size:40px">🗺️</div><div style="font-size:15px;font-weight:700;color:#1D4ED8">지도를 불러올 수 없습니다</div><div style="font-size:12px;line-height:1.7">카카오맵 도메인 설정을 확인해 주세요.</div></div>';
+    };
+    document.head.appendChild(sc);
+  }
+
+  function trailMkSvg(color, big){
+    const w = big ? 54 : 42, h = big ? 66 : 52;
+    let s = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 100 124">';
+    s += '<ellipse cx="50" cy="121" rx="'+(big?24:20)+'" ry="'+(big?8:6)+'" fill="rgba(0,0,0,'+(big?0.2:0.12)+')" />';
+    if(big) s += '<path d="M50 1C27 1 8 19 8 41 8 70 50 121 50 121 50 121 92 70 92 41 92 19 73 1 50 1Z" fill="white" opacity="0.25"/>';
+    s += '<path d="M50 5C29.5 5 13 21.5 13 42 13 69 50 119 50 119 50 119 87 69 87 42 87 21.5 70.5 5 50 5Z" fill="'+color+'" stroke="white" stroke-width="'+(big?5:3.5)+'"/>';
+    s += '<rect x="44" y="17" width="12" height="48" rx="3" fill="white"/>';
+    s += '<rect x="29" y="30" width="42" height="12" rx="3" fill="white"/>';
+    s += '</svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  }
+
+  function relayoutTrailMap(delay){
+    const wait = Number.isFinite(Number(delay)) ? Number(delay) : 0;
+    setTimeout(function(){
+      if(!(trailState.map && window.kakao && window.kakao.maps)) return;
+      try{
+        const center = trailState.map.getCenter ? trailState.map.getCenter() : null;
+        trailState.map.relayout();
+        if(center) trailState.map.setCenter(center);
+      }catch(e){}
+      syncTrailMarkers();
+    }, wait);
+  }
+
+  function hardResetTrailModule(){
+    try{ if(trailState.myOverlay) trailState.myOverlay.setMap(null); }catch(e){}
+    trailState.myOverlay = null;
+    trailState.markers.forEach(function(marker){ try{ marker.setMap(null); }catch(e){} });
+    trailState.markers = [];
+    trailState.selected = -1;
+    trailState.inited = false;
+    trailState.map = null;
+    trailState.pendingFitBounds = false;
+    const container = ig$('trail-map');
+    if(container) container.innerHTML = '';
+    if(typeof trailCloseSheet === 'function') trailCloseSheet();
+  }
+
+  function fitTrailMapToBounds(){
+    if(!(trailState.map && window.kakao && window.kakao.maps)) return;
+    try{
+      const bounds = new kakao.maps.LatLngBounds();
+      TRAIL_ITEMS.forEach(function(d){ bounds.extend(new kakao.maps.LatLng(d.lat, d.lng)); });
+      trailState.map.setBounds(bounds);
+      setTimeout(function(){
+        try{
+          const lv = trailState.map.getLevel();
+          if(Number.isFinite(lv) && lv < 12) trailState.map.setLevel(12);
+        }catch(e){}
+      }, 60);
+    }catch(e){}
+  }
+
+  function syncTrailMarkers(){
+    if(!(trailState.map && window.kakao && window.kakao.maps)) return;
+    if(trailState.markers.length !== TRAIL_ITEMS.length){
+      trailState.markers.forEach(function(marker){ try{ marker.setMap(null); }catch(e){} });
+      trailState.markers = [];
+      TRAIL_ITEMS.forEach(function(d, i){
+        const marker = new kakao.maps.Marker({
+          position:new kakao.maps.LatLng(d.lat,d.lng),
+          map:trailState.map,
+          image:new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[d.t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)}),
+          zIndex:1
+        });
+        kakao.maps.event.addListener(marker, 'click', function(){ trailSelectMarker(i); trailOpenSheet(i); });
+        trailState.markers.push(marker);
+      });
+      return;
+    }
+    trailState.markers.forEach(function(marker, i){
+      try{ marker.setMap(trailState.map); }catch(e){}
+      try{ marker.setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[i].t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)})); }catch(e){}
+      try{ marker.setZIndex(1); }catch(e){}
+    });
+    trailState.selected = -1;
+  }
+
+  function initTrailModule(){
+    buildTrailList();
+    if(trailState.inited){
+      syncTrailMarkers();
+      if(trailState.map){
+        relayoutTrailMap(30); relayoutTrailMap(180);
+        if(trailState.pendingFitBounds){
+          setTimeout(function(){ fitTrailMapToBounds(); trailState.pendingFitBounds = false; }, 90);
+        }
+      }
+      return;
+    }
+    ensureKakaoSdk(function(){
+      if(trailState.inited){
+        if(trailState.map){ relayoutTrailMap(30); relayoutTrailMap(180); }
+        return;
+      }
+      const container = ig$('trail-map');
+      if(!container || !(window.kakao && window.kakao.maps)) return;
+      trailState.map = new kakao.maps.Map(container, { center:new kakao.maps.LatLng(36.2,127.9), level:12 });
+      trailState.map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
+      if(trailState.restoreCenter && Number.isFinite(Number(trailState.restoreCenter.lat)) && Number.isFinite(Number(trailState.restoreCenter.lng))){
+        try{ trailState.map.setCenter(new kakao.maps.LatLng(Number(trailState.restoreCenter.lat), Number(trailState.restoreCenter.lng))); }catch(e){}
+      }
+      if(Number.isFinite(Number(trailState.restoreLevel))){
+        try{ trailState.map.setLevel(Number(trailState.restoreLevel)); }catch(e){}
+      }
+      trailState.restoreCenter = null;
+      trailState.restoreLevel = null;
+      syncTrailMarkers();
+      if(trailState.pendingFitBounds){
+        setTimeout(function(){ fitTrailMapToBounds(); trailState.pendingFitBounds = false; }, 80);
+      }
+      relayoutTrailMap(60);
+      relayoutTrailMap(220);
+      kakao.maps.event.addListener(trailState.map,'click', trailCloseSheet);
+      trailState.inited = true;
+      if(Number.isInteger(trailState.pendingOpenIndex) && TRAIL_ITEMS[trailState.pendingOpenIndex]){
+        const idx = trailState.pendingOpenIndex;
+        trailState.pendingOpenIndex = null;
+        setTimeout(function(){
+          trailSelectMarker(idx);
+          trailOpenSheet(idx);
+        }, 120);
+      }
+    });
+  }
+
+  function buildTrailList(){
+    const wrap = ig$('trail-list');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+    const countEl = ig$('trail-count');
+    if(countEl) countEl.textContent = TRAIL_ITEMS.length + '개';
+    TRAIL_ITEMS.forEach(function(d,i){
+      const card = document.createElement('div');
+      card.className = 'trail-card';
+      card.innerHTML = `
+        <div class="trail-r1">
+          <span class="trail-bdg ${d.t}">${esc(d.op)}</span>
+          <span class="trail-reg">📍 ${esc(d.r)}</span>
+        </div>
+        <div class="trail-r2">
+          <div class="trail-ico ${d.t}">${esc(d.ico)}</div>
+          <div class="trail-nm">${esc(d.n)}</div>
+        </div>
+        <div class="trail-foot">
+          <span class="trail-url">${esc(shortUrl(d.url))}</span>
+          <span class="trail-arr">›</span>
+        </div>`;
+      card.addEventListener('click', function(){
+        openExternalUrl(d.url, {
+          module:'trail',
+          view:'list',
+          scroll:(ig$('trail-list')?.scrollTop||0)
+        });
+      });
+      wrap.appendChild(card);
+    });
+  }
+
+  function trailSelectMarker(i){
+    if(!(trailState.map && window.kakao && window.kakao.maps)) return;
+    if(trailState.selected >= 0 && trailState.markers[trailState.selected]){
+      trailState.markers[trailState.selected].setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[trailState.selected].t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)}));
+      trailState.markers[trailState.selected].setZIndex(1);
+    }
+    trailState.selected = i;
+    if(trailState.markers[i]){
+      trailState.markers[i].setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[i].t], true), new kakao.maps.Size(54,66), {offset:new kakao.maps.Point(27,66)}));
+      trailState.markers[i].setZIndex(999);
+    }
+  }
+
+  window.trailOpenSheet = function(i){
+    const d = TRAIL_ITEMS[i];
+    if(!d) return;
+    ig$('trail-sh-bdg').textContent = d.op;
+    ig$('trail-sh-bdg').className = 'trail-sh-bdg ' + d.t;
+    ig$('trail-sh-region').textContent = '📍 ' + d.r;
+    ig$('trail-sh-ico').textContent = d.ico;
+    ig$('trail-sh-ico').className = 'trail-sh-ico ' + d.t;
+    ig$('trail-sh-name').textContent = d.n;
+    ig$('trail-sh-sub').textContent = d.op + ' · ' + d.r;
+    ig$('trail-sh-url').textContent = shortUrl(d.url);
+    const openFn = function(){
+      openExternalUrl(d.url, {
+        module:'trail',
+        view:'map',
+        openIndex:i
+      });
+    };
+    ig$('trail-sh-body').onclick = openFn;
+    ig$('trail-sh-foot').onclick = openFn;
+    ig$('trail-sheet').classList.add('open');
+    if(trailState.map && window.kakao && window.kakao.maps){
+      trailState.map.panTo(new kakao.maps.LatLng(d.lat,d.lng));
+    }
+  };
+
+  window.trailCloseSheet = function(){
+    ig$('trail-sheet')?.classList.remove('open');
+    if(!(trailState.map && window.kakao && window.kakao.maps)) return;
+    if(trailState.selected >= 0 && trailState.markers[trailState.selected]){
+      const idx = trailState.selected;
+      trailState.markers[idx].setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[idx].t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)}));
+      trailState.markers[idx].setZIndex(1);
+      trailState.selected = -1;
+    }
+  };
+
+  window.trailSetView = function(v){
+    trailState.view = v;
+    ig$('trail-panel-map')?.classList.toggle('on', v==='map');
+    ig$('trail-panel-list')?.classList.toggle('on', v==='list');
+    ig$('trail-tab-map')?.classList.toggle('on', v==='map');
+    ig$('trail-tab-list')?.classList.toggle('on', v==='list');
+    if(v==='map'){
+      initTrailModule();
+      syncTrailMarkers();
+      relayoutTrailMap(30); relayoutTrailMap(180); relayoutTrailMap(360);
+    } else {
+      trailCloseSheet();
+      buildTrailList();
+    }
+  };
+
+  window.trailMyLoc = function(){
+    if(!(window.navigator && navigator.geolocation)){ alert('위치 서비스를 지원하지 않습니다.'); return; }
+    if(!(trailState.map && window.kakao && window.kakao.maps)){ initTrailModule(); return; }
+    function show(pos){
+      const ll = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+      trailState.map.panTo(ll); trailState.map.setLevel(7);
+      if(trailState.myOverlay) trailState.myOverlay.setMap(null);
+      const dot = document.createElement('div');
+      dot.className = 'trail-myloc';
+      trailState.myOverlay = new kakao.maps.CustomOverlay({content:dot, position:ll, yAnchor:.5, zIndex:100});
+      trailState.myOverlay.setMap(trailState.map);
+    }
+    navigator.geolocation.getCurrentPosition(show, function(e){
+      alert(e && e.code===1 ? '위치 권한을 허용해 주세요.' : '위치를 가져올 수 없습니다.');
+    }, {enableHighAccuracy:false, timeout:5000, maximumAge:60000});
+    navigator.geolocation.getCurrentPosition(show, function(){}, {enableHighAccuracy:true, timeout:12000, maximumAge:0});
+  };
+
+  // 초기 선택 상태 반영
+  document.addEventListener('DOMContentLoaded', function(){
+    setWebCat(webState.curCat);
+  });
+})();
 </script>
+
 </body>
 </html>
