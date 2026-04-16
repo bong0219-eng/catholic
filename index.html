@@ -1317,6 +1317,10 @@ function restoreCoreReturnState(){
   try{ state=JSON.parse(raw); }catch(e){}
   try{ sessionStorage.removeItem(CORE_RETURN_KEY); }catch(e){}
   if(!state||!state.mode) return false;
+
+  // [패치] 주요기도문에서 뒤로가기 시 지도로 넘어가는 현상 차단
+  if(state.module === 'prayer') return false;
+
   const reopenTab=state.activeTab||'';
   _mode=state.mode;
   _filterDio=state.filterDio||'all';
@@ -1338,7 +1342,6 @@ function restoreCoreReturnState(){
   _loadMap();
   return true;
 }
-
 
 function _onMapReady(){
   const KM=kakao.maps;window._LL=KM.LatLng;window._MM=KM.Marker;window._MI=KM.MarkerImage;window._SZ=KM.Size;window._PT=KM.Point;window._LB=KM.LatLngBounds;window._PL=KM.Polyline;window._EL=KM.event.addListener;
