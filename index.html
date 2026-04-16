@@ -1286,7 +1286,7 @@ function goToCover() {
 window.addEventListener('pageshow', function () {
   setTimeout(function () {
     if (restoreCoreReturnState()) return;
-    if (restoreIntegratedState && restoreIntegratedState()) return;
+    if (restoreCoreReturnState && restoreCoreReturnState()) return;
   }, 0);
 });
 
