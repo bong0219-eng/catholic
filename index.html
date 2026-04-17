@@ -369,24 +369,24 @@ html.retreat-mode .region-wrap{background:var(--retreat-bg);}
   background:#fff;font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit;}
 .exit-ok{flex:1;padding:12px;border-radius:10px;border:none;
   background:var(--ink);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
-.region-info-card{margin:12px 14px 14px;background:#fff;border-radius:14px;overflow:hidden;
-  box-shadow:0 2px 12px rgba(14,21,53,.1);border:1px solid rgba(21,101,192,.2);}
+.region-info-card{margin:12px 14px 14px;background:#fff;border-radius:10px;overflow:hidden;
+  box-shadow:0 1px 7px rgba(14,21,53,.08);border:1px solid rgba(21,101,192,.15);}
 .ric-hd{background:linear-gradient(135deg,#0e1535,#1a2456);
-  padding:12px 14px;display:flex;align-items:center;gap:10px;}
+  padding:7px 10px;display:flex;align-items:center;gap:6px;}
 html.parish-mode .ric-hd{background:linear-gradient(135deg,#4a2e0a,#6d4c28);}
 html.retreat-mode .ric-hd{background:linear-gradient(135deg,#2d4a0a,#3d5c1a);}
-.ric-icon{width:38px;height:38px;border-radius:50%;background:rgba(212,170,106,.15);
-  border:1.5px solid rgba(212,170,106,.4);display:flex;align-items:center;
-  justify-content:center;font-size:18px;flex-shrink:0;}
+.ric-icon{width:24px;height:24px;border-radius:50%;background:rgba(212,170,106,.15);
+  border:1px solid rgba(212,170,106,.4);display:flex;align-items:center;
+  justify-content:center;font-size:11px;flex-shrink:0;}
 .ric-name-wrap{flex:1;min-width:0;}
-.ric-name{font-size:15px;font-weight:800;color:var(--gold);
+.ric-name{font-size:12px;font-weight:800;color:var(--gold);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ric-cat{font-size:10px;color:rgba(212,170,106,.6);margin-top:1px;}
-.ric-map-link{flex-shrink:0;padding:6px 10px;background:rgba(212,170,106,.15);
-  border:1px solid rgba(212,170,106,.4);border-radius:8px;
-  font-size:10px;font-weight:700;color:var(--gold);text-decoration:none;}
-.ric-body{padding:9px 14px 10px;background:#f5f7fc;display:flex;flex-direction:column;gap:4px;}
-.ric-row{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#555;}
+.ric-cat{font-size:9px;color:rgba(212,170,106,.6);margin-top:1px;}
+.ric-map-link{flex-shrink:0;padding:3px 7px;background:rgba(212,170,106,.15);
+  border:1px solid rgba(212,170,106,.4);border-radius:6px;
+  font-size:9px;font-weight:700;color:var(--gold);text-decoration:none;}
+.ric-body{padding:5px 10px 7px;background:#f5f7fc;display:flex;flex-direction:column;gap:3px;}
+.ric-row{display:flex;align-items:flex-start;gap:5px;font-size:10px;color:#555;}
 .ric-lbl{color:var(--pilgrim);font-weight:700;flex-shrink:0;}
 html.parish-mode .ric-lbl{color:var(--parish-accent);}
 html.retreat-mode .ric-lbl{color:var(--retreat-accent);}
@@ -1251,8 +1251,7 @@ function openMissa(){
   if(loading) loading.style.display='flex';
   frame.src=url;
   view.classList.add('open');
-  // 히스토리에 상태 추가 (뒤로가기 지원)
-  try{history.pushState({_missa:true},'',location.href);}catch(e){}
+  // pushState 없음: 이미 hideCoverAndRun이 pushState를 했으므로 추가 push 불필요
 }
 function closeMissa(){
   const view=$('missa-view');
@@ -1267,7 +1266,14 @@ function missaLoaded(){
 
 function openPrayerBook(){
   const url='https://maria.catholic.or.kr/mobile/prayer/';
-  try{ location.href = url; }catch(e){ try{ window.open(url,'_blank'); }catch(_e){} }
+  // saveCoreReturnState로 복귀 상태 저장 후 이동 → 한번 뒤로가기로 커버 복귀
+  try{
+    const state={mode:typeof _mode!=='undefined'?_mode:'shrine',activeTab:'',filterDio:'all',listSrch:'',infoIdx:-1,fromRegion:false};
+    sessionStorage.setItem(typeof CORE_RETURN_KEY!=='undefined'?CORE_RETURN_KEY:'catholic_core_return_v1',JSON.stringify(state));
+  }catch(e){}
+  // 히스토리 replace로 이동 → 뒤로가기 한번에 이전 페이지(커버)로
+  try{ history.replaceState(null,'',location.href); }catch(e){}
+  location.href = url;
 }
 
 const CORE_RETURN_KEY='catholic_core_return_v1';
@@ -1310,13 +1316,16 @@ function restoreCoreReturnState(){
   _resetMapState();
   _mapInited=true;
   _loadMap();
-  setTimeout(()=>{
+setTimeout(()=>{
     if(reopenTab) openTab(reopenTab);
     else _restoreMapMarkers();
     if(Number.isInteger(state.infoIdx) && state.infoIdx>=0){
       setTimeout(()=>{
-        try{ selectItem(state.infoIdx,{fromRegion:!!state.fromRegion}); }catch(e){}
-      },180);
+        try{
+          closeInfoCard();
+          selectItem(state.infoIdx,{fromRegion:!!state.fromRegion});
+        }catch(e){}
+      },300);
     }
   },700);
   return true;
