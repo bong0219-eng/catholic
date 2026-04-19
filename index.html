@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -921,6 +922,270 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
 .hs-web{ left:8.0%; top:82.2%; width:30.0%; }
 .hs-diocese{ left:51.0%; top:82.2%; width:30.0%; }
 /* ===== end nano-banana 8-card home ===== */
+/* ===== 1그룹 통일 (성지 / 성당 / 피정의집) ===== */
+
+/* 공통 사이즈 기준 */
+:root{
+  --ui-tab-h:52px;
+  --ui-btn-h:46px;
+  --ui-radius:14px;
+}
+
+/* ===== 탭바 ===== */
+.tab-btn{
+  font-size:12px;
+  padding:6px 0;
+}
+.tab-icon{font-size:20px;}
+.tab-btn.active .tab-icon{font-size:22px;}
+
+/* ===== 시트 헤더 ===== */
+.sheet-title{
+  font-size:16px;
+  font-weight:700;
+}
+
+/* ===== 검색창 ===== */
+.srch-inner{
+  height:38px;
+  border-radius:20px;
+}
+.srch-inner input{
+  font-size:14px;
+}
+
+/* ===== 필터 버튼 ===== */
+.filter-btn{
+  font-size:12px;
+  padding:5px 12px;
+  border-radius:14px;
+}
+
+/* ===== 리스트 카드 ===== */
+.list-item,
+.nearby-item,
+.region-item{
+  padding:14px 14px;
+  border-radius:16px;
+}
+
+/* 이름 */
+.li-name,
+.nearby-name{
+  font-size:15px;
+  font-weight:700;
+}
+
+/* 주소 */
+.li-sub,
+.nearby-addr{
+  font-size:12px;
+  color:#6B7280;
+}
+
+/* 거리 */
+.nearby-dist{
+  font-size:13px;
+  font-weight:700;
+}
+
+/* ===== 정보카드 ===== */
+.ic-name{
+  font-size:19px;
+  font-weight:800;
+}
+
+.ic-addr-val{
+  font-size:14px;
+}
+
+/* ===== 버튼 통일 ===== */
+.ic-tel-btn,
+.ic-route-btn,
+.btn-kakao-nav{
+  height:var(--ui-btn-h);
+  font-size:14px;
+  border-radius:12px;
+}
+
+/* ===== 색상만 모드별 유지 ===== */
+
+/* 성지 (기본) */
+html:not(.parish-mode):not(.retreat-mode){
+  --main-color:#0e1535;
+  --accent-color:#d4aa6a;
+}
+
+/* 성당 */
+html.parish-mode{
+  --main-color:#5D3A1A;
+  --accent-color:#f5e6d0;
+}
+
+/* 피정 */
+html.retreat-mode{
+  --main-color:#1f8f57;
+  --accent-color:#f1f8e9;
+}
+
+/* ===== 공통 색 적용 ===== */
+.sheet-hd{
+  background:var(--main-color);
+}
+
+.tab-btn.active{
+  color:var(--accent-color);
+  border-bottom-color:var(--accent-color);
+}
+
+.filter-btn.active{
+  background:var(--accent-color);
+  color:var(--main-color);
+}
+
+/* ===== 정보카드 버튼 색감 유지 ===== */
+.ic-route-btn{
+  background:#1565c0;
+}
+
+.ic-tel-btn{
+  background:#f0f7ff;
+}
+/* ===== 2그룹 통일 (순례길 / 웹 / 교구 / 기도문) ===== */
+
+/* 공통 카드 기준 */
+:root{
+  --card-radius:14px;
+  --card-padding:14px;
+  --card-gap:10px;
+}
+
+/* ===== 모듈 상단바 ===== */
+.module-bar{
+  padding:14px 16px;
+}
+.module-bar-title{
+  font-size:20px;
+  font-weight:800;
+}
+.module-bar-sub{
+  font-size:11px;
+}
+
+/* ===== 리스트 영역 ===== */
+.web-list,
+#trail-list{
+  gap:10px;
+  padding:12px 12px 80px;
+}
+
+/* ===== 카드 공통 ===== */
+.web-card,
+.trail-card{
+  border-radius:var(--card-radius);
+  padding:0;
+  min-height:120px;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
+  border:1px solid #e5e7eb;
+}
+
+/* 눌림 효과 */
+.web-card:active,
+.trail-card:active{
+  transform:scale(.97);
+}
+
+/* ===== 카드 내부 ===== */
+
+/* 상단 */
+.web-card-top,
+.trail-r1{
+  padding:12px 14px 0;
+}
+
+/* 본문 */
+.web-card-body,
+.trail-r2{
+  padding:10px 14px;
+}
+
+/* 제목 */
+.web-card-name,
+.trail-nm{
+  font-size:16px;
+  font-weight:800;
+  line-height:1.4;
+}
+
+/* 설명 */
+.web-card-desc{
+  font-size:13px;
+  line-height:1.5;
+}
+
+/* 하단 */
+.web-card-foot,
+.trail-foot{
+  padding:10px 14px;
+}
+
+/* 링크 텍스트 */
+.web-card-url,
+.trail-url{
+  font-size:11px;
+}
+
+/* ===== 아이콘 통일 ===== */
+.web-card-ico,
+.trail-ico{
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  font-size:20px;
+}
+
+/* ===== 빈 상태 ===== */
+.web-empty{
+  font-size:13px;
+  padding:60px 20px;
+}
+
+/* ===== 기도문 (여기에 맞추기) ===== */
+
+/* 기도문 리스트 카드로 쓰게 될 기본 */
+.prayer-card{
+  border-radius:var(--card-radius);
+  padding:14px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
+  margin:10px 12px;
+}
+
+.prayer-title{
+  font-size:16px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.prayer-text{
+  font-size:14px;
+  line-height:1.7;
+  color:#374151;
+}
+
+/* ===== 전체 통일 느낌 ===== */
+
+/* 배경 톤 통일 */
+.module-view{
+  background:#F5F3EE;
+}
+
+/* 카드 hover 느낌 */
+.web-card:hover,
+.trail-card:hover{
+  box-shadow:0 6px 18px rgba(0,0,0,.12);
+}
 
 </style>
 </head>
