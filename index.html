@@ -1414,7 +1414,9 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     #cc-8 .cover-icon-wrap { background-color: var(--color-8); }
 </style>
 
-<div id="cv-pull-modern" aria-hidden="true">
+
+<div id="cover">
+  <div id="cv-pull-modern" aria-hidden="true">
   <div class="cv-pull-ring">
     <svg viewBox="0 0 24 24" class="cv-pull-icon">
       <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
@@ -1422,7 +1424,6 @@ html.retreat-mode .tab-btn.active{background:linear-gradient(135deg,#1f8f57,#34b
     </svg>
   </div>
 </div>
-<div id="cover">
     <div class="cover-header">
         <div class="cover-subtitle">순례의 모든 여정</div>
         <h1 class="cover-title">한국 천주교 순례</h1>
@@ -1502,106 +1503,7 @@ if (window.history && (!window.history.state || window.history.state.page !== 'c
     try{window.history.replaceState({page: 'cover'}, '', window.location.pathname);}catch(e){}
 }
 
-// --- [Fix 2] Pull-to-refresh with Visual Feedback ---
-var coverEl = document.getElementById('cover');
-var ptrIndicator = document.getElementById('ptr-indicator');
-if (coverEl && ptrIndicator) {
-    var pStartY = 0;
-    var pIsPulling = false;
 
-(function(){
-  const cover = document.getElementById('cover');
-  const indicator = document.getElementById('cv-pull-modern');
-  if(!cover || !indicator) return;
-
-  let startY = 0;
-  let currentY = 0;
-  let pulling = false;
-  let ready = false;
-  let refreshing = false;
-
-  const THRESHOLD = 96;
-  const MAX_PULL = 140;
-
-  function canStartPull(){
-    if(refreshing) return false;
-    if(document.documentElement.classList.contains('app-active')) return false;
-    if(cover.style.display === 'none') return false;
-    if(cover.scrollTop > 0) return false;
-    return true;
-  }
-
-  function resetIndicator(){
-    indicator.classList.remove('show','ready','refreshing');
-  }
-
-  cover.addEventListener('touchstart', function(e){
-    if(!canStartPull()) return;
-    startY = e.touches[0].clientY;
-    currentY = startY;
-    pulling = true;
-    ready = false;
-    cover.style.transition = 'none';
-  }, { passive:true });
-
-  cover.addEventListener('touchmove', function(e){
-    if(!pulling || refreshing) return;
-    currentY = e.touches[0].clientY;
-    let dy = currentY - startY;
-    if(dy <= 0){
-      cover.style.transform = 'translateY(0)';
-      resetIndicator();
-      ready = false;
-      return;
-    }
-    dy = Math.min(dy, MAX_PULL);
-    const visualPull = dy * 0.42;
-    cover.style.transform = 'translateY(' + visualPull + 'px)';
-    indicator.classList.add('show');
-    if(dy >= THRESHOLD){
-      if(!ready){
-        try{ navigator.vibrate && navigator.vibrate(30); }catch(ex){}
-      }
-      ready = true;
-      indicator.classList.add('ready');
-    } else {
-      ready = false;
-      indicator.classList.remove('ready');
-    }
-  }, { passive:true });
-
-  function finishPull(){
-    cover.style.transition = 'transform .28s cubic-bezier(.4,0,.2,1)';
-    cover.style.transform = 'translateY(0)';
-  }
-
-  cover.addEventListener('touchend', function(){
-    if(!pulling) return;
-    pulling = false;
-    finishPull();
-    if(ready){
-      refreshing = true;
-      indicator.classList.remove('ready');
-      indicator.classList.add('show','refreshing');
-      try{ navigator.vibrate && navigator.vibrate([40,30,60]); }catch(ex){}
-      setTimeout(function(){ location.reload(); }, 420);
-    } else {
-      resetIndicator();
-    }
-    ready = false;
-    startY = 0;
-    currentY = 0;
-  });
-
-  cover.addEventListener('touchcancel', function(){
-    pulling = false;
-    ready = false;
-    finishPull();
-    resetIndicator();
-  });
-})();
-
-}
 </script>
 
 <!-- ══ 앱 ══ -->
