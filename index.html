@@ -1347,7 +1347,21 @@ html.retreat-mode .region-item .nearby-num {
   box-sizing: border-box !important;
   line-height: 1 !important;
 }
+/* ===== 순례길 리스트 눌림 방지 핵심 패치 ===== */
+#trail-list{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:12px !important;
+}
 
+#trail-list > .trail-card{
+  flex:0 0 auto !important;
+  min-height:118px !important;
+  width:100% !important;
+  align-self:stretch !important;
+  display:block !important;
+}
 </style>
 
 <body><!-- ══ 종료 다이얼로그 ══ -->
