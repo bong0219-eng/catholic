@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -489,16 +490,15 @@ html.retreat-mode .sm-tab.active{color:var(--retreat-bg);border-bottom-color:var
   font-weight:800;
 }
 .web-cat-btn.on{
+  /* v9-6: data-cat-color 선택자로 처리 */
   color:#FFFFFF;
   border-color:transparent;
-  background:#e91e8c;
-  box-shadow:0 4px 12px rgba(233,30,140,.22);
 }
 .web-cat-btn.on .cnt{
   background:rgba(255,255,255,.22);
   color:#FFFFFF;
 }
-.web-cat-btn[data-web-cat="전체"].on{background:#e91e8c;}
+.web-cat-btn[data-web-cat="전체"].on{background:var(--pink-start);}
 .web-list{
   flex:1;
   overflow-y:auto;
@@ -799,8 +799,8 @@ html.retreat-mode #tabbar{background:linear-gradient(180deg,rgba(85,139,47,.97),
 .module-bar-ico{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.16);}
 /* .web-body,.trail-body background → v9-4 */
 .web-cats,.trail-tabs{padding:12px 14px 10px;background:rgba(255,250,243,.88);backdrop-filter:blur(10px);border-bottom:1px solid #e4ddd6;}
-.web-cat-btn{border-radius:999px;padding:7px 13px;background:#fffaf2;border-color:#e9dfd1;box-shadow:0 4px 12px rgba(0,0,0,.04);}
-.web-cat-btn.on{box-shadow:0 10px 18px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.12);}
+.web-cat-btn{border-radius:999px;padding:7px 13px;background:#fffaf2;border-color:#e9dfd1;}
+.web-cat-btn.on{/* v9-6 처리 */}
 .web-list,#trail-list{padding:14px 14px calc(86px + env(safe-area-inset-bottom,0));}
 .web-card,.trail-card{border-radius:22px;border:1px solid #e6dccd;box-shadow:0 14px 26px rgba(15,23,42,.08);background:linear-gradient(180deg,#fffdfb 0%,#faf5ee 100%);}
 .web-card-top,.trail-r1{padding:14px 16px 0;}
@@ -879,7 +879,7 @@ html.retreat-mode #tabbar{background:linear-gradient(180deg,rgba(85,139,47,.97),
 /* .web-body,.trail-body background → v9-4 */
 .web-cats,.trail-tabs{background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-bottom:1px solid #e8ecf3;}
 .web-cat-btn,.trail-tab{border-radius:14px;border:1px solid #e2e7f1;background:#f7f9fd;color:#657086;box-shadow:inset 0 1px 0 rgba(255,255,255,.7);font-weight:800;}
-.web-cat-btn.on{background:linear-gradient(135deg,#7c3aed,#d94f70);color:#fff;box-shadow:0 12px 24px rgba(124,58,237,.18);}
+.web-cat-btn.on{/* v9-6: data-cat-color CSS로 처리 */}
 .web-cat-btn.on .cnt{background:rgba(255,255,255,.18);color:#fff;}
 .trail-tab.on{background:linear-gradient(135deg,#0d63d6,#2795eb);border-color:transparent;box-shadow:0 12px 24px rgba(13,99,214,.22);}
 #tabbar{background:linear-gradient(135deg,#1f2a44,#2f4167)!important;border-bottom:none;box-shadow:0 10px 28px rgba(17,24,39,.18);padding-left:8px;padding-right:8px;gap:8px;align-items:flex-end;}
@@ -1036,59 +1036,7 @@ html,body { background:var(--navy) !important; }
 .ic-name { font-size:16px !important; font-weight:700 !important; }
 .ic-sub  { font-size:10px !important; font-weight:600 !important; color:#9CA3AF !important; }
 
-/* ── 3-A. 목록 아이템 카드화 (웹카드 스타일) ── */
-.list-item,
-.nearby-item,
-.region-item {
-  margin:0 10px 8px;
-  padding:13px 14px;
-  border-bottom:none !important;
-  border:1px solid #e4ddd5 !important;
-  border-radius:16px !important;
-  background:#fff !important;
-  box-shadow:0 2px 10px rgba(14,21,53,.07) !important;
-  transition:transform .12s, box-shadow .12s;
-}
-.list-item:active,
-.nearby-item:active,
-.region-item:active {
-  transform:scale(.988);
-  background:#fffaf4 !important;
-  box-shadow:0 1px 4px rgba(14,21,53,.04) !important;
-}
-
-/* ── 3-B. 목록 아이템 내부 ── */
-.li-dot {
-  width:36px !important; height:36px !important;
-  border-radius:12px !important; flex-shrink:0;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
-}
-.li-info { flex:1; min-width:0; }
-.li-name {
-  font-size:15px !important; font-weight:700 !important;
-  color:#1F2937 !important;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.li-sub  { font-size:11px !important; color:#9CA3AF !important; margin-top:3px; }
-.li-badge {
-  font-size:11px !important; font-weight:800 !important;
-  padding:5px 10px !important; border-radius:999px !important;
-  white-space:nowrap; flex-shrink:0;
-}
-
-/* ── 3-C. 주변 아이템 내부 ── */
-.nearby-num {
-  border-radius:10px !important;
-  font-size:13px !important;
-  width:32px !important; height:32px !important;
-}
-.nearby-name { font-size:14px !important; font-weight:700 !important; color:#1F2937 !important; }
-.nearby-addr { font-size:11px !important; color:#9CA3AF !important; }
-.nearby-type { font-size:11px !important; font-weight:800 !important; border-radius:999px !important; padding:4px 9px !important; }
-.nearby-dist { font-size:12px !important; font-weight:700 !important; }
-
-/* ── 3-D. 지역검색 아이템 ── */
-.region-item { gap:12px !important; }
+/* ── 3-A~D. 목록 아이템 → v9-6 패치에서 처리 ── */
 
 /* ── 4. 성당/성지 모드별 탭 테마 - 콘텐츠 영역은 성지색 유지 ── */
 html.parish-mode .sheet-body,
@@ -1120,27 +1068,25 @@ html.retreat-mode .region-wrap {
 
 /* ── 6. web-cat-btn 배경 ── */
 .web-cats { background:var(--bg-unified) !important; border-bottom:1px solid #d9d0c4 !important; }
-.web-cat-btn { background:#fff !important; border-color:#d9d0c4 !important; color:#5c5548 !important; }
 
 /* ═══════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════
-   v9-5 통합 패치
-   1) 헤더/웹사이트 분홍→흰 그라데이션
-   2) module-bar 높이·패딩 통일
-   3) trail-tabs / web-cats 높이 통일
-   4) 웹사이트 탭 강조색 제거
-   5) 스와이프 탭 이동 (JS에서 처리)
-   6) 관구교구 내부 뷰 + 기도문 복귀 수정
+   v9-6 패치
+   1) 목록/내주변 디자인 - 이미지 참조 스타일
+   2) 순례길 시트 높이 충분히
+   3) 웹사이트 탭 강조색 - 카테고리별 진한색 + 흰글자
+   4) 관구교구 - 새 탭으로 열기
+   5) module-bar 통일
 ═══════════════════════════════════════════════════════ */
 :root {
   --pink-start: #E8397A;
-  --pink-end:   #f7a8c8;
+  --pink-end:   #f0609a;
   --header-h:   calc(52px + env(safe-area-inset-top,0));
   --module-tab-h: 48px;
 }
 
-/* ── 공통 module-bar (순례길·웹사이트·관구교구) ── */
+/* ══ 공통 module-bar ══ */
 .module-bar {
   padding: calc(env(safe-area-inset-top,0) + 14px) 16px 14px !important;
   min-height: var(--header-h) !important;
@@ -1152,104 +1098,188 @@ html.retreat-mode .region-wrap {
 .module-bar.trail {
   background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%) !important;
 }
-/* 관구교구 뷰도 동일 핑크 */
-.module-bar.diocese {
-  background: linear-gradient(135deg, var(--pink-start) 0%, var(--pink-end) 100%) !important;
-}
 
-/* ── web-cats · trail-tabs 높이 통일 ── */
+/* ══ web-cats · trail-tabs 높이 통일 ══ */
 .web-cats, .trail-tabs {
   min-height: var(--module-tab-h) !important;
   padding: 8px 14px !important;
   align-items: center;
 }
 
-/* ── 웹사이트 탭 버튼 강조색 제거 ── */
-.web-cat-btn.on {
-  background: #f0f4fa !important;
-  color: #334155 !important;
-  border-color: #94a3b8 !important;
-  box-shadow: none !important;
+/* ══════════════════════════════════════
+   목록 아이템 - 이미지 참조 디자인
+══════════════════════════════════════ */
+/* 공통 카드 리셋 */
+.list-item,
+.nearby-item,
+.region-item {
+  margin: 0 10px 6px !important;
+  padding: 12px 14px !important;
+  border: 1px solid #e8edf5 !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  box-shadow: 0 2px 8px rgba(14,21,53,.06) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  transition: transform .12s, box-shadow .12s;
 }
-.web-cat-btn.on .cnt {
-  background: #e2e8f0 !important;
-  color: #475569 !important;
-}
-/* 모든 카테고리 동일하게 강조색 없음 */
-.web-cat-btn[data-web-cat].on {
-  background: #f0f4fa !important;
+.list-item:active,
+.nearby-item:active,
+.region-item:active {
+  transform: scale(.988) !important;
+  background: #f8faff !important;
+  box-shadow: 0 1px 4px rgba(14,21,53,.04) !important;
 }
 
-/* ── 관구교구 내부 뷰 ── */
-#diocese-view {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 1800;
-  background: #f5f3ee;
-  flex-direction: column;
+/* 번호 원 */
+.nearby-num {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #fff !important;
+  flex-shrink: 0 !important;
 }
-#diocese-view.open { display: flex; }
-#diocese-bar {
-  background: linear-gradient(135deg, var(--pink-start) 0%, var(--pink-end) 100%);
-  padding: calc(env(safe-area-inset-top,0) + 14px) 16px 14px;
-  min-height: var(--header-h);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  color: #fff;
-  box-sizing: border-box;
-  flex-shrink: 0;
+
+/* 도트 → 작은 원형 아이콘 */
+.li-dot {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  box-shadow: none !important;
 }
-#diocese-bar-title {
-  font-size: 17px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -.02em;
+
+/* 텍스트 영역 */
+.li-info, .nearby-info { flex: 1; min-width: 0; }
+.li-name {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #1a2035 !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.3;
 }
-#diocese-close {
-  background: rgba(255,255,255,.18);
-  border: 1px solid rgba(255,255,255,.25);
-  border-radius: 50%;
-  color: #fff;
-  font-size: 20px;
-  width: 34px; height: 34px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
+.li-sub {
+  font-size: 12px !important;
+  color: #8a94a6 !important;
+  margin-top: 3px !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-#diocese-frame {
-  flex: 1;
-  width: 100%;
-  border: none;
-  background: #fff;
+.nearby-name {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #1a2035 !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.3;
 }
-#diocese-loading {
-  position: absolute;
-  inset: 0;
-  top: var(--header-h);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #f5f3ee;
-  z-index: 1;
-  pointer-events: none;
+.nearby-addr {
+  font-size: 12px !important;
+  color: #8a94a6 !important;
+  margin-top: 3px !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.diocese-spinner {
-  width: 38px; height: 38px;
-  border: 4px solid #e5ddd3;
-  border-top: 4px solid var(--pink-start);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 12px;
+
+/* 배지 */
+.li-badge {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 5px 12px !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  border: none !important;
 }
-.diocese-loading-txt {
-  font-size: 13px;
-  color: #8a7060;
-  font-weight: 600;
+.nearby-type {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+  display: block !important;
 }
+
+/* 거리 */
+.nearby-dist {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  margin-top: 4px !important;
+  color: #c0392b !important;
+}
+html.parish-mode .nearby-dist  { color: #355c7d !important; }
+html.retreat-mode .nearby-dist { color: #1a6e4a !important; }
+
+/* 성지 타입별 배지 고유 색상
+   성지: 빨강,  순례지: 파랑,  순교사적지: 초록 */
+.li-badge[style*="c0392b"],
+.nearby-type[style*="c0392b"] { background: #fde8e8 !important; color: #c0392b !important; }
+.li-badge[style*="1565c0"],
+.nearby-type[style*="1565c0"] { background: #e3eeff !important; color: #1565c0 !important; }
+.li-badge[style*="1b7a3e"],
+.nearby-type[style*="1b7a3e"] { background: #e8f5ee !important; color: #1b7a3e !important; }
+
+/* 성당 모드 배지 */
+html.parish-mode .li-badge  { background: #dbeeff !important; color: #21435f !important; }
+html.parish-mode .nearby-type { background: #dbeeff !important; color: #21435f !important; }
+
+/* 피정 모드 배지 */
+html.retreat-mode .li-badge  { background: #e6f4ec !important; color: #1a6e4a !important; }
+html.retreat-mode .nearby-type { background: #e6f4ec !important; color: #1a6e4a !important; }
+
+/* 교구 헤더 */
+.dio-hd {
+  padding: 8px 16px 6px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: .08em !important;
+  color: #1565c0 !important;
+  background: #f4f7fd !important;
+  border-bottom: 1px solid #e8edf5 !important;
+  position: sticky; top: 0; z-index: 1;
+}
+html.parish-mode .dio-hd  { color: #355c7d !important; background: #f0f6fb !important; }
+html.retreat-mode .dio-hd { color: #1a6e4a !important; background: #f0f7f4 !important; }
+
+/* ══════════════════════════════════════
+   순례길 시트 높이 충분히
+══════════════════════════════════════ */
+.trail-sheet {
+  max-height: 62vh !important;
+  overflow-y: auto !important;
+}
+.trail-sh-name { font-size: 17px !important; font-weight: 800 !important; }
+.trail-sh-sub  { font-size: 13px !important; }
+
+/* ══════════════════════════════════════
+   웹사이트 탭 버튼 - 카테고리별 진한색
+══════════════════════════════════════ */
+.web-cat-btn {
+  background: #f4f6fb !important;
+  color: #4a5568 !important;
+  border-color: #d8dee9 !important;
+  font-weight: 700 !important;
+}
+.web-cat-btn.on {
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,.18) !important;
+}
+.web-cat-btn.on .cnt {
+  background: rgba(255,255,255,.22) !important;
+  color: #fff !important;
+}
+/* 카테고리별 색 - JS에서 data-cat-color 속성으로 설정 */
+.web-cat-btn[data-cat-color="중앙기구"].on  { background: #8B1C2A !important; }
+.web-cat-btn[data-cat-color="신앙 포털"].on { background: #1A6B3C !important; }
+.web-cat-btn[data-cat-color="미디어"].on    { background: #1A4F8B !important; }
+.web-cat-btn[data-cat-color="언론"].on      { background: #5A3E8B !important; }
+.web-cat-btn[data-cat-color="출판·교육"].on { background: #7A5230 !important; }
+.web-cat-btn[data-cat-color="교구"].on      { background: #2e5a3a !important; }
+.web-cat-btn[data-cat-color="전체"].on      { background: var(--pink-start) !important; }
 
 /* ═══════════════════════════════════════════════════════ */
 
@@ -1677,26 +1707,11 @@ function openPrayerBook(){
 }
 
 function openDioceseView(){
-  const view=document.getElementById('diocese-view');
-  const frame=document.getElementById('diocese-frame');
-  const loading=document.getElementById('diocese-loading');
-  if(loading) loading.style.display='flex';
-  if(frame) frame.src='https://bong0219-eng.github.io/diocese.html';
-  if(view){ view.classList.add('open'); }
-  _screen='map';
-  document.documentElement.classList.add('app-active');
+  // X-Frame-Options 문제로 새 탭 오픈
+  window.open('https://bong0219-eng.github.io/diocese.html','_blank');
 }
-function closeDioceseView(){
-  const view=document.getElementById('diocese-view');
-  const frame=document.getElementById('diocese-frame');
-  if(view) view.classList.remove('open');
-  if(frame) frame.src='about:blank';
-  goToCover();
-}
-function dioceseLoaded(){
-  const loading=document.getElementById('diocese-loading');
-  if(loading) loading.style.display='none';
-}
+function closeDioceseView(){ /* 더이상 사용 안 함 */ }
+function dioceseLoaded(){ /* 더이상 사용 안 함 */ }
 
 const CORE_RETURN_KEY='catholic_core_return_v1';
 function saveCoreReturnState(extra){
@@ -1857,6 +1872,7 @@ const _RT_RAW=[
 ];;
 
 
+  
 const RETREATS=_unpack(_RT_RAW);
 function _getCurrentItems(){return _mode==='shrine'?SHRINES:(_mode==='retreat'?RETREATS:PARISHES);}
 function _getModeTypeText(){return _mode==='shrine'?'성지':(_mode==='retreat'?'피정의 집':'성당');}
@@ -3684,16 +3700,7 @@ function _fmtTime(s){
   }, {passive:true});
 })();
 
-// ── 뒤로가기로 관구교구 뷰 닫기 ─────────────────────────────────
-(function(){
-  const orig = window.addEventListener;
-  // popstate에서 diocese-view 닫기를 기존 핸들러 내에 포함시킴
-  // → 기존 popstate 핸들러 앞에 처리하기 위해 capture 활용
-  window.addEventListener('popstate', function(e){
-    const dv = document.getElementById('diocese-view');
-    if(dv?.classList.contains('open')){ closeDioceseView(); }
-  }, true);
-})();
+// ── 관구교구: 새 탭으로 열기 - popstate 핸들러 불필요 ──
 
 (function(){
   const IDLE_MS = 10 * 60 * 1000; // 10분
@@ -3714,18 +3721,6 @@ function _fmtTime(s){
   _resetIdle();
 })();
 </script>
-
-<div id="diocese-view">
-  <div id="diocese-bar">
-    <span id="diocese-bar-title">⛪ 관구·교구 알아보기</span>
-    <button id="diocese-close" onclick="closeDioceseView()">×</button>
-  </div>
-  <div id="diocese-loading">
-    <div class="diocese-spinner"></div>
-    <div class="diocese-loading-txt">불러오는 중…</div>
-  </div>
-  <iframe id="diocese-frame" src="about:blank" onload="dioceseLoaded()"></iframe>
-</div>
 
 <div id="web-view" class="module-view">
   <div class="module-bar web">
@@ -4055,6 +4050,7 @@ function _fmtTime(s){
       btn.className = 'web-cat-btn' + (c===webState.curCat ? ' on' : '');
       btn.id = 'web-cat_' + c;
       btn.dataset.webCat = c;
+      btn.dataset.catColor = c; // CSS 선택자용
       btn.setAttribute('aria-pressed', c===webState.curCat ? 'true' : 'false');
       const count = c==='전체' ? WEB_SITES.length : WEB_SITES.filter(s => s.cat===c).length;
       btn.innerHTML = esc(c) + '<span class="cnt">' + count + '</span>';
@@ -4074,10 +4070,11 @@ function _fmtTime(s){
       const active = name===webState.curCat;
       btn.classList.toggle('on', active);
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      // 강조색 없음: 인라인 스타일 초기화
+      // 인라인 스타일 완전 제거 - CSS data-cat-color 속성으로 처리
       btn.style.background = '';
       btn.style.color = '';
       btn.style.borderColor = '';
+      btn.style.boxShadow = '';
     });
     return true;
   }
