@@ -6544,175 +6544,146 @@ a,
 </style>
 
 
-<style id="large-screen-unclip-fix-20260424">
-/* ===== 큰 화면 잘림 방지 + 모바일 유지 보정 ===== */
-/* 기능/로직/데이터 미수정: CSS만 덮어쓰기 */
 
-/* 최신 브라우저 높이 대응 */
+
+
+<style id="fold-fullscreen-layout-fix-20260424">
+/* ===== 폴드/태블릿/PC 전체화면 보정 ===== */
+/* 기능, 로직, 데이터는 건드리지 않고 레이아웃 제한폭만 해제 */
+
+/* 전체 앱은 항상 화면 전체 사용 */
 html, body {
   width: 100% !important;
+  min-width: 0 !important;
   min-height: 100dvh !important;
+  overflow-x: hidden !important;
 }
 
-/* 앱 전체가 고정 모바일 폭에 갇히지 않도록 */
+#app,
 #cover,
-#app {
+#map-wrap,
+#map {
   width: 100vw !important;
   max-width: none !important;
 }
 
-/* 커버는 화면 높이가 커져도 가운데/상단이 잘리지 않게 */
-#cover {
-  min-height: 100dvh !important;
-  height: 100dvh !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-}
-
-/* PC/폴드 펼침/태블릿: 커버 내용 폭을 적당히 넓히고 중앙 정렬 */
-@media (min-width: 600px) {
-  #cover {
-    padding-left: clamp(20px, 5vw, 72px) !important;
-    padding-right: clamp(20px, 5vw, 72px) !important;
-  }
-
-  .cover-grid,
-  .cv-grid,
-  .main-grid,
-  .cover-menu,
-  .cover-buttons,
-  .category-grid {
-    width: min(100%, 920px) !important;
-    max-width: 920px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(220px, 1fr)) !important;
-    gap: 14px !important;
-  }
-
-  .cover-card,
-  .cv-card,
-  .main-card,
-  .category-card {
-    width: 100% !important;
-    max-width: none !important;
-  }
-}
-
-/* 더 큰 PC에서는 3열까지 허용 */
-@media (min-width: 980px) {
-  .cover-grid,
-  .cv-grid,
-  .main-grid,
-  .cover-menu,
-  .cover-buttons,
-  .category-grid {
-    width: min(100%, 1080px) !important;
-    max-width: 1080px !important;
-    grid-template-columns: repeat(3, minmax(220px, 1fr)) !important;
-  }
-}
-
-/* 앱 내부 화면은 모바일에서는 전체폭, 큰 화면에서는 보기 좋은 최대폭 */
-@media (min-width: 700px) {
-  .sheet,
-  #info-card,
-  #sheet-route,
-  #srch-modal .sm-inner {
-    left: 50% !important;
-    right: auto !important;
-    width: min(100vw, 760px) !important;
-    max-width: 760px !important;
-    transform: translate(-50%, 100%) !important;
-  }
-
-  .sheet.open {
-    transform: translate(-50%, 0) !important;
-  }
-
-  #info-card.open {
-    left: 50% !important;
-    right: auto !important;
-    width: min(100vw, 760px) !important;
-    max-width: 760px !important;
-    transform: translateX(-50%) !important;
-  }
-
-  #sheet-route {
-    left: 50% !important;
-    right: auto !important;
-    width: min(100vw, 760px) !important;
-    max-width: 760px !important;
-    transform: translateX(-50%) !important;
-  }
-}
-
-/* 지도는 큰 화면에서도 절대 잘리지 않게 */
-#map-wrap,
-#map {
+/* 이전 반응형에서 생긴 중앙 제한폭/오른쪽 빈공간 제거 */
+#list-view,
+#search-view,
+#website-list,
+#trail-list,
+#pilgrimage-list,
+.website-view,
+.web-view,
+.trail-view,
+.pilgrim-view,
+.prayer-view,
+.site-list-wrap,
+.web-list-wrap,
+.trail-list-wrap,
+.pilgrim-list-wrap,
+.site-list,
+.web-list,
+.trail-list,
+.pilgrim-list,
+.link-list {
   width: 100% !important;
   max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
-/* 가톨릭웹사이트/순례길/기도문 리스트가 큰 화면에서 모바일 폭으로 잘리지 않게 */
+/* 웹사이트/순례길/기도문은 폴드 펼침에서도 전체 폭 사용 */
+.website-page,
+.web-page,
+.trail-page,
+.pilgrim-page,
+.prayer-page,
+.site-page {
+  width: 100vw !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+/* 카드가 너무 넓어지면 읽기 불편하므로 '카드 자체'만 적당히 제한하고 화면은 전체 사용 */
 @media (min-width: 700px) {
-  #list-view,
-  #search-view,
-  .website-view,
-  .web-view,
-  .trail-view,
-  .pilgrim-view,
-  .prayer-view,
-  .site-list-wrap,
-  .web-list-wrap,
-  .trail-list-wrap,
-  .pilgrim-list-wrap {
-    width: min(100vw, 820px) !important;
-    max-width: 820px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+  .site-card,
+  .web-card,
+  .trail-card,
+  .pilgrim-card,
+  .link-card {
+    max-width: 720px !important;
   }
 
   .site-list,
   .web-list,
   .trail-list,
   .pilgrim-list,
-  .prayer-list,
   .link-list {
-    width: 100% !important;
-    max-width: none !important;
+    align-items: center !important;
   }
+}
 
+/* 시트/인포카드는 폴드에서 중앙 제한하지 말고 전체 하단 시트처럼 */
+.sheet,
+#info-card,
+#sheet-route,
+#srch-modal .sm-inner {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100vw !important;
+  max-width: none !important;
+}
+
+.sheet {
+  transform: translateY(100%) !important;
+}
+.sheet.open {
+  transform: translateY(0) !important;
+}
+#info-card.open {
+  transform: none !important;
+}
+#sheet-route {
+  transform: none !important;
+}
+
+/* 순례길 지도 영역은 반드시 전체폭 */
+.trail-map,
+.pilgrim-map,
+#trail-map,
+#pilgrimage-map {
+  width: 100vw !important;
+  max-width: none !important;
+}
+
+/* 주요기도문 상세 본문이 반응형 영향으로 흔들리지 않게 고정 */
+#detail-view,
+.detail-body,
+.detail-content-card {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.detail-content-card {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+.detail-content-card p {
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+/* 작은 화면에서는 원래 모바일 폭 그대로 */
+@media (max-width: 699px) {
   .site-card,
   .web-card,
   .trail-card,
   .pilgrim-card,
-  .link-card,
-  .prayer-item,
-  .list-card {
-    width: 100% !important;
-    max-width: none !important;
-  }
-}
-
-/* 작은 화면은 기존 모바일 흐름 유지 */
-@media (max-width: 599px) {
-  .cover-grid,
-  .cv-grid,
-  .main-grid,
-  .cover-menu,
-  .cover-buttons,
-  .category-grid {
-    max-width: 100% !important;
-  }
-
-  .sheet,
-  #info-card,
-  #sheet-route {
-    left: 0 !important;
-    right: 0 !important;
-    width: 100vw !important;
+  .link-card {
     max-width: none !important;
   }
 }
