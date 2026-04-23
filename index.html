@@ -5962,6 +5962,274 @@ document.addEventListener('DOMContentLoaded', function(){
 
 })();
 </script>
+
+<script>
+(function(){
+  var APP_BACK_STATE_KEY = '__app_back_trap_v1__';
+
+  function isOpen(id){
+    var el = document.getElementById(id);
+    return !!(el && el.classList.contains('open'));
+  }
+  function isShown(id){
+    var el = document.getElementById(id);
+    return !!(el && el.classList.contains('show'));
+  }
+  function appActive(){
+    return document.documentElement.classList.contains('app-active');
+  }
+  function anyOverlayOpen(){
+    return isOpen('missa-view') || isOpen('diocese-view') || isOpen('prayer-view') ||
+           isOpen('web-view') || isOpen('trail-view') ||
+           isOpen('sheet-nearby') || isOpen('sheet-list') || isOpen('sheet-region') || isOpen('sheet-route') ||
+           isOpen('info-card') || isOpen('srch-modal') || isOpen('exit-dlg') ||
+           isShown('prayer-detail');
+  }
+  function ensureAppBackTrap(force){
+    try{
+      var st = history.state || {};
+      if(force || !st[APP_BACK_STATE_KEY]){
+        var next = Object.assign({}, st);
+        next[APP_BACK_STATE_KEY] = 1;
+        history.pushState(next, '', location.href);
+      }
+    }catch(e){}
+  }
+  window.ensureAppBackTrap = ensureAppBackTrap;
+
+  function closeIntegratedFirst(){
+    var trailSheet = document.getElementById('trail-sheet');
+    if(trailSheet && trailSheet.classList.contains('open')){
+      if(typeof window.trailCloseSheet === 'function') { window.trailCloseSheet(); return true; }
+    }
+    if(isOpen('web-view')){
+      if(typeof window.goToCover === 'function') { window.goToCover(); return true; }
+    }
+    if(isOpen('trail-view')){
+      if(typeof window.goToCover === 'function') { window.goToCover(); return true; }
+    }
+    return false;
+  }
+
+  var _origHandleBack = window._handleBack;
+  window._handleBack = function(){
+    if(isOpen('exit-dlg')){ if(typeof window.closeExitDlg==='function') window.closeExitDlg(); return; }
+    if(isOpen('srch-modal')){ if(typeof window.closeSearchModal==='function') window.closeSearchModal(); return; }
+
+    if(isOpen('missa-view')){ if(typeof window.closeMissa==='function') window.closeMissa(); if(typeof window.goToCover==='function') window.goToCover(); return; }
+    if(isOpen('diocese-view')){ if(typeof window.closeDioceseView==='function') window.closeDioceseView(); if(typeof window.goToCover==='function') window.goToCover(); return; }
+
+    if(isOpen('prayer-view')){
+      if(isShown('prayer-detail')){ if(typeof window.prCloseDetail==='function') window.prCloseDetail(true); return; }
+      if(typeof window.closePrayerView==='function') { window.closePrayerView(); return; }
+      if(typeof window.goToCover==='function') { window.goToCover(); return; }
+      return;
+    }
+
+    if(closeIntegratedFirst()) return;
+
+    if(isOpen('info-card')){ if(typeof window.closeInfoCard==='function') window.closeInfoCard(); return; }
+    if(window._activeTab){ if(typeof window.closeTab==='function') window.closeTab(window._activeTab); return; }
+    if(window._routeMode || window._rS || window._rE){ if(typeof window.resetRoute==='function') window.resetRoute(); window._routeMode=false; return; }
+
+    if(appActive()){
+      if(typeof window.goToCover==='function') window.goToCover();
+      return;
+    }
+
+    if(typeof _origHandleBack === 'function') return _origHandleBack();
+  };
+
+  window.addEventListener('popstate', function(){
+    if(appActive() || anyOverlayOpen()){
+      ensureAppBackTrap(true);
+      try{ window._handleBack(); }catch(e){}
+    }
+  });
+
+  document.addEventListener('backbutton', function(e){
+    if(appActive() || anyOverlayOpen()){
+      e.preventDefault();
+      ensureAppBackTrap(true);
+      try{ window._handleBack(); }catch(err){}
+    }
+  }, false);
+
+  var _origStartApp = window.startApp;
+  if(typeof _origStartApp === 'function'){
+    window.startApp = function(){
+      ensureAppBackTrap(true);
+      return _origStartApp.apply(this, arguments);
+    };
+  }
+
+  var _origOpenPrayerBook = window.openPrayerBook;
+  if(typeof _origOpenPrayerBook === 'function'){
+    window.openPrayerBook = function(){
+      ensureAppBackTrap(true);
+      return _origOpenPrayerBook.apply(this, arguments);
+    };
+  }
+
+  var _origOpenMissa = window.openMissa;
+  if(typeof _origOpenMissa === 'function'){
+    window.openMissa = function(){
+      ensureAppBackTrap(true);
+      return _origOpenMissa.apply(this, arguments);
+    };
+  }
+
+  var _origOpenDioceseView = window.openDioceseView;
+  if(typeof _origOpenDioceseView === 'function'){
+    window.openDioceseView = function(){
+      ensureAppBackTrap(true);
+      return _origOpenDioceseView.apply(this, arguments);
+    };
+  }
+
+  var _origOpenWebView = window.openWebView;
+  if(typeof _origOpenWebView === 'function'){
+    window.openWebView = function(){
+      ensureAppBackTrap(true);
+      return _origOpenWebView.apply(this, arguments);
+    };
+  }
+
+  var _origOpenTrailView = window.openTrailView;
+  if(typeof _origOpenTrailView === 'function'){
+    window.openTrailView = function(){
+      ensureAppBackTrap(true);
+      return _origOpenTrailView.apply(this, arguments);
+    };
+  }
+
+  var _origGoToCover = window.goToCover;
+  if(typeof _origGoToCover === 'function'){
+    window.goToCover = function(){
+      var result = _origGoToCover.apply(this, arguments);
+      try{
+        var bt = document.getElementById('_bt');
+        if(bt) bt.remove();
+        if(typeof window.closeMissa === 'function') window.closeMissa();
+        if(typeof window.closeDioceseView === 'function') window.closeDioceseView();
+        if(typeof window.closeSearchModal === 'function') window.closeSearchModal();
+        if(typeof window.closeExitDlg === 'function') window.closeExitDlg();
+        if(typeof window.prCloseDetail === 'function') window.prCloseDetail(true);
+        var pv = document.getElementById('prayer-view');
+        if(pv) pv.classList.remove('open');
+      }catch(e){}
+      return result;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    if(appActive() || anyOverlayOpen()) ensureAppBackTrap(true);
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  var prevHandleBack = window._handleBack;
+
+  function el(id){ return document.getElementById(id); }
+  function isOpen(id){
+    var n = el(id);
+    return !!(n && n.classList.contains('open'));
+  }
+  function isShown(id){
+    var n = el(id);
+    return !!(n && n.classList.contains('show'));
+  }
+  function appActive(){
+    return document.documentElement.classList.contains('app-active');
+  }
+
+  function closePrayerStep(){
+    if(!isOpen('prayer-view')) return false;
+    if(isShown('prayer-detail')){
+      if(typeof window.prCloseDetail === 'function') window.prCloseDetail(true);
+      return true;
+    }
+    if(typeof window.closePrayerView === 'function') window.closePrayerView();
+    else if(typeof window.goToCover === 'function') window.goToCover();
+    return true;
+  }
+
+  function closeTrailStep(){
+    if(!isOpen('trail-view')) return false;
+    var trailSheet = el('trail-sheet');
+    if(trailSheet && trailSheet.classList.contains('open')){
+      if(typeof window.trailCloseSheet === 'function') window.trailCloseSheet();
+      return true;
+    }
+    if(window.trailState && window.trailState.view === 'list'){
+      if(typeof window.trailSetView === 'function') window.trailSetView('map');
+      return true;
+    }
+    if(typeof window.goToCover === 'function') window.goToCover();
+    return true;
+  }
+
+  function closeWebStep(){
+    if(!isOpen('web-view')) return false;
+    // 웹사이트 카테고리는 내부 상세 단계가 없으므로 첫 화면에서만 커버 복귀
+    if(typeof window.goToCover === 'function') window.goToCover();
+    return true;
+  }
+
+  function closeMissaStep(){
+    if(!isOpen('missa-view')) return false;
+    if(typeof window.closeMissa === 'function') window.closeMissa();
+    if(typeof window.goToCover === 'function') window.goToCover();
+    return true;
+  }
+
+  function closeDioceseStep(){
+    if(!isOpen('diocese-view')) return false;
+    if(typeof window.closeDioceseView === 'function') window.closeDioceseView();
+    if(typeof window.goToCover === 'function') window.goToCover();
+    return true;
+  }
+
+  function closeCoreMapStep(){
+    // 성지/성당/피정의집/기타 지도계열: 내부 전단계 복귀 후 첫화면에서만 커버
+    if(isOpen('exit-dlg')){ if(typeof window.closeExitDlg === 'function') window.closeExitDlg(); return true; }
+    if(isOpen('srch-modal')){ if(typeof window.closeSearchModal === 'function') window.closeSearchModal(); return true; }
+    if(isOpen('info-card')){ if(typeof window.closeInfoCard === 'function') window.closeInfoCard(); return true; }
+    if(window._activeTab){
+      if(typeof window.closeTab === 'function') window.closeTab(window._activeTab);
+      return true;
+    }
+    if(window._routeMode || window._rS || window._rE){
+      // activeTab이 없는데 길찾기 상태만 남았을 때만 직접 리셋
+      if(typeof window.resetRoute === 'function') window.resetRoute();
+      try{ window._routeMode = false; }catch(e){}
+      return true;
+    }
+    if(appActive()){
+      if(typeof window.goToCover === 'function') window.goToCover();
+      return true;
+    }
+    return false;
+  }
+
+  window._handleBack = function(){
+    // 1) 사용자가 따로 만든 개별 닫기/뒤로가기 단계 우선
+    if(closePrayerStep()) return;
+    if(closeTrailStep()) return;
+    if(closeWebStep()) return;
+    if(closeMissaStep()) return;
+    if(closeDioceseStep()) return;
+    if(closeCoreMapStep()) return;
+
+    // 2) 커버에서는 기존 종료 규칙 유지
+    if(typeof prevHandleBack === 'function') return prevHandleBack();
+  };
+})();
+</script>
+
 </body>
 </html>
 
