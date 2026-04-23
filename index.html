@@ -5852,6 +5852,165 @@ window.initPrayerView = function(){
 
 })();
 </script>
+
+<style id="oai-final-color-fix-v2">
+/* ===== OAI final color/application fix for shrine/parish/retreat ===== */
+:root{
+  --oai-shrine-header:#7a5b36;
+  --oai-parish-header:#4f6f90;
+  --oai-retreat-header:#7fb39a;
+  --oai-gold:#d4aa6a;
+  --oai-gold-border:#c49a57;
+  --oai-btn:#eef1f4;
+  --oai-btn-border:#cfd6dd;
+  --oai-btn-text:#334155;
+  --oai-ivory:#e9deca;
+  --oai-ivory-border:#d6c6a8;
+}
+
+/* 1) 상단 4개 탭: 클릭=금색, 나머지=밝은 회색 */
+html:not(.parish-mode):not(.retreat-mode) #tabbar,
+html.parish-mode #tabbar,
+html.retreat-mode #tabbar{
+  background:rgba(255,255,255,.96)!important;
+  border-bottom:1px solid #d8dee6!important;
+}
+.tab-btn{
+  background:var(--oai-btn)!important;
+  color:var(--oai-btn-text)!important;
+  border:1.5px solid var(--oai-btn-border)!important;
+  border-bottom:1.5px solid var(--oai-btn-border)!important;
+  border-radius:12px!important;
+  min-height:48px!important;
+  padding:10px 0 9px!important;
+  margin:0!important;
+  box-shadow:none!important;
+}
+.tab-btn .tab-icon{color:inherit!important;}
+.tab-btn.active{
+  background:var(--oai-gold)!important;
+  color:#1f2937!important;
+  border-color:var(--oai-gold-border)!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+
+/* 2) 모드별 헤더 기본색 - 성당처럼 '헤더색'이 기준이 되도록 */
+html:not(.parish-mode):not(.retreat-mode) .sheet-hd,
+html:not(.parish-mode):not(.retreat-mode) .filter-bar,
+html:not(.parish-mode):not(.retreat-mode) .region-wrap,
+html:not(.parish-mode):not(.retreat-mode) .sm-hd,
+html:not(.parish-mode):not(.retreat-mode) .sm-filter{
+  background:var(--oai-shrine-header)!important;
+}
+html.parish-mode .sheet-hd,
+html.parish-mode .filter-bar,
+html.parish-mode .region-wrap,
+html.parish-mode .sm-hd,
+html.parish-mode .sm-filter{
+  background:var(--oai-parish-header)!important;
+}
+html.retreat-mode .sheet-hd,
+html.retreat-mode .filter-bar,
+html.retreat-mode .region-wrap,
+html.retreat-mode .sm-hd,
+html.retreat-mode .sm-filter{
+  background:var(--oai-retreat-header)!important;
+}
+
+/* 검색창 감싸는 배경은 진한 아이보리 */
+.srch-bar{
+  background:var(--oai-ivory)!important;
+  border-bottom:1px solid var(--oai-ivory-border)!important;
+}
+.srch-inner{
+  background:var(--oai-ivory)!important;
+  border:1.5px solid var(--oai-ivory-border)!important;
+}
+.srch-inner input,
+.srch-inner input::placeholder,
+.srch-x{color:#4b5563!important;}
+
+/* 헤더 글자 금색 금지: 잘 보이는 밝은색 */
+.sheet-title,
+.sm-title{color:#ffffff!important;}
+.sheet-x,
+.sm-x{color:#ffffff!important;border-color:rgba(255,255,255,.28)!important;}
+
+/* 3) 교구 버튼/검색 필터: 클릭=금색, 일반=밝은 회색 */
+.filter-btn,
+.sm-fb{
+  background:var(--oai-btn)!important;
+  color:var(--oai-btn-text)!important;
+  border:1.5px solid var(--oai-btn-border)!important;
+  box-shadow:none!important;
+}
+.filter-btn.active,
+.sm-fb.on,
+html:not(.parish-mode):not(.retreat-mode) .filter-btn.active,
+html:not(.parish-mode):not(.retreat-mode) .sm-fb.on,
+html.parish-mode .filter-btn.active,
+html.parish-mode .sm-fb.on,
+html.retreat-mode .filter-btn.active,
+html.retreat-mode .sm-fb.on{
+  background:var(--oai-gold)!important;
+  color:#1f2937!important;
+  border-color:var(--oai-gold-border)!important;
+}
+
+/* 4) 출발 검색의 성지/일반장소 버튼: 순례길 크기로 고정 */
+#sm-tab-bar,
+html:not(.parish-mode):not(.retreat-mode) #sm-tab-bar,
+html.parish-mode #sm-tab-bar,
+html.retreat-mode #sm-tab-bar{
+  background:inherit!important;
+  border-bottom:1px solid rgba(255,255,255,.14)!important;
+  padding:10px 14px!important;
+  height:55px!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+.sm-tab{
+  flex:1!important;
+  height:36px!important;
+  min-height:36px!important;
+  padding:0 10px!important;
+  border-radius:10px!important;
+  border:1.5px solid var(--oai-btn-border)!important;
+  background:var(--oai-btn)!important;
+  color:var(--oai-btn-text)!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  box-shadow:none!important;
+}
+.sm-tab.active,
+html:not(.parish-mode):not(.retreat-mode) .sm-tab.active,
+html.parish-mode .sm-tab.active,
+html.retreat-mode .sm-tab.active{
+  background:var(--oai-gold)!important;
+  color:#1f2937!important;
+  border-color:var(--oai-gold-border)!important;
+}
+
+/* 5) 피정의집 기본색은 중간 밝기 파스텔 */
+html.retreat-mode .region-list-hd,
+html.retreat-mode .ric-lbl,
+html.retreat-mode .dio-hd,
+html.retreat-mode .li-name,
+html.retreat-mode .nearby-name,
+html.retreat-mode .nearby-dist{color:#4e7f67!important;}
+html.retreat-mode .li-badge,
+html.retreat-mode .nearby-type,
+html.retreat-mode .ic-type-badge{
+  background:#e5f1ea!important;
+  color:#4e7f67!important;
+}
+
+/* 6) 검색/헤더 영역 연결감 정리 */
+.filter-bar{border-bottom:1px solid rgba(255,255,255,.12)!important;}
+.region-wrap{border-top:none!important;}
+</style>
+
 </body>
 </html>
 
