@@ -6230,6 +6230,186 @@ document.addEventListener('DOMContentLoaded', function(){
 })();
 </script>
 
+
+<script>
+/* ===== 최종 백트랩 고정 패치 ===== */
+(function(){
+  var ORIG_HANDLE = window._handleBack;
+  var trapArmed = false;
+
+  function el(id){ return document.getElementById(id); }
+  function hasOpen(id){ var n=el(id); return !!(n && n.classList.contains('open')); }
+  function hasShow(id){ var n=el(id); return !!(n && n.classList.contains('show')); }
+  function appActive(){
+    return document.documentElement.classList.contains('app-active')
+      || hasOpen('prayer-view') || hasOpen('missa-view') || hasOpen('diocese-view')
+      || hasOpen('web-view') || hasOpen('trail-view') || hasOpen('info-card')
+      || hasOpen('sheet-list') || hasOpen('sheet-nearby') || hasOpen('sheet-region') || hasOpen('sheet-route')
+      || hasOpen('srch-modal') || hasOpen('exit-dlg');
+  }
+
+  function currentTrailView(){
+    try{
+      if(window.trailState && window.trailState.view) return window.trailState.view;
+    }catch(e){}
+    var listPanel = el('trail-panel-list');
+    if(listPanel && listPanel.classList.contains('on')) return 'list';
+    return 'map';
+  }
+
+  function armTrap(force){
+    if(!appActive()){
+      trapArmed = false;
+      return;
+    }
+    if(trapArmed && !force) return;
+    try{
+      history.pushState({__appTrap__:Date.now()}, '', location.href);
+      trapArmed = true;
+    }catch(e){}
+  }
+
+  function afterBackHandled(){
+    setTimeout(function(){
+      if(appActive()) armTrap(true);
+      else trapArmed = false;
+    }, 0);
+  }
+
+  function finalHandleBack(){
+    // 0) 최상위 오버레이
+    if(hasOpen('exit-dlg')){ if(typeof window.closeExitDlg==='function') window.closeExitDlg(); afterBackHandled(); return; }
+    if(hasOpen('srch-modal')){ if(typeof window.closeSearchModal==='function') window.closeSearchModal(); afterBackHandled(); return; }
+
+    // 1) 매일미사 / 관구교구 : 첫 페이지에서만 커버 복귀
+    if(hasOpen('missa-view')){
+      if(typeof window.closeMissa==='function') window.closeMissa();
+      if(typeof window.goToCover==='function') window.goToCover();
+      afterBackHandled();
+      return;
+    }
+    if(hasOpen('diocese-view')){
+      if(typeof window.closeDioceseView==='function') window.closeDioceseView();
+      if(typeof window.goToCover==='function') window.goToCover();
+      afterBackHandled();
+      return;
+    }
+
+    // 2) 기도문 : 상세 -> 목록 -> 커버
+    if(hasOpen('prayer-view')){
+      if(hasShow('prayer-detail')){
+        if(typeof window.prCloseDetail==='function') window.prCloseDetail(true);
+        var body = el('prayer-detail-body');
+        if(body) body.scrollTop = 0;
+        afterBackHandled();
+        return;
+      }
+      if(typeof window.closePrayerView==='function') window.closePrayerView();
+      else if(typeof window.goToCover==='function') window.goToCover();
+      afterBackHandled();
+      return;
+    }
+
+    // 3) 순례길 : 시트 -> 목록이면 지도 -> 첫 화면이면 커버
+    if(hasOpen('trail-view')){
+      var trailSheet = el('trail-sheet');
+      if(trailSheet && trailSheet.classList.contains('open')){
+        if(typeof window.trailCloseSheet==='function') window.trailCloseSheet();
+        afterBackHandled();
+        return;
+      }
+      if(currentTrailView() === 'list'){
+        if(typeof window.trailSetView==='function') window.trailSetView('map');
+        afterBackHandled();
+        return;
+      }
+      if(typeof window.goToCover==='function') window.goToCover();
+      afterBackHandled();
+      return;
+    }
+
+    // 4) 웹사이트 : 내부 첫 화면이면 커버
+    if(hasOpen('web-view')){
+      if(typeof window.goToCover==='function') window.goToCover();
+      afterBackHandled();
+      return;
+    }
+
+    // 5) 성지/성당/피정의집 : 전단계 복귀
+    if(hasOpen('info-card')){ if(typeof window.closeInfoCard==='function') window.closeInfoCard(); afterBackHandled(); return; }
+    if(window._activeTab){ if(typeof window.closeTab==='function') window.closeTab(window._activeTab); afterBackHandled(); return; }
+    if(window._routeMode || window._rS || window._rE){ if(typeof window.resetRoute==='function') window.resetRoute(); window._routeMode=false; afterBackHandled(); return; }
+
+    // 6) 앱 내부 첫 화면이면 커버
+    if(document.documentElement.classList.contains('app-active')){
+      if(typeof window.goToCover==='function') window.goToCover();
+      afterBackHandled();
+      return;
+    }
+
+    // 7) 커버에서는 기존 종료 규칙 유지
+    trapArmed = false;
+    if(typeof ORIG_HANDLE === 'function') return ORIG_HANDLE();
+  }
+
+  window._handleBack = finalHandleBack;
+  window.handleBack = finalHandleBack;
+
+  window.addEventListener('popstate', function(ev){
+    if(appActive()){
+      finalHandleBack();
+    }else{
+      trapArmed = false;
+    }
+  });
+
+  document.addEventListener('backbutton', function(ev){
+    if(appActive()){
+      ev.preventDefault();
+      finalHandleBack();
+    }
+  }, false);
+
+  // 진입 시 백트랩 장전
+  ['startApp','openPrayerBook','openMissa','openDioceseView','openWebView','openTrailView'].forEach(function(name){
+    var orig = window[name];
+    if(typeof orig !== 'function') return;
+    if(orig.__backTrapWrapped) return;
+    var wrapped = function(){
+      var r = orig.apply(this, arguments);
+      setTimeout(function(){ armTrap(true); }, 0);
+      return r;
+    };
+    wrapped.__backTrapWrapped = true;
+    window[name] = wrapped;
+  });
+
+  // cover 복귀 시 트랩 해제
+  if(typeof window.goToCover === 'function' && !window.goToCover.__backTrapWrapped){
+    var origGo = window.goToCover;
+    var wrappedGo = function(){
+      var r = origGo.apply(this, arguments);
+      trapArmed = false;
+      return r;
+    };
+    wrappedGo.__backTrapWrapped = true;
+    window.goToCover = wrappedGo;
+  }
+
+  // 명시적 뒤로가기 버튼 중 history.back()가 남아 있을 때 보정
+  setTimeout(function(){
+    try{
+      var prayerBack = document.querySelector('#prayer-detail .pr-back');
+      if(prayerBack) prayerBack.setAttribute('onclick','_handleBack()');
+    }catch(e){}
+  }, 0);
+
+  document.addEventListener('DOMContentLoaded', function(){
+    trapArmed = false;
+  });
+})();
+</script>
+
 </body>
 </html>
 
