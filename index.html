@@ -2917,6 +2917,124 @@ window.__DIOCESE_EMBED_HTML = "<!DOCTYPE html>\n<html lang=\"ko\">\n<head>\n<met
 })();
 </script>
 
+
+<style id="start-search-color-fix-20260424">
+/* ===== 출발 성지/성당/피정의집 검색 모달 색상 보정 ===== */
+/* 기능/로직/데이터 미수정: 검색창 배경, 성지/일반지역 버튼, 분리선만 보정 */
+
+/* 기본 고유색 변수: 성지=남색, 성당=갈색 기존톤, 피정의집=녹색 */
+:root{
+  --start-shrine-main:#0e1535;
+  --start-parish-main:#5D3A1A;
+  --start-retreat-main:#558B2F;
+  --start-gold:#d4aa6a;
+  --start-gold-dark:#1F2937;
+  --start-ivory:#efe5d4;
+  --start-line:rgba(255,255,255,.24);
+}
+
+/* 출발 검색 전체 상단 헤더/버튼 감싸는 배경 = 고유색 */
+#srch-modal .sm-hd,
+#srch-modal .sm-filter{
+  background:var(--start-shrine-main) !important;
+  border-bottom:1px solid var(--start-line) !important;
+}
+
+html.parish-mode #srch-modal .sm-hd,
+html.parish-mode #srch-modal .sm-filter{
+  background:var(--start-parish-main) !important;
+}
+
+html.retreat-mode #srch-modal .sm-hd,
+html.retreat-mode #srch-modal .sm-filter{
+  background:var(--start-retreat-main) !important;
+}
+
+/* 검색창을 감싸고 있는 배경 = 진한 아이보리 */
+#srch-modal .sm-srch{
+  background:var(--start-ivory) !important;
+  border-bottom:1px solid #d7c8ad !important;
+  padding:10px 12px !important;
+}
+
+/* 검색 input 박스 */
+#srch-modal .sm-si{
+  height:42px !important;
+  background:#fffaf0 !important;
+  border:1.5px solid #d4c3a4 !important;
+  border-radius:14px !important;
+}
+
+#srch-modal .sm-si input{
+  color:#1F2937 !important;
+}
+
+#srch-modal .sm-si input::placeholder{
+  color:#7c6f5c !important;
+}
+
+/* 성지/성당/피정의집 · 일반지역 버튼: 높이 40 고정 */
+#srch-modal .sm-tab{
+  height:40px !important;
+  min-height:40px !important;
+  max-height:40px !important;
+  padding:0 12px !important;
+  border-radius:12px !important;
+  border:1.5px solid rgba(255,255,255,.34) !important;
+  background:rgba(255,255,255,.12) !important;
+  color:rgba(255,255,255,.9) !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:40px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+/* 성지/일반지역 활성 버튼 강조색 = 금색 */
+#srch-modal .sm-tab.active{
+  background:var(--start-gold) !important;
+  color:var(--start-gold-dark) !important;
+  border-color:var(--start-gold) !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.16) !important;
+}
+
+/* 버튼 안 아이콘/텍스트도 명암 보정 */
+#srch-modal .sm-tab.active *{
+  color:var(--start-gold-dark) !important;
+}
+
+/* 버튼 감싸는 영역에 분리선 추가 */
+#srch-modal .sm-filter{
+  gap:8px !important;
+  padding:9px 12px !important;
+  box-shadow:inset 0 -1px 0 rgba(0,0,0,.14) !important;
+}
+
+/* 검색창 영역과 결과 영역 사이 분리선 */
+#srch-modal .sm-body{
+  border-top:1px solid #d7c8ad !important;
+  background:#fff !important;
+}
+
+/* 결과 그룹 헤더 분리선 */
+#srch-modal .sm-grp{
+  border-top:1px solid #eef0f4 !important;
+  border-bottom:1px solid #e5e7eb !important;
+}
+
+/* 닫기 버튼은 고유색 위에서 잘 보이게 */
+#srch-modal .sm-title{
+  color:#ffffff !important;
+}
+
+#srch-modal .sm-x{
+  color:#ffffff !important;
+  background:rgba(255,255,255,.14) !important;
+  border-color:rgba(255,255,255,.28) !important;
+}
+</style>
+
 </body>\n</html>";
 function openDioceseView(){
   const view=$('diocese-view');
