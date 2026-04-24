@@ -3718,182 +3718,191 @@ html.retreat-mode #srch-modal .sm-filter{
 </style>
 
 
-<style id="performance-light-fix-20260424">
-/* 체감속도 보정: 화면 밖 리스트/카드 렌더 부담 축소 */
-.web-card,.trail-card,.list-item,.nearby-item,.region-item,.sm-item,.sm-place-item{
-  content-visibility:auto;
-  contain-intrinsic-size:80px;
-}
-.module-view,.sheet,#srch-modal,#info-card,#missa-view{
-  will-change:auto;
-}
-a,button,.cv-hotspot,.web-card,.trail-card,.list-item,.nearby-item,.region-item{
-  touch-action:manipulation;
-}
+<style id="performance-light-fix-v21-20260424">
+.web-card,.trail-card,.list-item,.nearby-item,.region-item,.sm-item,.sm-place-item{content-visibility:auto;contain-intrinsic-size:80px;}
+a,button,.cv-hotspot,.web-card,.trail-card,.list-item,.nearby-item,.region-item{touch-action:manipulation;}
 </style>
 
 
-<script id="keyboard-link-diocese-fix-20260424">
+<script id="keyboard-diocese-safe-v21-20260424">
 (function(){
-  if(window.__KEYBOARD_LINK_DIOCESE_FIX__) return;
-  window.__KEYBOARD_LINK_DIOCESE_FIX__=true;
+  if(window.__KEYBOARD_DIOCESE_SAFE_V21__) return;
+  window.__KEYBOARD_DIOCESE_SAFE_V21__=true;
 
-  function $(id){return document.getElementById(id);}
+  function byId(id){return document.getElementById(id);}
   function blurNow(){
     try{
       var a=document.activeElement;
-      if(a && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable)){
-        a.blur();
-      }
+      if(a && (a.tagName==='INPUT' || a.tagName==='TEXTAREA' || a.isContentEditable)){ a.blur(); }
     }catch(e){}
   }
 
-  /* 모든 검색창: Enter/검색 후 키보드 닫기 */
   document.addEventListener('keydown',function(e){
     if(e.key==='Enter'){
       var t=e.target;
-      if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA')){
-        setTimeout(blurNow,20);
-      }
+      if(t && (t.tagName==='INPUT' || t.tagName==='TEXTAREA')) setTimeout(blurNow,20);
     }
   },true);
 
-  document.addEventListener('change',function(e){
-    var t=e.target;
-    if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA')){
-      setTimeout(blurNow,60);
-    }
-  },true);
-
-  /* 검색 결과 선택 / 지역찾기 / 출발지·도착지 선택 시 키보드 닫기 */
   document.addEventListener('click',function(e){
-    var hit=e.target.closest(
-      '.sm-item,.sm-place-item,.region-item,.nearby-item,.list-item,.region-search-btn,#rs-search-btn,.rs-start-box,.rs-end-box,.filter-btn,.sm-fb,.sm-tab'
-    );
+    var hit=e.target.closest('.sm-item,.sm-place-item,.region-item,.nearby-item,.list-item,.region-search-btn,#rs-search-btn,.rs-start-box,.rs-end-box,.filter-btn,.sm-fb,.sm-tab');
     if(hit) setTimeout(blurNow,10);
   },true);
 
-  /* input 이벤트 기반 검색도 멈춘 뒤 키보드가 남는 경우 보정 */
-  var inputTimer=null;
-  document.addEventListener('input',function(e){
-    var t=e.target;
-    if(!t || (t.tagName!=='INPUT' && t.tagName!=='TEXTAREA')) return;
-    clearTimeout(inputTimer);
-    inputTimer=setTimeout(function(){
-      /* 값 입력 직후 바로 닫지는 않고, 검색 결과 클릭/Enter에서 닫음 */
-    },250);
-  },true);
+  document.addEventListener('submit',function(){ setTimeout(blurNow,10); },true);
 
-  /* 외부 링크 체감속도: href가 있는 링크는 클릭 즉시 브라우저에 맡김 */
   document.addEventListener('click',function(e){
     var a=e.target.closest('a[href]');
     if(!a) return;
-    var href=a.getAttribute('href')||'';
+    var href=a.getAttribute('href') || '';
     if(!href || href==='#' || href.indexOf('javascript:')===0) return;
     setTimeout(blurNow,0);
-    try{ a.rel = (a.rel ? a.rel + ' ' : '') + 'noopener'; }catch(err){}
+    try{ if(!a.rel || a.rel.indexOf('noopener')<0) a.rel=(a.rel?a.rel+' ':'')+'noopener'; }catch(err){}
   },true);
 
-  /* 관구교구보기: 관구별보기에서 교구 글자 클릭 시 인포카드 강제 표시 보강 */
-  function textOf(el){return (el && (el.innerText||el.textContent)||'').trim();}
-  function normalizeName(s){
-    return String(s||'')
-      .replace(/\s+/g,'')
-      .replace(/천주교|가톨릭|교구청|교구|대교구|군종/g,'')
-      .replace(/[()（）ㆍ·\-_]/g,'')
-      .toLowerCase();
+  function txt(el){return (el && (el.innerText || el.textContent) || '').trim();}
+  function norm(s){
+    return String(s||'').replace(/\s+/g,'').replace(/천주교|가톨릭|교구청|교구|대교구|군종/g,'').replace(/[()（）ㆍ·\-_]/g,'').toLowerCase();
   }
 
-  function findDioceseByText(txt){
-    if(!txt) return null;
-    var n=normalizeName(txt);
+  function findData(name){
+    var n=norm(name);
     var pools=[];
-    try{ if(Array.isArray(window.DIOCESE_DATA)) pools.push.apply(pools,window.DIOCESE_DATA); }catch(e){}
-    try{ if(Array.isArray(window._DIOCESE_DATA)) pools.push.apply(pools,window._DIOCESE_DATA); }catch(e){}
-    try{ if(Array.isArray(window.DIOCESES)) pools.push.apply(pools,window.DIOCESES); }catch(e){}
-    try{ if(Array.isArray(window._DIOCESES)) pools.push.apply(pools,window._DIOCESES); }catch(e){}
-    try{ if(window.dioceseData && typeof window.dioceseData==='object') pools.push.apply(pools,Object.values(window.dioceseData)); }catch(e){}
-    try{ if(window.DIOCESE_INFO && typeof window.DIOCESE_INFO==='object') pools.push.apply(pools,Object.values(window.DIOCESE_INFO)); }catch(e){}
-
+    try{ if(Array.isArray(window.DIOCESE_DATA)) pools=pools.concat(window.DIOCESE_DATA); }catch(e){}
+    try{ if(Array.isArray(window._DIOCESE_DATA)) pools=pools.concat(window._DIOCESE_DATA); }catch(e){}
+    try{ if(Array.isArray(window.DIOCESES)) pools=pools.concat(window.DIOCESES); }catch(e){}
+    try{ if(Array.isArray(window._DIOCESES)) pools=pools.concat(window._DIOCESES); }catch(e){}
+    try{ if(window.dioceseData && typeof window.dioceseData==='object') pools=pools.concat(Object.values(window.dioceseData)); }catch(e){}
+    try{ if(window.DIOCESE_INFO && typeof window.DIOCESE_INFO==='object') pools=pools.concat(Object.values(window.DIOCESE_INFO)); }catch(e){}
     for(var i=0;i<pools.length;i++){
-      var d=pools[i]||{};
-      var name=d.name||d.title||d.diocese||d.label||d.nm||'';
-      if(!name) continue;
-      var dn=normalizeName(name);
+      var d=pools[i] || {};
+      var nm=d.name || d.title || d.diocese || d.label || d.nm || '';
+      var dn=norm(nm);
       if(dn && (dn===n || dn.indexOf(n)>-1 || n.indexOf(dn)>-1)) return d;
     }
-    return {name:txt};
+    return {name:name};
   }
 
-  function fallbackCard(data){
-    var card=$('diocese-info-card') || $('diocese-card') || $('province-info-card') || $('info-card');
+  function showFallbackCard(data){
+    var card=byId('diocese-info-card') || byId('diocese-card') || byId('province-info-card');
     if(!card){
       card=document.createElement('div');
       card.id='diocese-info-card';
-      card.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:9998;background:#fff;border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.22);padding:16px;border:1px solid #e5e7eb;';
+      card.style.position='fixed';
+      card.style.left='12px';
+      card.style.right='12px';
+      card.style.bottom='calc(14px + env(safe-area-inset-bottom,0px))';
+      card.style.zIndex='9998';
+      card.style.background='#fff';
+      card.style.borderRadius='18px';
+      card.style.boxShadow='0 8px 28px rgba(0,0,0,.22)';
+      card.style.padding='16px';
+      card.style.border='1px solid #e5e7eb';
       document.body.appendChild(card);
     }
-    var name=data.name||data.title||data.diocese||data.label||'교구';
-    var addr=data.addr||data.address||data.location||'';
-    var tel=data.tel||data.phone||'';
-    var url=data.url||data.homepage||data.hp||data.link||'';
-    card.innerHTML =
-      '<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;">'
-      + '<div style="font-size:17px;font-weight:900;color:#111827;">'+name+'</div>'
-      + '<button type="button" onclick="this.closest(\\'#diocese-info-card\\').style.display=\\'none\\'" style="width:30px;height:30px;border-radius:50%;border:0;background:#f3f4f6;font-size:18px;">×</button>'
-      + '</div>'
-      + (addr?'<div style="font-size:13px;color:#4b5563;line-height:1.5;margin-bottom:4px;">📍 '+addr+'</div>':'')
-      + (tel?'<div style="font-size:13px;color:#4b5563;line-height:1.5;margin-bottom:4px;">☎ '+tel+'</div>':'')
-      + (url?'<div style="margin-top:10px;"><a href="'+url+'" target="_blank" rel="noopener" style="display:block;text-align:center;background:#0e1535;color:#fff;text-decoration:none;border-radius:12px;padding:11px;font-weight:800;">홈페이지 열기</a></div>':'');
+
+    while(card.firstChild) card.removeChild(card.firstChild);
+
+    var top=document.createElement('div');
+    top.style.display='flex';
+    top.style.justifyContent='space-between';
+    top.style.alignItems='center';
+    top.style.gap='10px';
+    top.style.marginBottom='8px';
+
+    var title=document.createElement('div');
+    title.textContent=data.name || data.title || data.diocese || data.label || '교구';
+    title.style.fontSize='17px';
+    title.style.fontWeight='900';
+    title.style.color='#111827';
+
+    var close=document.createElement('button');
+    close.type='button';
+    close.textContent='×';
+    close.style.width='30px';
+    close.style.height='30px';
+    close.style.borderRadius='50%';
+    close.style.border='0';
+    close.style.background='#f3f4f6';
+    close.style.fontSize='18px';
+    close.onclick=function(){ card.style.display='none'; card.classList.remove('open'); };
+
+    top.appendChild(title);
+    top.appendChild(close);
+    card.appendChild(top);
+
+    var addr=data.addr || data.address || data.location || '';
+    var tel=data.tel || data.phone || '';
+    var url=data.url || data.homepage || data.hp || data.link || '';
+
+    if(addr){
+      var a=document.createElement('div');
+      a.textContent='📍 '+addr;
+      a.style.fontSize='13px';
+      a.style.color='#4b5563';
+      a.style.lineHeight='1.5';
+      a.style.marginBottom='4px';
+      card.appendChild(a);
+    }
+    if(tel){
+      var t=document.createElement('div');
+      t.textContent='☎ '+tel;
+      t.style.fontSize='13px';
+      t.style.color='#4b5563';
+      t.style.lineHeight='1.5';
+      t.style.marginBottom='4px';
+      card.appendChild(t);
+    }
+    if(url){
+      var link=document.createElement('a');
+      link.href=url;
+      link.target='_blank';
+      link.rel='noopener';
+      link.textContent='홈페이지 열기';
+      link.style.display='block';
+      link.style.textAlign='center';
+      link.style.background='#0e1535';
+      link.style.color='#fff';
+      link.style.textDecoration='none';
+      link.style.borderRadius='12px';
+      link.style.padding='11px';
+      link.style.fontWeight='800';
+      link.style.marginTop='10px';
+      card.appendChild(link);
+    }
+
     card.style.display='block';
     card.classList.add('open');
-    return true;
   }
 
-  function showDioceseCardFromText(txt){
-    var data=findDioceseByText(txt);
+  function showCard(name){
+    var data=findData(name);
     try{
-      if(typeof window.showDioceseInfo==='function'){window.showDioceseInfo(data);return true;}
-      if(typeof window.openDioceseInfo==='function'){window.openDioceseInfo(data);return true;}
-      if(typeof window.showDioceseCard==='function'){window.showDioceseCard(data);return true;}
-      if(typeof window.openDioceseCard==='function'){window.openDioceseCard(data);return true;}
-      if(typeof window.selectDiocese==='function'){window.selectDiocese(data.code||data.id||txt);return true;}
+      if(typeof window.showDioceseInfo==='function'){ window.showDioceseInfo(data); return; }
+      if(typeof window.openDioceseInfo==='function'){ window.openDioceseInfo(data); return; }
+      if(typeof window.showDioceseCard==='function'){ window.showDioceseCard(data); return; }
+      if(typeof window.openDioceseCard==='function'){ window.openDioceseCard(data); return; }
+      if(typeof window.selectDiocese==='function'){ window.selectDiocese(data.code || data.id || name); return; }
     }catch(e){}
-    return fallbackCard(data);
+    showFallbackCard(data);
   }
 
   document.addEventListener('click',function(e){
-    var target=e.target.closest(
-      '.province-view .diocese-name,.province-view .diocese-label,.province-view text,.province-view [data-diocese],'
-      +'.diocese-province .diocese-name,.diocese-province .diocese-label,.diocese-province text,.diocese-province [data-diocese],'
-      +'#diocese-view .diocese-name,#diocese-view .diocese-label,#diocese-view text,#diocese-view [data-diocese],'
-      +'#diocese-map-view .diocese-name,#diocese-map-view .diocese-label,#diocese-map-view text,#diocese-map-view [data-diocese]'
-    );
+    var target=e.target.closest('.province-view .diocese-name,.province-view .diocese-label,.province-view [data-diocese],.diocese-province .diocese-name,.diocese-province .diocese-label,.diocese-province [data-diocese],#diocese-view .diocese-name,#diocese-view .diocese-label,#diocese-view [data-diocese],#diocese-map-view .diocese-name,#diocese-map-view .diocese-label,#diocese-map-view [data-diocese]');
     if(!target) return;
-
-    var txt=target.getAttribute('data-diocese')||target.getAttribute('data-name')||textOf(target);
-    if(!txt) return;
-    var isProbablyDiocese=/교구|대교구|군종|서울|대구|광주|수원|인천|대전|부산|청주|마산|안동|전주|제주|원주|춘천|의정부/.test(txt);
-    if(!isProbablyDiocese) return;
-
+    var name=target.getAttribute('data-diocese') || target.getAttribute('data-name') || txt(target);
+    if(!name) return;
+    if(!/교구|대교구|군종|서울|대구|광주|수원|인천|대전|부산|청주|마산|안동|전주|제주|원주|춘천|의정부/.test(name)) return;
     blurNow();
-    setTimeout(function(){showDioceseCardFromText(txt);},0);
+    setTimeout(function(){ showCard(name); },0);
   },true);
 
-  /* 지역명 별칭 보강: 경기 시흥시 등 공백/도/시 변형 정규화 함수 전역 제공 */
-  window.__normalizeRegionAlias = function(s){
+  window.__normalizeRegionAlias=function(s){
     s=String(s||'').trim();
     var compact=s.replace(/\s+/g,'');
     var noDo=compact.replace(/^경기도?/,'경기').replace(/^강원도?/,'강원').replace(/^충청북도?/,'충북').replace(/^충청남도?/,'충남').replace(/^전라북도?/,'전북').replace(/^전라남도?/,'전남').replace(/^경상북도?/,'경북').replace(/^경상남도?/,'경남');
-    return Array.from(new Set([
-      s, compact, noDo,
-      noDo.replace(/^경기/,'경기도'),
-      noDo.replace(/시$/,''),
-      noDo.replace(/^경기/,'').replace(/시$/,''),
-      noDo.replace(/^경기/,'')
-    ].filter(Boolean)));
+    return Array.from(new Set([s,compact,noDo,noDo.replace(/^경기/,'경기도'),noDo.replace(/시$/,''),noDo.replace(/^경기/,'').replace(/시$/,''),noDo.replace(/^경기/,'')].filter(Boolean)));
   };
-
 })();
 </script>
 
