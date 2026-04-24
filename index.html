@@ -3686,5 +3686,53 @@ html.retreat-mode #srch-modal .sm-filter{
 }
 </style>
 
+  // ===== 뒤로가기 안정화 패치 =====
+
+// 앱 진입 시 스택 확보
+window.addEventListener("load", function () {
+  history.replaceState({ app: true }, "");
+  history.pushState({ app: true }, "");
+});
+
+// 카테고리 클릭 시 스택 추가
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest(".category, .menu-btn, .card, .tab-btn");
+  if (btn) {
+    history.pushState({ app: true }, "");
+  }
+});
+
+// 뒤로가기 제어
+window.addEventListener("popstate", function (e) {
+  const appActive = document.documentElement.classList.contains("app-active");
+
+  // 커버가 아니면 앱 안으로 잡아두기
+  if (appActive) {
+    e.preventDefault();
+
+    // 열린 것부터 닫기
+    if (document.getElementById("srch-modal")?.classList.contains("open")) {
+      document.getElementById("srch-modal").classList.remove("open");
+      history.pushState({ app: true }, "");
+      return;
+    }
+
+    if (document.getElementById("detail-view")?.classList.contains("show")) {
+      document.getElementById("detail-view").classList.remove("show");
+      history.pushState({ app: true }, "");
+      return;
+    }
+
+    if (document.querySelector(".sheet.open")) {
+      document.querySelector(".sheet.open").classList.remove("open");
+      history.pushState({ app: true }, "");
+      return;
+    }
+
+    // 마지막이면 커버로
+    document.documentElement.classList.remove("app-active");
+    history.pushState({ app: true }, "");
+  }
+});
 </body>
 </html>
