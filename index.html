@@ -3497,15 +3497,15 @@ window.initPrayerView = function(){
 <script id="principle-back-controller-20260424">
 /*
  * ═══════════════════════════════════════════════════════════
- *  뒤로가기 대원칙 (이 블록만 수정)
+ *  뒤로가기 대원칙
  *
- *  [대전제] 커버에서만 앱 탈출. 그 외에는 절대 탈출하지 않음.
+ *  [대전제] 커버에서만 앱 탈출.
  *
  *  처리 우선순위:
  *   1. 외부링크 뷰(미사/기도문/교구지도) 열려있음 → 닫기만 (커버 이동 없음)
  *   2. 카테고리 내 팝업/시트/카드/모달 열려있음 → 하나씩 닫기 (전단계 복귀)
  *   3. 아무것도 없고 앱 안에 있음 → 커버로 복귀
- *   4. 커버 상태 → 아무것도 하지 않음 (브라우저 기본 동작 = 앱 탈출)
+ *   4. 커버 상태 → 브라우저 기본 동작 (앱 탈출)
  * ═══════════════════════════════════════════════════════════
  */
 (function(){
@@ -3533,18 +3533,29 @@ window.initPrayerView = function(){
   }
 
   /* ── history 트랩 ──
-     popstate 이벤트가 반드시 발생하도록 항상 트랩 1개를 앞에 유지.
-     커버 상태에서는 트랩을 쌓지 않으므로 브라우저가 자연스럽게 탈출 가능.
+     앱 활성 상태에서 뒤로가기 popstate가 반드시 발생하도록 트랩을 유지.
+     트랩이 2개 이상 쌓이지 않도록 체크.
   */
+  var _trapPushed = false;
+
   function pushTrap(){
-    if(!appActive()) return;          // 커버 상태엔 트랩 불필요
-    try{ history.pushState({__back__:1},'',location.href); }catch(e){}
+    if(!appActive()) return;
+    try{
+      history.pushState({__back__:1},'',location.href);
+      _trapPushed = true;
+    }catch(e){}
   }
 
-  /* 페이지 로드 시 기본 상태 1개만 세팅 (덮어쓰기) */
+  function ensureTrap(){
+    /* 이미 트랩이 있으면 추가하지 않음 */
+    if(_trapPushed) return;
+    pushTrap();
+  }
+
+  /* 페이지 로드 시 루트 상태 1개 */
   try{ history.replaceState({__root__:1},'',location.href); }catch(e){}
 
-  /* ── 외부링크 뷰 닫기 (원칙 1) ── */
+  /* ── 외부링크·임베드 뷰 닫기 (원칙 1) ── */
   var EXT_VIEWS = [
     { id:'missa-view',   close:'closeMissa'        },
     { id:'prayer-view',  close:'closePrayerView'   },
@@ -3600,16 +3611,18 @@ window.initPrayerView = function(){
     var trailSh = document.querySelector('.trail-sheet.open');
     if(trailSh){ trailSh.classList.remove('open'); return true; }
 
-    /* 일반 sheet (목록/내주변/지역) — 가장 나중에 열린 것부터 */
+    /* 일반 sheet */
     var sheets = document.querySelectorAll('.sheet.open');
     if(sheets.length){
       sheets[sheets.length-1].classList.remove('open'); return true;
     }
 
-    /* module-view (웹링크 목록·순례길 등) */
+    /* module-view (web-view, trail-view) */
     var mods = document.querySelectorAll('.module-view.open');
     if(mods.length){
-      mods[mods.length-1].classList.remove('open'); return true;
+      mods[mods.length-1].classList.remove('open');
+      /* module-view가 닫혀도 앱은 살아있으므로 트랩 유지 */
+      return true;
     }
 
     return false;
@@ -3617,9 +3630,8 @@ window.initPrayerView = function(){
 
   /* ── 커버로 복귀 (원칙 3) ── */
   function returnToCover(){
-    /* 앱의 goToCover() 함수 사용 — 마커 정리 등 내부 상태도 함께 처리 */
+    _trapPushed = false; /* 커버로 가면 트랩 초기화 */
     if(callIfExists('goToCover')) return;
-    /* fallback */
     document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');
     var cover = g('cover'), app = g('app');
     if(app)   app.style.display = 'none';
@@ -3628,41 +3640,107 @@ window.initPrayerView = function(){
 
   /* ── 메인 핸들러 ── */
   function onBack(ev){
-    /* 원칙 4: 커버 상태 → 아무것도 하지 않음 (브라우저 탈출) */
-    if(!appActive()) return;
+    if(!appActive()) return; /* 커버 → 기본 동작(앱 탈출) */
 
-    /* 앱 활성 상태 → 브라우저 기본 동작 차단 */
     if(ev && ev.preventDefault) ev.preventDefault();
     if(ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation();
 
-    /* 원칙 1: 외부링크 뷰 */
+    _trapPushed = false; /* popstate가 발생했으므로 트랩 소비됨 */
+
     if(closeExternalView()){ pushTrap(); return; }
-
-    /* 원칙 2: 카테고리 내 레이어 */
-    if(closeTopLayer()){ pushTrap(); return; }
-
-    /* 원칙 3: 커버로 복귀 */
+    if(closeTopLayer())    { pushTrap(); return; }
     returnToCover();
-    /* 커버로 복귀한 뒤에는 트랩 불필요 — 다음 popstate는 브라우저가 처리 */
   }
 
-  /* popstate: 트랩이 pop되면 항상 onBack 호출 */
   window.addEventListener('popstate', onBack, true);
-
-  /* Cordova/WebView 물리 뒤로가기 버튼 */
   document.addEventListener('backbutton', onBack, true);
 
-  /* startApp 진입마다 트랩 보강 */
+  /* ── 뷰 열릴 때 트랩 자동 주입 ──
+     openDioceseView / openPrayerBook / openWebView / openTrailView /
+     startApp / showSheet / openSearchModal 등 래핑
+  */
+  function wrapFn(name, before){
+    var orig = window[name];
+    window[name] = function(){
+      var r = orig ? orig.apply(this, arguments) : undefined;
+      if(before) before();
+      return r;
+    };
+  }
+
+  /* startApp: 앱 진입 시 트랩 */
   var _origStartApp = window.startApp;
   window.startApp = function(){
     var r = _origStartApp ? _origStartApp.apply(this, arguments) : undefined;
-    setTimeout(pushTrap, 50);
+    _trapPushed = false;
+    setTimeout(pushTrap, 60);
     return r;
   };
 
-  /* 클릭마다 트랩 보강 (이미 있으면 중복 방지) */
+  /* goToCover 래핑: 커버 복귀 시 트랩 초기화 */
+  var _origGoToCover = window.goToCover;
+  window.goToCover = function(){
+    _trapPushed = false;
+    return _origGoToCover ? _origGoToCover.apply(this, arguments) : undefined;
+  };
+
+  /* openDioceseView: 열릴 때 트랩 */
+  var _origOpenDioceseView = window.openDioceseView;
+  window.openDioceseView = function(){
+    var r = _origOpenDioceseView ? _origOpenDioceseView.apply(this, arguments) : undefined;
+    _trapPushed = false;
+    setTimeout(pushTrap, 60);
+    return r;
+  };
+
+  /* openPrayerBook: 열릴 때 트랩 */
+  var _origOpenPrayerBook = window.openPrayerBook;
+  window.openPrayerBook = function(){
+    var r = _origOpenPrayerBook ? _origOpenPrayerBook.apply(this, arguments) : undefined;
+    _trapPushed = false;
+    setTimeout(pushTrap, 60);
+    return r;
+  };
+
+  /* openWebView / openTrailView: 열릴 때 트랩 */
+  var _origOpenWebView = window.openWebView;
+  window.openWebView = function(){
+    var r = _origOpenWebView ? _origOpenWebView.apply(this, arguments) : undefined;
+    _trapPushed = false;
+    setTimeout(pushTrap, 60);
+    return r;
+  };
+
+  var _origOpenTrailView = window.openTrailView;
+  window.openTrailView = function(){
+    var r = _origOpenTrailView ? _origOpenTrailView.apply(this, arguments) : undefined;
+    _trapPushed = false;
+    setTimeout(pushTrap, 60);
+    return r;
+  };
+
+  /* closeMissa / closePrayerView / closeDioceseView 래핑:
+     닫은 후 앱이 살아있으면 트랩 재주입 */
+  function wrapClose(name){
+    var orig = window[name];
+    window[name] = function(){
+      var r = orig ? orig.apply(this, arguments) : undefined;
+      _trapPushed = false;
+      setTimeout(function(){
+        if(appActive()) pushTrap();
+      }, 60);
+      return r;
+    };
+  }
+  wrapClose('closeMissa');
+  wrapClose('closePrayerView');
+  wrapClose('closeDioceseView');
+
+  /* 클릭 시 트랩 보강 (앱 활성 중 항상) */
   document.addEventListener('click', function(){
-    setTimeout(function(){ pushTrap(); }, 200);
+    setTimeout(function(){
+      if(appActive() && !_trapPushed) pushTrap();
+    }, 250);
   }, false);
 
 })();
