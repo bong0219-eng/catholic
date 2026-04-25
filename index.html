@@ -33,7 +33,7 @@
     <div class="missa-spinner"></div>
     <div class="missa-loading-txt">오늘의 매일미사 불러오는 중…</div>
   </div>
-  <iframe id="missa-frame" src="about:blank" onload="missaLoaded()"></iframe>
+  <iframe id="missa-frame" src="about:blank" onload="if(typeof missaLoaded==='function')missaLoaded()">
 </div>
 <div id="exit-dlg"><div class="exit-box"><h3>앱을 종료할까요?</h3><p>성지순례 앱을 종료합니다.</p><div class="exit-btns"><button class="exit-cancel" onclick="closeExitDlg()">취소</button><button class="exit-ok" onclick="doExit()">종료</button></div></div>
 </div>
@@ -46,7 +46,7 @@
     <div class="missa-spinner"></div>
     <div class="missa-loading-txt">교구 지도를 불러오는 중…</div>
   </div>
-  <iframe id="diocese-frame" src="about:blank" onload="dioceseLoaded()" style="flex:1;width:100%;border:none;background:#fff;"></iframe>
+  <iframe id="diocese-frame" src="about:blank" onload="if(typeof dioceseLoaded==='function')dioceseLoaded()" style="flex:1;width:100%;border:none;background:#fff;"></iframe>
 </div>
 <div id="prayer-view">
   <div id="prayer-bar">
@@ -317,8 +317,9 @@ function openDioceseView(){
   const view=$('diocese-view');
   const frame=$('diocese-frame');
   const loading=$('diocese-loading');
+  if(!view||!frame) return;
   if(loading) loading.style.display='flex';
-  frame.removeAttribute('src');
+  try{ frame.removeAttribute('src'); }catch(e){}
   frame.srcdoc=window.__DIOCESE_EMBED_HTML||'';
   view.classList.add('open');
 }
@@ -3497,251 +3498,164 @@ window.initPrayerView = function(){
 <script id="principle-back-controller-20260424">
 /*
  * ═══════════════════════════════════════════════════════════
- *  뒤로가기 대원칙
+ *  뒤로가기 원칙 (이 블록만 관리)
  *
  *  [대전제] 커버에서만 앱 탈출.
  *
- *  처리 우선순위:
- *   1. 외부링크 뷰(미사/기도문/교구지도) 열려있음 → 닫기만 (커버 이동 없음)
- *   2. 카테고리 내 팝업/시트/카드/모달 열려있음 → 하나씩 닫기 (전단계 복귀)
- *   3. 아무것도 없고 앱 안에 있음 → 커버로 복귀
- *   4. 커버 상태 → 브라우저 기본 동작 (앱 탈출)
+ *  처리 순서:
+ *   1. 외부 뷰(미사/기도문/교구지도) 열려있음 → 닫기만
+ *   2. 카테고리 레이어(시트/카드/모달) 열려있음 → 하나씩 닫기
+ *   3. 웹/순례길 module-view 열려있음 → 닫기
+ *   4. 아무것도 없고 앱 활성 → 커버로 복귀
+ *   5. 커버에서 두 번 → 앱 탈출
+ *
+ *  핵심 전략: [#stay(0), #app(1)] 2개 항목 유지, back → go(1)으로 복원 → UI만 JS처리
+ *  커버에서 두 번째 뒤로가기 → 앱 종료 시도
  * ═══════════════════════════════════════════════════════════
  */
 (function(){
-  if(window.__PRINCIPLE_BACK_INIT__) return;
-  window.__PRINCIPLE_BACK_INIT__ = true;
+  'use strict';
+  if(window.__BACK_CTRL__) return;
+  window.__BACK_CTRL__ = true;
+
+  var _base = location.href.split('#')[0];
+
+  /* ── history 초기화: [#stay(0), #app(1)] ── */
+  try{
+    history.replaceState({_p:0}, '', _base+'#stay');
+    history.pushState({_p:1}, '', _base+'#app');
+  }catch(e){}
 
   /* ── 유틸 ── */
-  function g(id){ return document.getElementById(id); }
-
-  function isVisible(el){
-    if(!el) return false;
-    if(el.classList.contains('open'))  return true;
-    if(el.classList.contains('show'))  return true;
-    var d = el.style.display;
-    return d === 'block' || d === 'flex';
-  }
+  function $id(id){ return document.getElementById(id); }
 
   function appActive(){
     return document.documentElement.classList.contains('app-active');
   }
 
-  function callIfExists(name){
-    try{ if(typeof window[name]==='function'){ window[name](); return true; } }catch(e){}
-    return false;
-  }
-
-  /* ── history 트랩 ──
-     앱 활성 상태에서 뒤로가기 popstate가 반드시 발생하도록 트랩을 유지.
-     트랩이 2개 이상 쌓이지 않도록 체크.
-  */
-  var _trapPushed = false;
-
-  function pushTrap(){
-    if(!appActive()) return;
-    try{
-      history.pushState({__back__:1},'',location.href);
-      _trapPushed = true;
-    }catch(e){}
-  }
-
-  function ensureTrap(){
-    /* 이미 트랩이 있으면 추가하지 않음 */
-    if(_trapPushed) return;
-    pushTrap();
-  }
-
-  /* 페이지 로드 시 루트 상태 1개 */
-  try{ history.replaceState({__root__:1},'',location.href); }catch(e){}
-
-  /* ── 외부링크·임베드 뷰 닫기 (원칙 1) ── */
-  var EXT_VIEWS = [
-    { id:'missa-view',   close:'closeMissa'        },
-    { id:'prayer-view',  close:'closePrayerView'   },
-    { id:'diocese-view', close:'closeDioceseView'  }
-  ];
-
-  function closeExternalView(){
-    for(var i=0;i<EXT_VIEWS.length;i++){
-      var v = EXT_VIEWS[i];
-      var el = g(v.id);
-      if(!isVisible(el)) continue;
-      if(callIfExists(v.close)) return true;
-      el.classList.remove('open');
-      el.style.display = 'none';
+  /* ── 외부 뷰(미사/기도문/교구지도) 닫기 ── */
+  function closeExt(){
+    var defs = [
+      {id:'missa-view',   fn:'closeMissa'      },
+      {id:'prayer-view',  fn:'closePrayerView' },
+      {id:'diocese-view', fn:'closeDioceseView'}
+    ];
+    for(var i=0;i<defs.length;i++){
+      var el = $id(defs[i].id);
+      if(!el || !el.classList.contains('open')) continue;
+      var fn = window[defs[i].fn];
+      if(typeof fn === 'function') fn();
+      else { el.classList.remove('open'); }
       return true;
     }
     return false;
   }
 
-  /* ── 카테고리 내 레이어 닫기 (원칙 2) ── */
-  function closeTopLayer(){
+  /* ── 카테고리 레이어 닫기 ── */
+  function closeLayer(){
     var el;
 
-    /* 종료 확인 다이얼로그 */
-    el = g('exit-dlg');
+    el = $id('exit-dlg');
+    if(el && el.classList.contains('open')){ el.classList.remove('open'); return true; }
+
+    el = $id('srch-modal');
     if(el && el.classList.contains('open')){
-      el.classList.remove('open'); return true;
-    }
-
-    /* 검색 모달 */
-    el = g('srch-modal');
-    if(el && el.classList.contains('open')){
-      callIfExists('closeSearchModal');
-      el.classList.remove('open'); return true;
-    }
-
-    /* 인포카드 */
-    el = g('info-card');
-    if(el && el.classList.contains('open')){
-      callIfExists('closeInfoCard');
-      el.classList.remove('open');
-      el.style.display = 'none'; return true;
-    }
-
-    /* 경로 시트 */
-    el = g('sheet-route');
-    if(el && el.classList.contains('open')){
-      el.classList.remove('open');
-      el.style.display = 'none'; return true;
-    }
-
-    /* 순례길 하단 시트 */
-    var trailSh = document.querySelector('.trail-sheet.open');
-    if(trailSh){ trailSh.classList.remove('open'); return true; }
-
-    /* 일반 sheet */
-    var sheets = document.querySelectorAll('.sheet.open');
-    if(sheets.length){
-      sheets[sheets.length-1].classList.remove('open'); return true;
-    }
-
-    /* module-view (web-view, trail-view) */
-    var mods = document.querySelectorAll('.module-view.open');
-    if(mods.length){
-      mods[mods.length-1].classList.remove('open');
-      /* module-view가 닫혀도 앱은 살아있으므로 트랩 유지 */
+      if(typeof window.closeSearchModal==='function') window.closeSearchModal();
+      else el.classList.remove('open');
       return true;
     }
+
+    el = $id('info-card');
+    if(el && el.classList.contains('open')){
+      if(typeof window.closeInfoCard==='function') window.closeInfoCard();
+      else { el.classList.remove('open'); el.style.display='none'; }
+      return true;
+    }
+
+    el = $id('sheet-route');
+    if(el && el.classList.contains('open')){ el.classList.remove('open'); el.style.display='none'; return true; }
+
+    /* _activeTab 처리 (기존 함수 활용) */
+    if(typeof window._activeTab !== 'undefined' && window._activeTab){
+      if(typeof window.closeTab === 'function'){ window.closeTab(window._activeTab); return true; }
+    }
+
+    /* 경로 모드 */
+    if(window._routeMode || window._rS || window._rE){
+      if(typeof window.resetRoute==='function') window.resetRoute();
+      window._routeMode = false;
+      return true;
+    }
+
+    var tsh = document.querySelector('.trail-sheet.open');
+    if(tsh){ tsh.classList.remove('open'); return true; }
+
+    var sheets = document.querySelectorAll('.sheet.open');
+    if(sheets.length){ sheets[sheets.length-1].classList.remove('open'); return true; }
+
+    var mods = document.querySelectorAll('.module-view.open');
+    if(mods.length){ mods[mods.length-1].classList.remove('open'); return true; }
 
     return false;
   }
 
-  /* ── 커버로 복귀 (원칙 3) ── */
-  function returnToCover(){
-    _trapPushed = false; /* 커버로 가면 트랩 초기화 */
-    if(callIfExists('goToCover')) return;
-    document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');
-    var cover = g('cover'), app = g('app');
-    if(app)   app.style.display = 'none';
-    if(cover) cover.style.display = '';
-  }
+  /* ── popstate 핸들러 ── */
+  var _restoring = false;
 
-  /* ── 메인 핸들러 ── */
-  function onBack(ev){
-    if(!appActive()) return; /* 커버 → 기본 동작(앱 탈출) */
+  window.addEventListener('popstate', function(ev){
+    /* go(1) 복원 직후의 popstate — URL만 고정하고 종료 */
+    if(_restoring){
+      _restoring = false;
+      try{
+        history.replaceState({_p:1}, '', _base+'#app');
+      }catch(e){}
+      return;
+    }
 
-    if(ev && ev.preventDefault) ev.preventDefault();
-    if(ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+    /* ── 커버 상태 ── */
+    if(!appActive()){
+      /* 두 번 눌러 종료 (토스트 후 탈출) */
+      _restoring = true;
+      history.go(1); /* 위치 복원 */
+      if(typeof window._showBackToast === 'function') window._showBackToast();
+      return;
+    }
 
-    _trapPushed = false; /* popstate가 발생했으므로 트랩 소비됨 */
+    /* ── 앱 활성 상태: 항상 go(1) 먼저 복원 후 UI 처리 ── */
+    _restoring = true;
+    history.go(1);
 
-    if(closeExternalView()){ pushTrap(); return; }
-    if(closeTopLayer())    { pushTrap(); return; }
-    returnToCover();
-  }
+    if(closeExt())    return;
+    if(closeLayer())  return;
 
-  window.addEventListener('popstate', onBack, true);
-  document.addEventListener('backbutton', onBack, true);
-
-  /* ── 뷰 열릴 때 트랩 자동 주입 ──
-     openDioceseView / openPrayerBook / openWebView / openTrailView /
-     startApp / showSheet / openSearchModal 등 래핑
-  */
-  function wrapFn(name, before){
-    var orig = window[name];
-    window[name] = function(){
-      var r = orig ? orig.apply(this, arguments) : undefined;
-      if(before) before();
-      return r;
-    };
-  }
-
-  /* startApp: 앱 진입 시 트랩 */
-  var _origStartApp = window.startApp;
-  window.startApp = function(){
-    var r = _origStartApp ? _origStartApp.apply(this, arguments) : undefined;
-    _trapPushed = false;
-    setTimeout(pushTrap, 60);
-    return r;
-  };
-
-  /* goToCover 래핑: 커버 복귀 시 트랩 초기화 */
-  var _origGoToCover = window.goToCover;
-  window.goToCover = function(){
-    _trapPushed = false;
-    return _origGoToCover ? _origGoToCover.apply(this, arguments) : undefined;
-  };
-
-  /* openDioceseView: 열릴 때 트랩 */
-  var _origOpenDioceseView = window.openDioceseView;
-  window.openDioceseView = function(){
-    var r = _origOpenDioceseView ? _origOpenDioceseView.apply(this, arguments) : undefined;
-    _trapPushed = false;
-    setTimeout(pushTrap, 60);
-    return r;
-  };
-
-  /* openPrayerBook: 열릴 때 트랩 */
-  var _origOpenPrayerBook = window.openPrayerBook;
-  window.openPrayerBook = function(){
-    var r = _origOpenPrayerBook ? _origOpenPrayerBook.apply(this, arguments) : undefined;
-    _trapPushed = false;
-    setTimeout(pushTrap, 60);
-    return r;
-  };
-
-  /* openWebView / openTrailView: 열릴 때 트랩 */
-  var _origOpenWebView = window.openWebView;
-  window.openWebView = function(){
-    var r = _origOpenWebView ? _origOpenWebView.apply(this, arguments) : undefined;
-    _trapPushed = false;
-    setTimeout(pushTrap, 60);
-    return r;
-  };
-
-  var _origOpenTrailView = window.openTrailView;
-  window.openTrailView = function(){
-    var r = _origOpenTrailView ? _origOpenTrailView.apply(this, arguments) : undefined;
-    _trapPushed = false;
-    setTimeout(pushTrap, 60);
-    return r;
-  };
-
-  /* closeMissa / closePrayerView / closeDioceseView 래핑:
-     닫은 후 앱이 살아있으면 트랩 재주입 */
-  function wrapClose(name){
-    var orig = window[name];
-    window[name] = function(){
-      var r = orig ? orig.apply(this, arguments) : undefined;
-      _trapPushed = false;
-      setTimeout(function(){
-        if(appActive()) pushTrap();
-      }, 60);
-      return r;
-    };
-  }
-  wrapClose('closeMissa');
-  wrapClose('closePrayerView');
-  wrapClose('closeDioceseView');
-
-  /* 클릭 시 트랩 보강 (앱 활성 중 항상) */
-  document.addEventListener('click', function(){
-    setTimeout(function(){
-      if(appActive() && !_trapPushed) pushTrap();
-    }, 250);
+    /* 아무것도 닫을 게 없으면 커버로 복귀 */
+    if(typeof window.goToCover === 'function') window.goToCover();
+    else {
+      document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');
+      var cover=$id('cover'), app=$id('app');
+      if(app) app.style.display='none';
+      if(cover) cover.style.display='';
+    }
   }, false);
+
+  /* Cordova 물리 백버튼 */
+  document.addEventListener('backbutton', function(){
+    if(!appActive()){
+      if(typeof window._showBackToast === 'function') window._showBackToast();
+      return;
+    }
+    if(closeExt())   return;
+    if(closeLayer()) return;
+    if(typeof window.goToCover === 'function') window.goToCover();
+  }, false);
+
+  /* 백그라운드 복귀 시 URL 정합성 유지 */
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState !== 'visible') return;
+    try{
+      history.replaceState({_p:1}, '', _base+'#app');
+    }catch(e){}
+  });
 
 })();
 </script>
