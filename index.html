@@ -3495,9 +3495,13 @@ window.initPrayerView = function(){
  * ═══════════════════════════════════════════════════════════
  *  뒤로가기 원칙
  *  [대전제] 커버에서만 앱 탈출.
- *  전략: go(1) 방식 — [#stay(0), #app(1)] 2개 항목 유지
- *        back → 위치0 → popstate → go(1)복원 → UI만 JS처리
- *        커버에서: 1번=토스트, 2번=앱종료
+ *
+ *  핵심 설계:
+ *  - go(1) 방식: [루트(0), 트랩(1)] 유지 → back → go(1) → UI처리
+ *  - 외부뷰(미사/기도/교구지도)/모듈뷰(웹/순례길) 닫힐 때 → goToCover()
+ *  - 카테고리 레이어(시트/카드/모달) → 하나씩 닫기
+ *  - 아무것도 없고 앱 활성 → goToCover()
+ *  - 커버 상태 → 토스트 → 두 번째 → 앱 종료
  * ═══════════════════════════════════════════════════════════
  */
 (function(){
@@ -3505,10 +3509,9 @@ window.initPrayerView = function(){
   if(window.__BACK_CTRL__) return;
   window.__BACK_CTRL__ = true;
 
-  /* URL 변경 없이 state 객체만으로 [루트(0), 트랩(1)] 2개 항목 유지
-     → file:// 환경의 iframe Unsafe origin 에러 방지 */
   var _href = location.href.split('#')[0];
 
+  /* history 초기화 */
   try{
     history.replaceState({_p:0}, '', _href);
     history.pushState({_p:1}, '', _href);
@@ -3517,85 +3520,110 @@ window.initPrayerView = function(){
   function $b(id){ return document.getElementById(id); }
   function appActive(){ return document.documentElement.classList.contains('app-active'); }
 
-  /* 외부 뷰 닫기 */
-  function closeExt(){
-    /* 매일미사: 닫기만, 앱 유지 */
-    var missa=$b('missa-view');
-    if(missa&&missa.classList.contains('open')){
-      if(typeof window.closeMissa==='function') window.closeMissa();
+  function callGTC(){
+    if(typeof window.goToCover === 'function') window.goToCover();
+    else {
+      document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');
+      var cv = $b('cover'); if(cv) cv.style.display = '';
+    }
+  }
+
+  /* ── 외부·모듈 뷰 닫기 (닫으면 항상 goToCover) ── */
+  function closeExtOrModule(){
+    /* 매일미사 */
+    var missa = $b('missa-view');
+    if(missa && missa.classList.contains('open')){
+      if(typeof window.closeMissa === 'function') window.closeMissa();
       else missa.classList.remove('open');
-      return 'keep';
+      callGTC(); return true;
     }
-    /* 기도문/교구지도: 닫고 커버로 복귀 */
-    var prayer=$b('prayer-view');
-    if(prayer&&prayer.classList.contains('open')){
-      closePrayerView();
-      return 'cover';
+    /* 기도문 */
+    var prayer = $b('prayer-view');
+    if(prayer && prayer.classList.contains('open')){
+      if(typeof window.closePrayerView === 'function') window.closePrayerView();
+      else prayer.classList.remove('open');
+      callGTC(); return true;
     }
-    var diocese=$b('diocese-view');
-    if(diocese&&diocese.classList.contains('open')){
-      if(typeof window.closeDioceseView==='function') window.closeDioceseView();
+    /* 교구지도 */
+    var diocese = $b('diocese-view');
+    if(diocese && diocese.classList.contains('open')){
+      if(typeof window.closeDioceseView === 'function') window.closeDioceseView();
       else diocese.classList.remove('open');
-      return 'cover';
+      callGTC(); return true;
+    }
+    /* module-view (웹/순례길) */
+    var mods = document.querySelectorAll('.module-view.open');
+    if(mods.length){
+      mods[mods.length-1].classList.remove('open');
+      callGTC(); return true;
     }
     return false;
   }
 
-  /* 카테고리 레이어 닫기 */
+  /* ── 카테고리 레이어 닫기 (하나씩) ── */
   function closeLayer(){
     var el;
-    el=$b('exit-dlg');   if(el&&el.classList.contains('open')){el.classList.remove('open');return true;}
-    el=$b('srch-modal'); if(el&&el.classList.contains('open')){if(typeof window.closeSearchModal==='function')window.closeSearchModal();else el.classList.remove('open');return true;}
-    el=$b('info-card');  if(el&&el.classList.contains('open')){if(typeof window.closeInfoCard==='function')window.closeInfoCard();else{el.classList.remove('open');el.style.display='none';}return true;}
-    el=$b('sheet-route');if(el&&el.classList.contains('open')){el.classList.remove('open');el.style.display='none';return true;}
-    if(window._activeTab&&typeof window.closeTab==='function'){window.closeTab(window._activeTab);return true;}
-    if((window._routeMode||window._rS||window._rE)&&typeof window.resetRoute==='function'){window.resetRoute();window._routeMode=false;return true;}
-    var tsh=document.querySelector('.trail-sheet.open'); if(tsh){tsh.classList.remove('open');return true;}
-    var ss=document.querySelectorAll('.sheet.open');     if(ss.length){ss[ss.length-1].classList.remove('open');return true;}
-    var ms=document.querySelectorAll('.module-view.open');if(ms.length){ms[ms.length-1].classList.remove('open');return true;}
+    el = $b('exit-dlg');
+    if(el && el.classList.contains('open')){ el.classList.remove('open'); return true; }
+
+    el = $b('srch-modal');
+    if(el && el.classList.contains('open')){
+      if(typeof window.closeSearchModal==='function') window.closeSearchModal();
+      else el.classList.remove('open');
+      return true;
+    }
+    el = $b('info-card');
+    if(el && el.classList.contains('open')){
+      if(typeof window.closeInfoCard==='function') window.closeInfoCard();
+      else{ el.classList.remove('open'); el.style.display='none'; }
+      return true;
+    }
+    el = $b('sheet-route');
+    if(el && el.classList.contains('open')){ el.classList.remove('open'); el.style.display='none'; return true; }
+
+    if(window._activeTab && typeof window.closeTab==='function'){ window.closeTab(window._activeTab); return true; }
+
+    var tsh = document.querySelector('.trail-sheet.open');
+    if(tsh){ tsh.classList.remove('open'); return true; }
+
+    var sheets = document.querySelectorAll('.sheet.open');
+    if(sheets.length){ sheets[sheets.length-1].classList.remove('open'); return true; }
+
     return false;
   }
 
-  var _restoring=false;
+  /* ── popstate 핸들러 ── */
+  var _restoring = false;
 
   window.addEventListener('popstate', function(){
-    /* go(1) 직후 복원 popstate — 무시 */
-    if(_restoring){ _restoring=false; return; }
+    if(_restoring){ _restoring = false; return; }
 
-    /* 커버 상태: 토스트 → 두 번째에 종료 */
+    /* 커버: 토스트 → 두 번째에 종료 */
     if(!appActive()){
-      _restoring=true;
+      _restoring = true;
       history.go(1);
       if(typeof window._showBackToast==='function') window._showBackToast();
       return;
     }
 
-    /* 앱 활성: go(1) 복원 후 UI 처리 */
-    _restoring=true;
+    /* 앱 활성: go(1) 복원 후 처리 */
+    _restoring = true;
     history.go(1);
-    var extResult=closeExt();
-    if(extResult==='cover'){
-      if(typeof window.goToCover==='function') window.goToCover();
-      else{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');var cv=$b('cover');if(cv)cv.style.display='';}
-      return;
-    }
-    if(extResult==='keep') return;
-    if(closeLayer()) return;
-    if(typeof window.goToCover==='function') window.goToCover();
-    else{
-      document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');
-      var cv=$b('cover'); if(cv) cv.style.display='';
-    }
+
+    if(closeExtOrModule()) return;  /* 닫으면서 goToCover() 이미 호출됨 */
+    if(closeLayer()) return;        /* 레이어만 닫기, 앱 유지 */
+    callGTC();                      /* 아무것도 없으면 커버로 */
   }, false);
 
   /* Cordova 물리 백버튼 */
   document.addEventListener('backbutton', function(){
-    if(!appActive()){if(typeof window._showBackToast==='function')window._showBackToast();return;}
-    var extResult=closeExt();
-    if(extResult==='cover'){if(typeof window.goToCover==='function')window.goToCover();return;}
-    if(extResult==='keep') return;
+    if(!appActive()){
+      if(typeof window._showBackToast==='function') window._showBackToast();
+      return;
+    }
+    if(closeExtOrModule()) return;
     if(closeLayer()) return;
-    if(typeof window.goToCover==='function') window.goToCover();
+    callGTC();
   }, false);
 
 })();
