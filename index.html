@@ -274,6 +274,7 @@ function openMissa(){
   if(loading) loading.style.display='flex';
   frame.src=url;
   view.classList.add('open');
+  _screen='ext';
   // pushState 없음: hideCoverAndRun이 이미 pushState 처리함
 }
 function closeMissa(){
@@ -281,6 +282,7 @@ function closeMissa(){
   const frame=$('missa-frame');
   view.classList.remove('open');
   frame.src='about:blank';
+  if(_screen==='ext') _screen='cover';
 }
 function missaLoaded(){
   const loading=$('missa-loading');
@@ -293,12 +295,14 @@ function openPrayerBook(){
   const cv=$('cover');
   if(cv){ cv.style.opacity='0'; cv.style.display='none'; }
   document.documentElement.classList.add('app-active');
+  _screen='ext';
   view.classList.add('open');
   setTimeout(function(){ if(typeof window.initPrayerView==='function') try{window.initPrayerView();}catch(e){} }, 50);
 }
 function closePrayerView(){
   const view=$('prayer-view');
   if(view) view.classList.remove('open');
+  if(_screen==='ext') _screen='cover';
 }
 function _closePrayerAndReturn(){
   closePrayerView();
@@ -317,12 +321,14 @@ function openDioceseView(){
   try{ frame.removeAttribute('src'); }catch(e){}
   frame.srcdoc=window.__DIOCESE_EMBED_HTML||'';
   view.classList.add('open');
+  _screen='ext';
 }
 function closeDioceseView(){
   var view=document.getElementById('diocese-view');
   var frame=document.getElementById('diocese-frame');
   if(view) view.classList.remove('open');
   if(frame){ frame.srcdoc=''; frame.src='about:blank'; }
+  if(_screen==='ext') _screen='cover';
 }
 function dioceseLoaded(){
   const loading=$('diocese-loading');
@@ -2482,13 +2488,9 @@ function _fmtTime(s){
    op:"천주교 서울대교구", url:"https://m.catholic.or.kr/web/addr/",
    desc:"교구·본당·기관 연락처와 주소를 모바일에서 빠르게 확인"},
   {cat:"신앙 포털", ico:"📘", name:"가톨릭 용어사전",
-   op:"천주교 서울대교구", url:"http://qainfo.catholic.or.kr/mobile/dictionary/",
+   op:"Q&A 정보마당", url:"http://qainfo.catholic.or.kr/mobile/dictionary/",
    desc:"가톨릭 교리·전례·성경 용어를 모바일 사전으로 조회"},
-  {cat:"신앙 포털", ico:"🕊️", name:"가톨릭 성인",
-   op:"천주교 서울대교구", url:"https://maria.catholic.or.kr/mobile/sa_ho/list/list.asp?menugubun=saint&today=on",
-   desc:"오늘의 성인 / 성인 찾기"},
 
-    
   /* 미디어/방송 */
   {cat:"미디어", ico:"📺", name:"cpbc 가톨릭평화방송",
    op:"가톨릭평화방송", url:"https://www.cpbc.co.kr",
@@ -3628,12 +3630,13 @@ window.initPrayerView = function(){
 
     /* 커버: 토스트 → 두 번째에 종료 */
     if(!appActive()){
+      /* go(1)으로 history 복원 후, _restoring 해제 완료 시점에 토스트 */
       _restoring = true;
       history.go(1);
-      /* go(1) 복원 후 _restoring이 해제된 다음 토스트 표시 */
+      /* 100ms 딜레이: go(1) popstate 처리(_restoring=false) 완료 후 토스트 */
       setTimeout(function(){
         if(typeof window._showBackToast==='function') window._showBackToast();
-      }, 50);
+      }, 100);
       return;
     }
 
@@ -3770,95 +3773,6 @@ html.retreat-mode #srch-modal .sm-filter{
   border-top:2px solid rgba(0,0,0,.10);
 }
 </style>
-<script>
-/* =========================================================
-   긴급 패치: 기도문 뒤로가기 + 관구교구 열기 안정화
-   위치: </body> 바로 위에 붙여넣기
-========================================================= */
-(function(){
-  if(window.__PRAYER_DIOCESE_FIX_20260427__) return;
-  window.__PRAYER_DIOCESE_FIX_20260427__ = true;
 
-  function $(id){ return document.getElementById(id); }
-  function appActive(){
-    return document.documentElement.classList.contains('app-active');
-  }
-
-  /* 1) 기도문 상세 화면에서 휴대폰 뒤로가기 = 기도문 목록으로 */
-  window.addEventListener('popstate', function(e){
-    var prayer = $('prayer-view');
-    var detail = $('prayer-detail');
-
-    if(appActive() && prayer && prayer.classList.contains('open') &&
-       detail && detail.classList.contains('show')){
-
-      e.stopImmediatePropagation();
-
-      try{ history.go(1); }catch(err){}
-
-      setTimeout(function(){
-        detail.classList.remove('show');
-      }, 30);
-
-      return false;
-    }
-  }, true);
-
-  /* 2) 관구·교구 열기 안정화: srcdoc 대신 iframe document.write 우선 사용 */
-  window.openDioceseView = function(){
-    var view = $('diocese-view');
-    var frame = $('diocese-frame');
-    var loading = $('diocese-loading');
-    var html = window.__DIOCESE_EMBED_HTML || '';
-
-    if(!view || !frame){
-      alert('교구지도 화면 요소를 찾지 못했습니다.');
-      return;
-    }
-
-    document.documentElement.classList.add('app-active');
-    var cover = $('cover');
-    if(cover) cover.style.display = 'none';
-
-    view.classList.add('open');
-    if(loading) loading.style.display = 'flex';
-
-    try{
-      frame.removeAttribute('srcdoc');
-      frame.src = 'about:blank';
-
-      setTimeout(function(){
-        try{
-          var doc = frame.contentWindow.document;
-          doc.open();
-          doc.write(html);
-          doc.close();
-          if(loading) setTimeout(function(){ loading.style.display = 'none'; }, 500);
-        }catch(err){
-          frame.srcdoc = html;
-          if(loading) setTimeout(function(){ loading.style.display = 'none'; }, 800);
-        }
-      }, 50);
-    }catch(e){
-      frame.srcdoc = html;
-      if(loading) setTimeout(function(){ loading.style.display = 'none'; }, 800);
-    }
-  };
-
-  window.closeDioceseView = function(){
-    var view = $('diocese-view');
-    var frame = $('diocese-frame');
-
-    if(view) view.classList.remove('open');
-
-    if(frame){
-      try{
-        frame.removeAttribute('srcdoc');
-        frame.src = 'about:blank';
-      }catch(e){}
-    }
-  };
-})();
-</script>
 </body>
 </html>
