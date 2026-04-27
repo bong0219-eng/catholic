@@ -3770,6 +3770,95 @@ html.retreat-mode #srch-modal .sm-filter{
   border-top:2px solid rgba(0,0,0,.10);
 }
 </style>
+<script>
+/* =========================================================
+   긴급 패치: 기도문 뒤로가기 + 관구교구 열기 안정화
+   위치: </body> 바로 위에 붙여넣기
+========================================================= */
+(function(){
+  if(window.__PRAYER_DIOCESE_FIX_20260427__) return;
+  window.__PRAYER_DIOCESE_FIX_20260427__ = true;
 
+  function $(id){ return document.getElementById(id); }
+  function appActive(){
+    return document.documentElement.classList.contains('app-active');
+  }
+
+  /* 1) 기도문 상세 화면에서 휴대폰 뒤로가기 = 기도문 목록으로 */
+  window.addEventListener('popstate', function(e){
+    var prayer = $('prayer-view');
+    var detail = $('prayer-detail');
+
+    if(appActive() && prayer && prayer.classList.contains('open') &&
+       detail && detail.classList.contains('show')){
+
+      e.stopImmediatePropagation();
+
+      try{ history.go(1); }catch(err){}
+
+      setTimeout(function(){
+        detail.classList.remove('show');
+      }, 30);
+
+      return false;
+    }
+  }, true);
+
+  /* 2) 관구·교구 열기 안정화: srcdoc 대신 iframe document.write 우선 사용 */
+  window.openDioceseView = function(){
+    var view = $('diocese-view');
+    var frame = $('diocese-frame');
+    var loading = $('diocese-loading');
+    var html = window.__DIOCESE_EMBED_HTML || '';
+
+    if(!view || !frame){
+      alert('교구지도 화면 요소를 찾지 못했습니다.');
+      return;
+    }
+
+    document.documentElement.classList.add('app-active');
+    var cover = $('cover');
+    if(cover) cover.style.display = 'none';
+
+    view.classList.add('open');
+    if(loading) loading.style.display = 'flex';
+
+    try{
+      frame.removeAttribute('srcdoc');
+      frame.src = 'about:blank';
+
+      setTimeout(function(){
+        try{
+          var doc = frame.contentWindow.document;
+          doc.open();
+          doc.write(html);
+          doc.close();
+          if(loading) setTimeout(function(){ loading.style.display = 'none'; }, 500);
+        }catch(err){
+          frame.srcdoc = html;
+          if(loading) setTimeout(function(){ loading.style.display = 'none'; }, 800);
+        }
+      }, 50);
+    }catch(e){
+      frame.srcdoc = html;
+      if(loading) setTimeout(function(){ loading.style.display = 'none'; }, 800);
+    }
+  };
+
+  window.closeDioceseView = function(){
+    var view = $('diocese-view');
+    var frame = $('diocese-frame');
+
+    if(view) view.classList.remove('open');
+
+    if(frame){
+      try{
+        frame.removeAttribute('srcdoc');
+        frame.src = 'about:blank';
+      }catch(e){}
+    }
+  };
+})();
+</script>
 </body>
 </html>
