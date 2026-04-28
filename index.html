@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko" class="oai-font-global">
 <head>
@@ -4749,6 +4750,61 @@ html.oai-font-global #cover .pr-font-btn{display:inline-flex!important;visibilit
 #cover .cover-sub{
   font-size:calc(12.5px * var(--app-font-scale,1)) !important;
   line-height:1.25 !important;
+}
+</style>
+
+
+<!-- OAI FINAL VISIBLE CSS PATCH 20260428: cover category bigger + active button color restore -->
+<style id="oai-final-visible-cover-active-20260428">
+/* 커버: 대제목/서브는 그대로, 카테고리 이름만 확실히 확대 */
+#cover .cover-card .cover-name,
+#cover .cover-name{
+  font-size:calc(22px * var(--app-font-scale,1)) !important;
+  line-height:1.16 !important;
+  font-weight:850 !important;
+  letter-spacing:-0.03em !important;
+}
+@media (max-width:420px){
+  #cover .cover-card .cover-name,
+  #cover .cover-name{font-size:calc(20px * var(--app-font-scale,1)) !important;}
+}
+
+/* 표준화 탭/버튼 활성색 재복구: 사라진 활성 배경을 마지막 CSS에서 강제 */
+#tabbar .tab-btn.active,
+.filter-btn.active,
+.sm-fb.on,
+.sm-tab.active,
+.web-cat-btn.on,
+.trail-tab.on,
+.qna-tab.on,
+#prayer-tabs .pr-tab.on,
+#prayer-tabs .pr-tab.active{
+  background:var(--gold,#d4aa6a) !important;
+  color:var(--navy,#0e1535) !important;
+  border-color:var(--gold,#d4aa6a) !important;
+  box-shadow:0 4px 12px rgba(212,170,106,.32) !important;
+  font-weight:850 !important;
+}
+
+/* 웹사이트/순례길 표준화 버튼은 활성 상태가 확실히 보이도록 동일 톤 유지 */
+#web-view .web-cat-btn.on,
+#trail-view .trail-tab.on,
+#qna-view .qna-tab.on{
+  background:var(--gold,#d4aa6a) !important;
+  color:var(--navy,#0e1535) !important;
+  border-color:var(--gold,#d4aa6a) !important;
+}
+
+/* 성지/성당/피정 내부 탭 활성 표시 */
+html.parish-mode .sm-tab.active,
+html.retreat-mode .sm-tab.active,
+html.parish-mode .filter-btn.active,
+html.retreat-mode .filter-btn.active,
+html.parish-mode .sm-fb.on,
+html.retreat-mode .sm-fb.on{
+  background:var(--gold,#d4aa6a) !important;
+  color:var(--navy,#0e1535) !important;
+  border-color:var(--gold,#d4aa6a) !important;
 }
 </style>
 
