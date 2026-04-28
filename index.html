@@ -4808,5 +4808,140 @@ html.retreat-mode .sm-fb.on{
 }
 </style>
 
+
+<!-- OAI ACTIVE COLOR RESTORE PATCH 20260428: restore original module/category active colors -->
+<style id="oai-active-original-colors-20260428">
+/* 상단 성지/성당/피정 탭: 금색 덮어쓰기 제거 후 원래 계열색 복구 */
+#tabbar .tab-btn.active{
+  color:#fff !important;
+  border-bottom:none !important;
+  border-color:transparent !important;
+  box-shadow:0 10px 20px rgba(0,0,0,.10) !important;
+}
+html:not(.parish-mode):not(.retreat-mode) #tabbar .tab-btn.active{
+  background:linear-gradient(135deg,#243a83,#1f2f6b) !important;
+}
+html.parish-mode #tabbar .tab-btn.active{
+  background:var(--parish-active,#446e93) !important;
+}
+html.retreat-mode #tabbar .tab-btn.active{
+  background:var(--retreat-active,#0d6f66) !important;
+}
+
+/* 성지/성당/피정의 내부 필터·검색 탭: 금색이 아닌 원래 카테고리 색으로 복구 */
+html:not(.parish-mode):not(.retreat-mode) .filter-btn.active,
+html:not(.parish-mode):not(.retreat-mode) .sm-fb.on{
+  background:var(--shrine-soft,#f4ead6) !important;
+  color:#7a5a23 !important;
+  border-color:#d8be8c !important;
+}
+html.parish-mode .filter-btn.active,
+html.parish-mode .sm-fb.on{
+  background:var(--church-soft,#e8eff6) !important;
+  color:#38536f !important;
+  border-color:#a7b8ca !important;
+}
+html.retreat-mode .filter-btn.active,
+html.retreat-mode .sm-fb.on{
+  background:var(--retreat-soft,#e8f3ec) !important;
+  color:#4f7c67 !important;
+  border-color:#b8d2c2 !important;
+}
+html:not(.parish-mode):not(.retreat-mode) .sm-tab.active{
+  background:linear-gradient(135deg,var(--shrine-main,#243a83),var(--shrine-main-2,#1f2f6b)) !important;
+  color:#fff !important;
+  border-color:transparent !important;
+}
+html.parish-mode .sm-tab.active{
+  background:linear-gradient(135deg,#355c7d,#446e93) !important;
+  color:#fff !important;
+  border-color:transparent !important;
+}
+html.retreat-mode .sm-tab.active{
+  background:linear-gradient(135deg,#0f8c7e,#0d6f66) !important;
+  color:#fff !important;
+  border-color:transparent !important;
+}
+
+/* 주요기도문 탭: 각 기도 분류 고유색 복구 */
+#prayer-tabs .pr-tab:not(.on){
+  background:#fff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78) !important;
+}
+#prayer-tabs .pr-tab.on{color:#fff !important;border-color:transparent !important;box-shadow:0 8px 18px rgba(15,23,42,.12) !important;}
+#prayer-tabs .pr-tab.on[data-cat="favorites"]{background:#E8780C !important;}
+#prayer-tabs .pr-tab.on[data-cat="aim"]{background:#1565C0 !important;}
+#prayer-tabs .pr-tab.on[data-cat="basic"]{background:#1E40AF !important;}
+#prayer-tabs .pr-tab.on[data-cat="special"]{background:#BE185D !important;}
+#prayer-tabs .pr-tab.on[data-cat="etc"]{background:#15803D !important;}
+#prayer-tabs .pr-tab.on[data-cat="bong1"]{background:#475569 !important;}
+#prayer-tabs .pr-tab.on[data-cat="bong2"]{background:#7E22CE !important;}
+#prayer-tabs .pr-tab.on[data-cat="bong3"]{background:#C2410C !important;}
+
+/* 순례길 탭: 지도/목록 원래 색 복구 */
+#trail-view #trail-tab-map.on{
+  background:#2563eb !important;
+  color:#fff !important;
+  border-color:#2563eb !important;
+  box-shadow:0 8px 18px rgba(37,99,235,.22) !important;
+}
+#trail-view #trail-tab-list.on{
+  background:#2A8040 !important;
+  color:#fff !important;
+  border-color:#2A8040 !important;
+  box-shadow:0 8px 18px rgba(42,128,64,.20) !important;
+}
+
+/* 웹사이트 탭: 분류별 원래 색 복구 */
+#web-view .web-cat-btn.on{color:#fff !important;border-color:transparent !important;box-shadow:0 8px 18px rgba(15,23,42,.12) !important;}
+#web-view .web-cat-btn[data-cat-color="전체"].on{background:#1a2d5a !important;}
+#web-view .web-cat-btn[data-cat-color="중앙기구"].on{background:#8B1C2A !important;}
+#web-view .web-cat-btn[data-cat-color="신앙 포털"].on{background:#1A6B3C !important;}
+#web-view .web-cat-btn[data-cat-color="미디어"].on{background:#1A4F8B !important;}
+#web-view .web-cat-btn[data-cat-color="언론"].on{background:#5A3E8B !important;}
+#web-view .web-cat-btn[data-cat-color="출판·교육"].on{background:#7A5230 !important;}
+#web-view .web-cat-btn[data-cat-color="교구"].on{background:#2e5a3a !important;}
+#web-view .web-cat-btn.on .cnt{background:rgba(255,255,255,.22) !important;color:#fff !important;}
+
+/* Q&A 탭은 앱 기본 남색 계열 유지 */
+#qna-view .qna-tab.on{background:#1f2a44 !important;color:#fff !important;border-color:#1f2a44 !important;}
+</style>
+<script id="oai-prayer-active-sync-20260428">
+(function(){
+  if(window.__OAI_PRAYER_ACTIVE_SYNC_20260428__) return;
+  window.__OAI_PRAYER_ACTIVE_SYNC_20260428__ = true;
+  function syncPrayerTabOn(){
+    var wrap = document.getElementById('prayer-tabs');
+    if(!wrap) return;
+    var tabs = wrap.querySelectorAll('.pr-tab');
+    if(!tabs || !tabs.length) return;
+    var active = null;
+    for(var i=0;i<tabs.length;i++){
+      var c = tabs[i].style && tabs[i].style.color ? String(tabs[i].style.color).toLowerCase() : '';
+      if(c === '#fff' || c === 'white' || c.indexOf('255, 255, 255') > -1){ active = tabs[i]; break; }
+    }
+    if(!active) active = wrap.querySelector('.pr-tab.on') || tabs[0];
+    for(var j=0;j<tabs.length;j++) tabs[j].classList.toggle('on', tabs[j] === active);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target && e.target.closest ? e.target.closest('#prayer-tabs .pr-tab') : null;
+    if(t){
+      setTimeout(function(){
+        var tabs = document.querySelectorAll('#prayer-tabs .pr-tab');
+        for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
+        t.classList.add('on');
+      }, 0);
+      setTimeout(syncPrayerTabOn, 80);
+    }
+  }, true);
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(syncPrayerTabOn, 300); });
+  window.addEventListener('load', function(){ setTimeout(syncPrayerTabOn, 300); });
+  setInterval(function(){
+    var pv = document.getElementById('prayer-view');
+    if(pv && pv.classList.contains('open')) syncPrayerTabOn();
+  }, 500);
+})();
+</script>
+
 </body>
 </html>
