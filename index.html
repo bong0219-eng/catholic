@@ -5003,7 +5003,6 @@ html.retreat-mode .sm-tab.active{
   height:20px !important;
   font-size:calc(11px * var(--app-font-scale,1)) !important;
 }
- 
 </style>
 <script id="oai-final-request-20260428-script">
 (function(){
@@ -5101,6 +5100,197 @@ html.retreat-mode .sm-tab.active{
     var d = document.getElementById('diocese-view');
     if(d && d.classList.contains('open')) shrinkDioceseButtons();
   },1000);
+})();
+</script>
+
+
+<!-- OAI PATCH 20260428: 4-module header icon alignment + visible prayer cross + diocese parish count line -->
+<style id="oai-header-icon-diocese-count-20260428-style">
+#prayer-bar-brand,
+#web-view .module-bar-main,
+#trail-view .module-bar-main,
+#qna-view .module-bar-main{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  min-width:0 !important;
+}
+#prayer-bar-ico,
+#web-view .module-bar-ico,
+#trail-view .module-bar-ico,
+#qna-view .module-bar-ico{
+  width:42px !important;
+  height:42px !important;
+  min-width:42px !important;
+  flex:0 0 42px !important;
+  border-radius:14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:23px !important;
+  line-height:1 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+#prayer-bar-txt,
+#web-view .module-bar-txt,
+#trail-view .module-bar-txt,
+#qna-view .module-bar-txt{
+  min-width:0 !important;
+  flex:1 1 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  text-align:left !important;
+}
+#prayer-bar-ttl,
+#web-view .module-bar-title,
+#trail-view .module-bar-title,
+#qna-view .module-bar-title{
+  line-height:1.22 !important;
+  text-align:left !important;
+  margin:0 !important;
+}
+#prayer-bar-sub,
+#web-view .module-bar-sub,
+#trail-view .module-bar-sub,
+#qna-view .module-bar-sub{
+  line-height:1.25 !important;
+  text-align:left !important;
+  margin-top:2px !important;
+}
+
+#prayer-bar-ico{
+  position:relative !important;
+  overflow:hidden !important;
+  color:#fff8e8 !important;
+  font-size:0 !important;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,.42), rgba(255,255,255,.08) 38%, rgba(0,0,0,.18) 100%),
+    linear-gradient(145deg,#f2d08a 0%,#c89235 45%,#7b4a13 100%) !important;
+  border:1.5px solid rgba(255,239,198,.66) !important;
+  box-shadow:
+    inset 1px 1px 2px rgba(255,255,255,.55),
+    inset -2px -3px 5px rgba(92,48,5,.45),
+    0 6px 14px rgba(0,0,0,.28) !important;
+}
+#prayer-bar-ico::before{
+  content:'✝' !important;
+  display:block !important;
+  font-size:27px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  color:#fff8e7 !important;
+  text-shadow:
+    0 1px 0 rgba(90,48,5,.95),
+    1px 2px 0 rgba(120,67,12,.62),
+    0 4px 8px rgba(0,0,0,.38) !important;
+  transform:translateY(-1px) !important;
+}
+#prayer-bar-ico::after{
+  content:'' !important;
+  position:absolute !important;
+  inset:5px 7px auto 7px !important;
+  height:12px !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,0)) !important;
+  pointer-events:none !important;
+}
+#web-view .module-bar-ico,
+#trail-view .module-bar-ico,
+#qna-view .module-bar-ico{
+  font-size:24px !important;
+  background:rgba(255,255,255,.16) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+}
+</style>
+<script id="oai-header-icon-diocese-count-20260428-script">
+(function(){
+  if(window.__OAI_HEADER_ICON_DIOCESE_COUNT_20260428__) return;
+  window.__OAI_HEADER_ICON_DIOCESE_COUNT_20260428__ = true;
+
+  function patchDioceseFrame(){
+    var frame = document.getElementById('diocese-frame');
+    if(!frame || !frame.contentWindow) return;
+    var doc;
+    try{ doc = frame.contentWindow.document; }catch(e){ return; }
+    if(!doc || !doc.documentElement) return;
+
+    if(!doc.getElementById('oai-diocese-header-count-style-20260428')){
+      var st = doc.createElement('style');
+      st.id = 'oai-diocese-header-count-style-20260428';
+      st.textContent = `
+header{display:flex!important;align-items:center!important;}
+.hd{display:flex!important;align-items:center!important;width:100%!important;}
+.hd-left{display:flex!important;align-items:center!important;gap:12px!important;min-width:0!important;}
+.hd-icon{width:42px!important;height:42px!important;min-width:42px!important;flex:0 0 42px!important;border-radius:14px!important;font-size:23px!important;line-height:1!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.18)!important;box-sizing:border-box!important;}
+.hd-titles{min-width:0!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;text-align:left!important;}
+.hd h1{line-height:1.22!important;text-align:left!important;margin:0!important;}
+.hd-sub{line-height:1.25!important;text-align:left!important;margin-top:2px!important;}
+.lv-card .lv-body{align-items:center!important;}
+.lv-count-line,.oai-parish-count-line{display:inline-flex!important;align-items:center!important;justify-content:center!important;margin-top:4px!important;padding:2px 8px!important;border-radius:999px!important;background:#F1F5F9!important;color:#475569!important;font-size:12px!important;font-weight:500!important;line-height:1.35!important;white-space:nowrap!important;letter-spacing:-.02em!important;}
+.lv-count-line b,.oai-parish-count-line b{font-weight:600!important;color:#1F2A44!important;}
+`;
+      (doc.head || doc.documentElement).appendChild(st);
+    }
+
+    function normalizeCountText(t){
+      if(!t) return '';
+      t = String(t).replace(/\s+/g,' ').trim();
+      var m = t.match(/(\d+)\s*개/);
+      if(!m) m = t.match(/본당\s*수?\s*(\d+)/);
+      if(!m) m = t.match(/(\d+)/);
+      return m ? ('본당 수 ' + m[1] + '개') : t.replace(/본당\s+(\d+)\s*개/g,'본당 수 $1개');
+    }
+
+    var countNodes = doc.querySelectorAll('.lv-parish-count,.oai-parish-count,.lv-sec-cnt,.lv-count-line,.oai-parish-count-line');
+    countNodes.forEach(function(n){
+      var text = normalizeCountText(n.textContent);
+      if(text){
+        n.textContent = text;
+        n.classList.add('oai-parish-count-line');
+      }
+    });
+
+    doc.querySelectorAll('.lv-card').forEach(function(card){
+      var body = card.querySelector('.lv-info') || card.querySelector('.lv-body') || card;
+      var existing = card.querySelector('.oai-parish-count-line');
+      if(existing) return;
+      var src = card.querySelector('.lv-det,.lv-rg,.lv-op');
+      var txt = src ? normalizeCountText(src.textContent) : '';
+      if(!/\d+개/.test(txt)) return;
+      var line = doc.createElement('div');
+      line.className = 'oai-parish-count-line';
+      line.textContent = txt;
+      body.appendChild(line);
+    });
+  }
+
+  function install(){
+    patchDioceseFrame();
+    var frame = document.getElementById('diocese-frame');
+    if(frame && !frame.__oaiHeaderCountPatch20260428){
+      frame.__oaiHeaderCountPatch20260428 = true;
+      frame.addEventListener('load', function(){
+        setTimeout(patchDioceseFrame,80);
+        setTimeout(patchDioceseFrame,500);
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', install);
+  window.addEventListener('load', function(){ install(); setTimeout(patchDioceseFrame,500); });
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.closest && e.target.closest('[onclick*="Diocese"],#diocese-view,.module-bar')){
+      setTimeout(patchDioceseFrame,120);
+      setTimeout(patchDioceseFrame,700);
+    }
+  }, true);
+  setInterval(function(){
+    var d = document.getElementById('diocese-view');
+    if(d && d.classList.contains('open')) patchDioceseFrame();
+  },1200);
 })();
 </script>
 </body>
