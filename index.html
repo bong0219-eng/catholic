@@ -2645,6 +2645,18 @@ function _fmtTime(s){
   {cat:"신앙 포털", ico:"📘", name:"가톨릭 용어사전",
    op:"Q&A 정보마당", url:"http://qainfo.catholic.or.kr/mobile/dictionary/",
    desc:"가톨릭 교리·전례·성경 용어를 모바일 사전으로 조회"},
+  {cat:"신앙 포털", ico:"🌟", name:"가톨릭 성인",
+   op:"가톨릭인터넷 굿뉴스", url:"https://maria.catholic.or.kr/mobile/sa_ho/list/list.asp?menugubun=saint&today=on",
+   desc:"오늘의 성인과 가톨릭 성인 정보를 확인"},
+  {cat:"신앙 포털", ico:"📖", name:"성경",
+   op:"가톨릭인터넷 굿뉴스", url:"https://maria.catholic.or.kr/mobile/main/",
+   desc:"가톨릭 성경과 신앙 자료를 모바일에서 확인"},
+  {cat:"신앙 포털", ico:"🎼", name:"가톨릭 성가",
+   op:"가톨릭인터넷 굿뉴스", url:"https://maria.catholic.or.kr/mobile/sungga/sungga.asp",
+   desc:"가톨릭 성가 검색과 악보 자료 제공"},
+  {cat:"신앙 포털", ico:"🎵", name:"가톨릭 생활성가",
+   op:"가톨릭인터넷 굿뉴스", url:"https://maria.catholic.or.kr/mobile/ccm/main.asp",
+   desc:"생활성가와 CCM 자료 제공"},
 
   /* 미디어/방송 */
   {cat:"미디어", ico:"📺", name:"cpbc 가톨릭평화방송",
@@ -5293,5 +5305,96 @@ header{display:flex!important;align-items:center!important;}
   },1200);
 })();
 </script>
+<style id="oai-faith-retreat-parish-final-20260428">
+/* 피정의집 전용 파스텔 그린: 활성 탭·필터·내주변 번호 */
+html.retreat-mode{
+  --retreat-bg:#66BB6A!important;
+  --retreat-active:#81C784!important;
+  --retreat-accent:#E8F5E9!important;
+  --dist-retreat:#4F9E56!important;
+}
+html.retreat-mode #tabbar,
+html.retreat-mode .sheet-hd,
+html.retreat-mode .srch-bar,
+html.retreat-mode .filter-bar,
+html.retreat-mode .region-wrap,
+html.retreat-mode .sm-hd,
+html.retreat-mode .sm-filter{
+  background:linear-gradient(135deg,#66BB6A,#81C784)!important;
+}
+html.retreat-mode .tab-btn.active,
+html.retreat-mode .filter-btn.active,
+html.retreat-mode .sm-fb.on,
+html.retreat-mode .sm-tab.active{
+  background:#81C784!important;
+  color:#ffffff!important;
+  border-color:#6FBF73!important;
+  box-shadow:0 4px 12px rgba(102,187,106,.24)!important;
+}
+html.retreat-mode .nearby-num{
+  background:#81C784!important;
+  color:#ffffff!important;
+}
+html.retreat-mode .nearby-dist,
+html.retreat-mode .region-list-hd,
+html.retreat-mode .dio-hd{
+  color:#4F9E56!important;
+}
+html.retreat-mode .ic-route-btn{
+  background:#66BB6A!important;
+  color:#ffffff!important;
+}
+/* 관구교구 본당 수 줄: 최종 표기 형식 유지 */
+.oai-parish-count-line{
+  font-weight:500!important;
+  letter-spacing:0!important;
+}
+</style>
+<script id="oai-faith-retreat-parish-final-js-20260428">
+(function(){
+  if(window.__OAI_FAITH_RETREAT_PARISH_FINAL_20260428__) return;
+  window.__OAI_FAITH_RETREAT_PARISH_FINAL_20260428__ = true;
+
+  function normalizeParishCountText(text){
+    text = String(text || '').replace(/\s+/g,' ').trim();
+    var m = text.match(/본당\s*수\s*(\d+)\s*개?/);
+    if(!m) m = text.match(/(\d+)\s*본당/);
+    if(!m) m = text.match(/본당\s*(\d+)\s*개?/);
+    if(!m) m = text.match(/(\d+)\s*개/);
+    return m ? ('본당 수 ' + m[1] + '개') : text;
+  }
+
+  function patchDioceseParishCount(){
+    var frame = document.getElementById('diocese-frame');
+    if(!frame) return;
+    var doc = null;
+    try{ doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document); }catch(e){ return; }
+    if(!doc) return;
+    try{
+      doc.querySelectorAll('.lv-parish-count,.oai-parish-count,.lv-sec-cnt,.lv-count-line,.oai-parish-count-line').forEach(function(el){
+        var t = normalizeParishCountText(el.textContent);
+        if(t){ el.textContent = t; el.classList.add('oai-parish-count-line'); }
+      });
+    }catch(e){}
+  }
+
+  window.addEventListener('load',function(){
+    patchDioceseParishCount();
+    var frame = document.getElementById('diocese-frame');
+    if(frame && !frame.__oaiParishCountFinal20260428){
+      frame.__oaiParishCountFinal20260428 = true;
+      frame.addEventListener('load',function(){
+        setTimeout(patchDioceseParishCount,100);
+        setTimeout(patchDioceseParishCount,500);
+      });
+    }
+  });
+  document.addEventListener('click',function(){
+    setTimeout(patchDioceseParishCount,150);
+    setTimeout(patchDioceseParishCount,700);
+  },true);
+})();
+</script>
+
 </body>
 </html>
