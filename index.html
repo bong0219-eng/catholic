@@ -4943,5 +4943,164 @@ html.retreat-mode .sm-tab.active{
 })();
 </script>
 
+
+
+<!-- OAI FINAL REQUEST PATCH 20260428: prayer swipe loop + smaller cover label + 80pct module buttons -->
+<style id="oai-final-request-20260428-style">
+/* 1) 커버 카테고리 글자: 현재보다 한 단계 축소 */
+#cover .cover-card .cover-name,
+#cover .cover-name{
+  font-size:calc(20px * var(--app-font-scale,1)) !important;
+  line-height:1.16 !important;
+  font-weight:850 !important;
+  letter-spacing:-0.03em !important;
+}
+@media (max-width:420px){
+  #cover .cover-card .cover-name,
+  #cover .cover-name{font-size:calc(18px * var(--app-font-scale,1)) !important;}
+}
+
+/* 2) 주요기도문·순례길·웹사이트·관구교구 버튼/탭 높이 80% 수준 */
+:root{
+  --oai-std-tab-h:38px !important;
+  --oai-std-btn-h:34px !important;
+  --oai-std-btn-fs:calc(14px * var(--app-font-scale,1)) !important;
+}
+#prayer-tabs,
+#web-view .web-cats,
+#trail-view .trail-tabs,
+#qna-view .qna-tabs{
+  min-height:calc(var(--oai-std-tab-h) + 12px) !important;
+  height:calc(var(--oai-std-tab-h) + 12px) !important;
+  padding:6px 14px !important;
+}
+#prayer-tabs .pr-tab,
+#web-view .web-cat-btn,
+#trail-view .trail-tab,
+#qna-view .qna-tab{
+  min-height:var(--oai-std-tab-h) !important;
+  height:var(--oai-std-tab-h) !important;
+  padding:0 13px !important;
+  font-size:var(--oai-std-btn-fs) !important;
+  border-radius:12px !important;
+}
+#prayer-search-bar{
+  min-height:calc(var(--oai-std-btn-h) + 12px) !important;
+  padding:6px 14px !important;
+}
+#prayer-search-wrap,
+#prayer-search-inp,
+#prayer-view .pr-font-ctrl,
+#prayer-view .pr-font-btn{
+  height:var(--oai-std-btn-h) !important;
+  min-height:var(--oai-std-btn-h) !important;
+}
+#prayer-view .pr-font-btn{
+  width:36px !important;
+}
+#web-view .web-cat-btn .cnt{
+  min-width:20px !important;
+  height:20px !important;
+  font-size:calc(11px * var(--app-font-scale,1)) !important;
+}
+</style>
+<script id="oai-final-request-20260428-script">
+(function(){
+  if(window.__OAI_FINAL_REQUEST_20260428__) return;
+  window.__OAI_FINAL_REQUEST_20260428__ = true;
+
+  var PRAYER_ORDER = ['favorites','aim','basic','special','etc','bong1','bong2','bong3'];
+
+  function activePrayerCat(){
+    var active = document.querySelector('#prayer-tabs .pr-tab.on') ||
+                 document.querySelector('#prayer-tabs .pr-tab.active');
+    if(active && active.dataset && active.dataset.cat) return active.dataset.cat;
+    var tabs = document.querySelectorAll('#prayer-tabs .pr-tab');
+    for(var i=0;i<tabs.length;i++){
+      if(tabs[i].classList.contains('on') || tabs[i].classList.contains('active')){
+        return tabs[i].dataset.cat;
+      }
+    }
+    return 'favorites';
+  }
+
+  function switchPrayerBySwipe(dir){
+    if(typeof window.prSwitchCat !== 'function') return false;
+    var cur = activePrayerCat();
+    var idx = PRAYER_ORDER.indexOf(cur);
+    if(idx < 0) idx = 0;
+    var next = (dir > 0)
+      ? PRAYER_ORDER[(idx + 1) % PRAYER_ORDER.length]
+      : PRAYER_ORDER[(idx - 1 + PRAYER_ORDER.length) % PRAYER_ORDER.length];
+    window.prSwitchCat(next);
+    setTimeout(function(){
+      var tabs = document.querySelectorAll('#prayer-tabs .pr-tab');
+      for(var i=0;i<tabs.length;i++) tabs[i].classList.toggle('on', tabs[i].dataset.cat === next);
+    },0);
+    return true;
+  }
+
+  function installPrayerSwipe(){
+    var el = document.getElementById('prayer-list-view');
+    if(!el || el.__oaiSwipeFinal20260428) return;
+    el.__oaiSwipeFinal20260428 = true;
+    var sx=0, sy=0, tracking=false;
+    el.addEventListener('touchstart', function(e){
+      if(!e.touches || !e.touches.length) return;
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+      tracking = true;
+    }, true);
+    el.addEventListener('touchend', function(e){
+      if(!tracking || !e.changedTouches || !e.changedTouches.length) return;
+      tracking = false;
+      var dx = e.changedTouches[0].clientX - sx;
+      var dy = e.changedTouches[0].clientY - sy;
+      if(Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+      if(switchPrayerBySwipe(dx < 0 ? 1 : -1)){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    }, true);
+  }
+
+  function shrinkDioceseButtons(){
+    var f = document.getElementById('diocese-frame');
+    if(!f || !f.contentWindow) return;
+    var doc;
+    try{ doc = f.contentWindow.document; }catch(e){ return; }
+    if(!doc || !doc.documentElement) return;
+    var st = doc.getElementById('oai-diocese-button-80pct-20260428');
+    if(!st){
+      st = doc.createElement('style');
+      st.id = 'oai-diocese-button-80pct-20260428';
+      st.textContent = `
+:root{--std-tab-h:38px!important;--std-btn-h:34px!important;--std-btn-fs:calc(14px*var(--app-font-scale,1))!important;}
+.tabs,.tabbar,.seg,.mode-tabs{min-height:calc(var(--std-tab-h) + 12px)!important;height:calc(var(--std-tab-h) + 12px)!important;padding:6px 14px!important;}
+.tab,.qbtn,.tabs button,.tabbar button,.seg button,.mode-tabs button,.btn,.card button,.card a,.home-btn,.link-btn{min-height:var(--std-btn-h)!important;height:var(--std-btn-h)!important;font-size:var(--std-btn-fs)!important;border-radius:12px!important;}
+.tab,.tabs button,.tabbar button,.seg button,.mode-tabs button{min-height:var(--std-tab-h)!important;height:var(--std-tab-h)!important;padding:0 13px!important;}
+`;
+      (doc.head || doc.documentElement).appendChild(st);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){ installPrayerSwipe(); setTimeout(shrinkDioceseButtons,300); });
+  window.addEventListener('load', function(){ installPrayerSwipe(); setTimeout(shrinkDioceseButtons,300); });
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.closest && e.target.closest('#cover .cover-card,[onclick*="Prayer"],[onclick*="Diocese"]')){
+      setTimeout(installPrayerSwipe,300);
+      setTimeout(shrinkDioceseButtons,600);
+    }
+  }, true);
+  var fr = document.getElementById('diocese-frame');
+  if(fr) fr.addEventListener('load', function(){ setTimeout(shrinkDioceseButtons,80); setTimeout(shrinkDioceseButtons,500); });
+  setInterval(function(){
+    var p = document.getElementById('prayer-view');
+    if(p && p.classList.contains('open')) installPrayerSwipe();
+    var d = document.getElementById('diocese-view');
+    if(d && d.classList.contains('open')) shrinkDioceseButtons();
+  },1000);
+})();
+</script>
 </body>
 </html>
