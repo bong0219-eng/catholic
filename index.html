@@ -5396,5 +5396,41 @@ html.retreat-mode .ic-route-btn{
 })();
 </script>
 
+
+<!-- OAI_SAFE_PATCH_20260428_RETREAT_MAP_UX -->
+<style id="oai-safe-retreat-map-ux-20260428">
+html.retreat-mode{--retreat-bg:#4F9D63 !important;--retreat-active:#5DAE72 !important;--retreat-accent:#EAF7EE !important;--dist-retreat:#3F8F55 !important;}
+html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .region-wrap{background:#F8FAFC !important;border-bottom:1px solid #E5E7EB !important;}
+html.retreat-mode .srch-inner{background:#FFFFFF !important;border-color:#DDE3EE !important;}
+html.retreat-mode .srch-inner input{color:#111827 !important;}
+html.retreat-mode .srch-inner input::placeholder{color:#9CA3AF !important;}
+html.retreat-mode .filter-btn,html.retreat-mode .region-search-btn{background:#FFFFFF !important;color:#4B5563 !important;border:1.5px solid #DDE3EE !important;}
+html.retreat-mode .filter-btn.active,html.retreat-mode .sm-fb.on,html.retreat-mode .sm-tab.active{background:#4F9D63 !important;color:#FFFFFF !important;border-color:#4F9D63 !important;}
+html.retreat-mode .nearby-num,html.retreat-mode .sm-role{background:#4F9D63 !important;color:#FFFFFF !important;}
+html.retreat-mode .nearby-dist{color:#3F8F55 !important;}
+html.retreat-mode .nearby-name,html.retreat-mode .li-name,html.retreat-mode .region-item .li-name,html.retreat-mode .sm-name,html.retreat-mode .sm-place-name{color:#111827 !important;}
+html.retreat-mode .ic-route-btn{background:#4F9D63 !important;color:#fff !important;}
+#cover .cover-card,#cover .cv-btn{transform:scale(.95) !important;transform-origin:center center !important;}
+#cover .cover-grid,#cover .cv-grid{gap:8px !important;}
+#qna-cover-btn{bottom:calc(22px + env(safe-area-inset-bottom,0px)) !important;right:12px !important;padding:10px 14px !important;font-size:calc(13px * var(--app-font-scale,1)) !important;border-radius:999px !important;}
+@media (max-height:720px){#cover .cover-card,#cover .cv-btn{transform:scale(.92) !important;}#qna-cover-btn{bottom:calc(12px + env(safe-area-inset-bottom,0px)) !important;padding:9px 12px !important;}}
+</style>
+<script id="oai-safe-map-ux-20260428">
+(function(){
+  if(window.__OAI_SAFE_MAP_UX_20260428__) return;
+  window.__OAI_SAFE_MAP_UX_20260428__ = true;
+  function byId(id){return document.getElementById(id);}
+  function getLL(lat,lng){try{if(typeof _LL==='function')return new _LL(lat,lng);}catch(_){} try{if(window.kakao&&kakao.maps)return new kakao.maps.LatLng(lat,lng);}catch(_){} return null;}
+  function panMap(map,latlng){if(!map||!latlng)return;try{if(typeof map.panTo==='function')map.panTo(latlng);else map.setCenter(latlng);}catch(_){try{map.setCenter(latlng);}catch(__){}}}
+  function softZoom(map,item){try{if(!map||!item)return;var cur=typeof map.getLevel==='function'?map.getLevel():0;if(cur&&cur>6){try{map.setLevel(6,{animate:true,anchor:getLL(item.lat,item.lng)});}catch(_){try{map.setLevel(6);}catch(__){}}}}catch(_){}}
+  window._focusMarkerAboveInfoCard=function(item){
+    if(!window._map||!item||!item.lat||!item.lng)return;
+    var map=window._map;var pos=getLL(item.lat,item.lng);if(!pos)return;
+    try{softZoom(map,item);panMap(map,pos);setTimeout(function(){try{var cardEl=byId('info-card');var mapEl=byId('map-wrap');if(!cardEl||!mapEl||!map||!cardEl.classList.contains('open'))return;var cardH=cardEl.offsetHeight||0;var mapH=mapEl.offsetHeight||window.innerHeight;if(cardH<10||mapH<120)return;var proj=map.getProjection&&map.getProjection();if(!proj)return;var pt=proj.containerPointFromCoords(pos);var centerY=mapH/2;var tb=byId('tabbar');var visibleTop=(tb&&tb.offsetHeight)||60;var visibleBottom=Math.max(visibleTop+90,mapH-cardH-28);var targetY=visibleTop+Math.max(58,(visibleBottom-visibleTop)*0.30);var newCenter=proj.coordsFromContainerPoint({x:pt.x,y:pt.y+(centerY-targetY)});panMap(map,newCenter);}catch(_){}},220);}catch(_){}
+  };
+  if(typeof window._showInfoCard==='function'&&!window._showInfoCard.__oaiUxWrapped){var oldShow=window._showInfoCard;window._showInfoCard=function(item,idx){var r=oldShow.apply(this,arguments);try{setTimeout(function(){window._focusMarkerAboveInfoCard(item);},120);}catch(_){}return r;};window._showInfoCard.__oaiUxWrapped=true;}
+})();
+</script>
+
 </body>
 </html>
