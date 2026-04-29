@@ -4903,45 +4903,7 @@ html.retreat-mode .sm-tab.active{
 #web-view .web-cat-btn[data-cat-color="교구"].on{background:#2e5a3a !important;}
 #web-view .web-cat-btn.on .cnt{background:rgba(255,255,255,.22) !important;color:#fff !important;}
 
-/* Q&A 탭은 앱 기본 남색 계열 유지 */
-#qna-view .qna-tab.on{background:#1f2a44 !important;color:#fff !important;border-color:#1f2a44 !important;}
-</style>
-<script id="oai-prayer-active-sync-20260428">
-(function(){
-  if(window.__OAI_PRAYER_ACTIVE_SYNC_20260428__) return;
-  window.__OAI_PRAYER_ACTIVE_SYNC_20260428__ = true;
-  function syncPrayerTabOn(){
-    var wrap = document.getElementById('prayer-tabs');
-    if(!wrap) return;
-    var tabs = wrap.querySelectorAll('.pr-tab');
-    if(!tabs || !tabs.length) return;
-    var active = null;
-    for(var i=0;i<tabs.length;i++){
-      var c = tabs[i].style && tabs[i].style.color ? String(tabs[i].style.color).toLowerCase() : '';
-      if(c === '#fff' || c === 'white' || c.indexOf('255, 255, 255') > -1){ active = tabs[i]; break; }
-    }
-    if(!active) active = wrap.querySelector('.pr-tab.on') || tabs[0];
-    for(var j=0;j<tabs.length;j++) tabs[j].classList.toggle('on', tabs[j] === active);
-  }
-  document.addEventListener('click', function(e){
-    var t = e.target && e.target.closest ? e.target.closest('#prayer-tabs .pr-tab') : null;
-    if(t){
-      setTimeout(function(){
-        var tabs = document.querySelectorAll('#prayer-tabs .pr-tab');
-        for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
-        t.classList.add('on');
-      }, 0);
-      setTimeout(syncPrayerTabOn, 80);
-    }
-  }, true);
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(syncPrayerTabOn, 300); });
-  window.addEventListener('load', function(){ setTimeout(syncPrayerTabOn, 300); });
-  setInterval(function(){
-    var pv = document.getElementById('prayer-view');
-    if(pv && pv.classList.contains('open')) syncPrayerTabOn();
-  }, 500);
-})();
-</script>
+
 
 
 
@@ -5295,3 +5257,44 @@ header{display:flex!important;align-items:center!important;}
 </script>
 </body>
 </html>
+
+
+  /* Q&A 탭은 앱 기본 남색 계열 유지 */
+#qna-view .qna-tab.on{background:#1f2a44 !important;color:#fff !important;border-color:#1f2a44 !important;}
+</style>
+<script id="oai-prayer-active-sync-20260428">
+(function(){
+  if(window.__OAI_PRAYER_ACTIVE_SYNC_20260428__) return;
+  window.__OAI_PRAYER_ACTIVE_SYNC_20260428__ = true;
+  function syncPrayerTabOn(){
+    var wrap = document.getElementById('prayer-tabs');
+    if(!wrap) return;
+    var tabs = wrap.querySelectorAll('.pr-tab');
+    if(!tabs || !tabs.length) return;
+    var active = null;
+    for(var i=0;i<tabs.length;i++){
+      var c = tabs[i].style && tabs[i].style.color ? String(tabs[i].style.color).toLowerCase() : '';
+      if(c === '#fff' || c === 'white' || c.indexOf('255, 255, 255') > -1){ active = tabs[i]; break; }
+    }
+    if(!active) active = wrap.querySelector('.pr-tab.on') || tabs[0];
+    for(var j=0;j<tabs.length;j++) tabs[j].classList.toggle('on', tabs[j] === active);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target && e.target.closest ? e.target.closest('#prayer-tabs .pr-tab') : null;
+    if(t){
+      setTimeout(function(){
+        var tabs = document.querySelectorAll('#prayer-tabs .pr-tab');
+        for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
+        t.classList.add('on');
+      }, 0);
+      setTimeout(syncPrayerTabOn, 80);
+    }
+  }, true);
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(syncPrayerTabOn, 300); });
+  window.addEventListener('load', function(){ setTimeout(syncPrayerTabOn, 300); });
+  setInterval(function(){
+    var pv = document.getElementById('prayer-view');
+    if(pv && pv.classList.contains('open')) syncPrayerTabOn();
+  }, 500);
+})();
+</script>
